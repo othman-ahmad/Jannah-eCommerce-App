@@ -9,7 +9,9 @@ class PrimaryButton extends StatelessWidget {
     return FilledButton(
       onPressed: onPressed,
       style: ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(Colors.green),
+        backgroundColor: WidgetStatePropertyAll(
+          const Color.fromARGB(255, 0, 0, 0),
+        ),
         foregroundColor: WidgetStatePropertyAll(Colors.white),
         padding: WidgetStatePropertyAll(
           const EdgeInsets.symmetric(vertical: 16, horizontal: 32),

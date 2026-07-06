@@ -81,7 +81,7 @@ class _StepIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<OnboardingCubit, OnboardingState>(
       builder: (context, state) {
-        return Container(
+        return SizedBox(
           width: 120,
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -95,7 +95,7 @@ class _StepIndicator extends StatelessWidget {
                 width: 10,
                 decoration: BoxDecoration(
                   color: state.currentPageIndex == index
-                      ? Colors.green
+                      ? const Color.fromARGB(255, 0, 0, 0)
                       : Colors.grey.shade400,
                   shape: BoxShape.circle,
                 ),

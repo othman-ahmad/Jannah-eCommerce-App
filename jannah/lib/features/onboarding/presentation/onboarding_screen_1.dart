@@ -6,50 +6,36 @@ class OnboardingScreen1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              const Spacer(),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.network(
-                  'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=900&q=80',
-                  height: 280,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) =>
-                      const _ImageFallback(icon: Icons.shopping_bag_outlined),
-                ),
-              ),
-              const SizedBox(height: 32),
-              const Text(
-                'Find everything you need in one simple shopping experience.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const Spacer(),
-            ],
+      body: Column(
+        children: [
+          Spacer(),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: const Text(
+              'Find everything you need',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            ),
           ),
-        ),
+          SizedBox(height: 24),
+          const Text(
+            'in one Place',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 122, 122, 122),
+            ),
+          ),
+          Spacer(),
+          Image.asset(
+            'assets/images/JannahMixImage (9).png',
+            height: 280,
+            width: double.infinity,
+          ),
+          Spacer(),
+        ],
       ),
-    );
-  }
-}
-
-class _ImageFallback extends StatelessWidget {
-  const _ImageFallback({required this.icon});
-
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 280,
-      width: double.infinity,
-      color: Colors.green.shade50,
-      child: Icon(icon, size: 96, color: Colors.green),
     );
   }
 }

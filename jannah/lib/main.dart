@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jannah/features/onboarding/presentation/onboarding_parent_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const Jannah());
@@ -10,7 +11,10 @@ class Jannah extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      theme: ThemeData(
+        textTheme: GoogleFonts.nunitoTextTheme(Theme.of(context).textTheme),
+      ),
       debugShowCheckedModeBanner: false,
       home: onboardinginitiate(),
     );
