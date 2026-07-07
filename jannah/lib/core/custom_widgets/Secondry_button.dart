@@ -9,22 +9,30 @@ class SecondryButton extends StatelessWidget {
     return OutlinedButton(
       onPressed: onPressed,
       style: ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(
-          const Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: const WidgetStatePropertyAll(
+          Color.fromARGB(255, 255, 255, 255),
         ),
-        foregroundColor: WidgetStatePropertyAll(
-          const Color.fromARGB(255, 0, 0, 0),
+        foregroundColor: const WidgetStatePropertyAll(
+          Color.fromARGB(255, 0, 0, 0),
         ),
-        padding: WidgetStatePropertyAll(
-          const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+        overlayColor: WidgetStatePropertyAll(Colors.black.withOpacity(0.05)),
+        side: const WidgetStatePropertyAll(
+          BorderSide(color: Color.fromARGB(255, 0, 0, 0), width: 1.2),
+        ),
+        padding: const WidgetStatePropertyAll(
+          EdgeInsets.symmetric(vertical: 18, horizontal: 32),
         ),
         shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
       ),
       child: Text(
         text,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
+        ),
       ),
     );
   }
