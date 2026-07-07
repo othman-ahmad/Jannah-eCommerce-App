@@ -13,6 +13,7 @@ class Jannah extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,
         textTheme: GoogleFonts.nunitoTextTheme(Theme.of(context).textTheme),
       ),
       debugShowCheckedModeBanner: false,

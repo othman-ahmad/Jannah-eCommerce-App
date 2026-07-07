@@ -6,23 +6,30 @@ class OnboardingScreen3 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              const Spacer(),
-
-              const SizedBox(height: 32),
-              const Text(
-                'Save favorites and enjoy offers made for your daily needs.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const Spacer(),
-            ],
+      body: Column(
+        children: [
+          Spacer(),
+          Image.asset(
+            'assets/images/Driver.png',
+            height: 380,
+            width: double.infinity,
           ),
-        ),
+          Spacer(),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: const Text(
+              'Fast & Reliable',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            ),
+          ),
+          const Text(
+            'Delivery',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          ),
+          Spacer(flex: 2),
+        ],
       ),
     );
   }

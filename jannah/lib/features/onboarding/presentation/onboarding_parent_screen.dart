@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jannah/core/custom_widgets/primary_button.dart';
+import 'package:jannah/features/authentication/presentation/authentication_screen.dart';
 import 'package:jannah/features/home_page/presentation/home_page_screen.dart';
 import 'package:jannah/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:jannah/features/onboarding/presentation/cubit/onboarding_state.dart';
@@ -49,7 +50,8 @@ class OnboardingParentScreen extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const HomePageScreen(),
+                                builder: (context) =>
+                                    const AuthenticationScreen(),
                               ),
                             );
                           } else {
