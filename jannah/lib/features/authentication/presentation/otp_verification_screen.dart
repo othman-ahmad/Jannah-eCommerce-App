@@ -1,6 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:jannah/core/custom_widgets/primary_button.dart';
-import 'package:jannah/features/home_page/presentation/home_page_screen.dart';
+import 'package:jannah/features/authentication/presentation/new_password_screen.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   const OtpVerificationScreen({super.key});
@@ -10,14 +12,63 @@ class OtpVerificationScreen extends StatefulWidget {
 }
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
+  static const int _resendCooldownSeconds = 60;
+
   final List<TextEditingController> controllers = List.generate(
     6,
     (_) => TextEditingController(),
   );
   final List<FocusNode> focusNodes = List.generate(6, (_) => FocusNode());
+  Timer? _resendTimer;
+  int _secondsUntilResend = _resendCooldownSeconds;
+
+  bool get _canResendCode => _secondsUntilResend == 0;
+
+  String get _resendCounterText {
+    final minutes = (_secondsUntilResend ~/ 60).toString().padLeft(2, '0');
+    final seconds = (_secondsUntilResend % 60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _startResendCooldown();
+  }
+
+  void _startResendCooldown() {
+    _resendTimer?.cancel();
+    setState(() {
+      _secondsUntilResend = _resendCooldownSeconds;
+    });
+
+    _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_secondsUntilResend <= 1) {
+        timer.cancel();
+        if (mounted) {
+          setState(() {
+            _secondsUntilResend = 0;
+          });
+        }
+        return;
+      }
+
+      if (mounted) {
+        setState(() {
+          _secondsUntilResend--;
+        });
+      }
+    });
+  }
+
+  void _resendCode() {
+    if (!_canResendCode) return;
+    _startResendCooldown();
+  }
 
   @override
   void dispose() {
+    _resendTimer?.cancel();
     for (final c in controllers) {
       c.dispose();
     }
@@ -132,11 +183,13 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: GestureDetector(
-                  onTap: () {},
-                  child: const Text(
-                    'Resend Code',
+                  onTap: _canResendCode ? _resendCode : null,
+                  child: Text(
+                    _canResendCode
+                        ? 'Resend Code'
+                        : 'Resend Code in $_resendCounterText',
                     style: TextStyle(
-                      color: Colors.black,
+                      color: _canResendCode ? Colors.black : Colors.grey,
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                     ),
@@ -148,12 +201,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 width: double.infinity,
                 child: PrimaryButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => HomePageScreen(),
+                        builder: (context) => const NewPasswordScreen(),
                       ),
-                      (route) => false,
                     );
                   },
                   text: 'Verify',
