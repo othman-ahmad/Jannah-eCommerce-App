@@ -10,52 +10,67 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
       appBar: AppBar(
         toolbarHeight: 100,
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFFAFAFA),
+        elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         title: Text(
           'Register',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.grey.shade900,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.2,
+          ),
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: SizedBox(
           width: double.infinity,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Spacer(),
+              const Spacer(),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'New to Jannah?',
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
+                    color: Colors.grey.shade900,
+                  ),
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Let\'s get you started with a new account.',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey.shade500,
+                  ),
                 ),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               PrimaryTextField(hintText: 'Full Name'),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               PrimaryTextField(hintText: 'Email or Phone Number'),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               PrimaryTextField(hintText: 'Password', isPassword: true),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               PrimaryTextField(hintText: 'Confirm password', isPassword: true),
-              Spacer(),
+              const Spacer(),
               SizedBox(
                 width: double.infinity,
                 child: PrimaryButton(
@@ -68,8 +83,7 @@ class RegisterScreen extends StatelessWidget {
                   text: 'Register',
                 ),
               ),
-
-              SizedBox(height: 60),
+              const SizedBox(height: 60),
             ],
           ),
         ),

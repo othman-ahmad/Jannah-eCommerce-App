@@ -6,34 +6,58 @@ class OnboardingScreen1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
       body: Column(
         children: [
-          Spacer(),
+          const Spacer(),
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: const Text(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Text(
               'Find everything you need',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.w800,
+                height: 1.25,
+                letterSpacing: -0.5,
+                color: Colors.grey.shade900,
+              ),
             ),
           ),
-          SizedBox(height: 24),
-          const Text(
+          const SizedBox(height: 12),
+          Text(
             'in one Place',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Color.fromARGB(255, 122, 122, 122),
+              fontSize: 22,
+              fontWeight: FontWeight.w500,
+              letterSpacing: -0.2,
+              color: Colors.grey.shade500,
             ),
           ),
-          Spacer(),
-          Image.asset(
-            'assets/images/JannahMixImage (9).png',
-            height: 280,
-            width: double.infinity,
+          const Spacer(),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(28),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 24,
+                  offset: const Offset(0, 12),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(28),
+              child: Image.asset(
+                'assets/images/JannahMixImage (9).png',
+                height: 280,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
-          Spacer(),
+          const Spacer(),
         ],
       ),
     );

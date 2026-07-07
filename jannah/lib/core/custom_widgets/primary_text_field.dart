@@ -30,31 +30,36 @@ class _PrimaryTextFieldState extends State<PrimaryTextField> {
       ),
       child: TextField(
         obscureText: widget.isPassword ? isObscureText : false,
+        style: const TextStyle(fontSize: 16),
         decoration: InputDecoration(
           label: Text(widget.hintText),
+          labelStyle: TextStyle(color: Colors.grey.shade600),
           filled: true,
-          fillColor: const Color.fromARGB(255, 255, 255, 255),
+          fillColor: Colors.white,
           contentPadding: const EdgeInsets.symmetric(
-            vertical: 16,
-            horizontal: 32,
+            vertical: 18,
+            horizontal: 24,
           ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(14.0),
             borderSide: BorderSide(color: mainGray),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(14.0),
             borderSide: BorderSide(color: mainGray),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: BorderSide(color: mainGray, width: 2.0),
+            borderRadius: BorderRadius.circular(14.0),
+            borderSide: const BorderSide(color: Colors.black, width: 1.5),
           ),
           suffixIcon: widget.isPassword
               ? IconButton(
-                  icon: isObscureText
-                      ? Icon(Icons.visibility_off)
-                      : Icon(Icons.visibility),
+                  icon: Icon(
+                    isObscureText
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: Colors.grey.shade600,
+                  ),
                   onPressed: () {
                     setState(() {
                       isObscureText = !isObscureText;

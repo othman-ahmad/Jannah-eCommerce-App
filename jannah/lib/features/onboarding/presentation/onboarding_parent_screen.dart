@@ -35,9 +35,27 @@ class OnboardingParentScreen extends StatelessWidget {
           body: Stack(
             alignment: Alignment.bottomCenter,
             children: [
-              onboardingScreens[state.currentPageIndex],
-              Padding(
-                padding: const EdgeInsets.only(bottom: 32, left: 24, right: 24),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                child: onboardingScreens[state.currentPageIndex],
+              ),
+              Container(
+                padding: const EdgeInsets.only(
+                  bottom: 32,
+                  left: 24,
+                  right: 24,
+                  top: 20,
+                ),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      const Color(0xFFFAFAFA).withOpacity(0.0),
+                      const Color(0xFFFAFAFA),
+                    ],
+                  ),
+                ),
                 child: Row(
                   children: [
                     state.currentPageIndex != 2
@@ -83,23 +101,23 @@ class _StepIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<OnboardingCubit, OnboardingState>(
       builder: (context, state) {
-        return SizedBox(
-          width: 120,
+        return Padding(
+          padding: const EdgeInsets.only(right: 16),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
               3,
               (index) => AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                height: 10,
-                width: 10,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOut,
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                height: 8,
+                width: state.currentPageIndex == index ? 22 : 8,
                 decoration: BoxDecoration(
                   color: state.currentPageIndex == index
-                      ? const Color.fromARGB(255, 0, 0, 0)
-                      : Colors.grey.shade400,
-                  shape: BoxShape.circle,
+                      ? Colors.black
+                      : Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(4),
                 ),
               ),
             ),

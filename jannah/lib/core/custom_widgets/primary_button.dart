@@ -9,20 +9,26 @@ class PrimaryButton extends StatelessWidget {
     return FilledButton(
       onPressed: onPressed,
       style: ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(
-          const Color.fromARGB(255, 0, 0, 0),
+        backgroundColor: const WidgetStatePropertyAll(
+          Color.fromARGB(255, 0, 0, 0),
         ),
-        foregroundColor: WidgetStatePropertyAll(Colors.white),
-        padding: WidgetStatePropertyAll(
-          const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+        foregroundColor: const WidgetStatePropertyAll(Colors.white),
+        overlayColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.08)),
+        elevation: const WidgetStatePropertyAll(0),
+        padding: const WidgetStatePropertyAll(
+          EdgeInsets.symmetric(vertical: 18, horizontal: 32),
         ),
         shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
       ),
       child: Text(
         text,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
+        ),
       ),
     );
   }

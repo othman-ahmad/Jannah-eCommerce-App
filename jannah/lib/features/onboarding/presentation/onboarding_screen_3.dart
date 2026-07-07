@@ -6,29 +6,62 @@ class OnboardingScreen3 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
       body: Column(
         children: [
-          Spacer(),
-          Image.asset(
-            'assets/images/Driver.png',
-            height: 380,
-            width: double.infinity,
-          ),
-          Spacer(),
+          const Spacer(),
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: const Text(
-              'Fast & Reliable',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(28),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.06),
+                    blurRadius: 24,
+                    offset: const Offset(0, 12),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(28),
+                child: Image.asset(
+                  'assets/images/Driver.png',
+                  height: 380,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           ),
-          const Text(
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Text(
+              'Fast & Reliable',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.w800,
+                height: 1.25,
+                letterSpacing: -0.5,
+                color: Colors.grey.shade900,
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
             'Delivery',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.w800,
+              height: 1.25,
+              letterSpacing: -0.5,
+              color: Colors.grey.shade900,
+            ),
           ),
-          Spacer(flex: 2),
+          const Spacer(flex: 2),
         ],
       ),
     );
