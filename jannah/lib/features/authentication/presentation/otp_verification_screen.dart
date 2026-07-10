@@ -197,19 +197,16 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 ),
               ),
               const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: PrimaryButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const NewPasswordScreen(),
-                      ),
-                    );
-                  },
-                  text: 'Verify',
-                ),
+              PrimaryButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NewPasswordScreen(),
+                    ),
+                  );
+                },
+                text: 'Verify',
               ),
               const SizedBox(height: 60),
             ],

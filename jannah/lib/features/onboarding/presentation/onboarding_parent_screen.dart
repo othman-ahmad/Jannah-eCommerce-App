@@ -104,7 +104,8 @@ class _StepIndicator extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(right: 16),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
               3,
               (index) => AnimatedContainer(

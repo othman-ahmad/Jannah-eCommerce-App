@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jannah/core/colors.dart';
+import 'package:jannah/core/glopal_constants.dart/colors.dart';
 
 class PrimaryTextField extends StatefulWidget {
   PrimaryTextField({

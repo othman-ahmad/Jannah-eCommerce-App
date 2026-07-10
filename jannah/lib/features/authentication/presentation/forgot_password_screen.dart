@@ -56,19 +56,16 @@ class ForgotPasswordScreen extends StatelessWidget {
               const SizedBox(height: 40),
               PrimaryTextField(hintText: 'Email or Phone Number'),
               const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: PrimaryButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const OtpVerificationScreen(),
-                      ),
-                    );
-                  },
-                  text: 'Send Code',
-                ),
+              PrimaryButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const OtpVerificationScreen(),
+                    ),
+                  );
+                },
+                text: 'Send Code',
               ),
               const SizedBox(height: 60),
             ],

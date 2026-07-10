@@ -61,20 +61,15 @@ class NewPasswordScreen extends StatelessWidget {
                 isPassword: true,
               ),
               const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: PrimaryButton(
-                  onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HomePageScreen(),
-                      ),
-                      (route) => false,
-                    );
-                  },
-                  text: 'Reset Password',
-                ),
+              PrimaryButton(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePageScreen()),
+                    (route) => false,
+                  );
+                },
+                text: 'Reset Password',
               ),
               const SizedBox(height: 60),
             ],

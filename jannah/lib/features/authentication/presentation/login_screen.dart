@@ -91,17 +91,14 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: PrimaryButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePageScreen()),
-                    );
-                  },
-                  text: 'Login',
-                ),
+              PrimaryButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePageScreen()),
+                  );
+                },
+                text: 'Login',
               ),
               const SizedBox(height: 20),
               Row(

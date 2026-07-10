@@ -71,17 +71,14 @@ class RegisterScreen extends StatelessWidget {
               const SizedBox(height: 16),
               PrimaryTextField(hintText: 'Confirm password', isPassword: true),
               const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: PrimaryButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePageScreen()),
-                    );
-                  },
-                  text: 'Register',
-                ),
+              PrimaryButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePageScreen()),
+                  );
+                },
+                text: 'Register',
               ),
               const SizedBox(height: 60),
             ],

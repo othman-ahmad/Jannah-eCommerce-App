@@ -10,29 +10,11 @@ class OnboardingScreen3 extends StatelessWidget {
       body: Column(
         children: [
           const Spacer(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(28),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
-                    blurRadius: 24,
-                    offset: const Offset(0, 12),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(28),
-                child: Image.asset(
-                  'assets/images/Driver.png',
-                  height: 380,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+          Image.asset(
+            'assets/images/Driver.png',
+            height: 380,
+            width: double.infinity,
+            fit: BoxFit.cover,
           ),
           const Spacer(),
           Padding(

@@ -31,19 +31,14 @@ class AuthenticationScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 60),
-                SizedBox(
-                  width: double.infinity,
-                  child: PrimaryButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomePageScreen(),
-                        ),
-                      );
-                    },
-                    text: 'Continue as a Guest',
-                  ),
+                PrimaryButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePageScreen()),
+                    );
+                  },
+                  text: 'Continue as a Guest',
                 ),
                 SizedBox(height: 16),
 
@@ -57,32 +52,24 @@ class AuthenticationScreen extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: SecondryButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
-                      );
-                    },
-                    text: 'Login',
-                  ),
+                SecondryButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                    );
+                  },
+                  text: 'Login',
                 ),
                 SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: SecondryButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RegisterScreen(),
-                        ),
-                      );
-                    },
-                    text: 'Register',
-                  ),
+                SecondryButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => RegisterScreen()),
+                    );
+                  },
+                  text: 'Register',
                 ),
               ],
             ),
