@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:jannah/app/navigation/navigation_cubit.dart';
 import 'package:jannah/features/cart/presentation/favourites_screen.dart';
 import 'package:jannah/features/home_page/presentation/home_page_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class JannahNavigationBar extends StatefulWidget {
+class JannahNavigationBar extends StatelessWidget {
   const JannahNavigationBar({super.key});
-
-  @override
-  State<JannahNavigationBar> createState() => _JannahNavigationBarState();
-}
-
-class _JannahNavigationBarState extends State<JannahNavigationBar> {
-  int _currentIndex = 0;
 
   Widget _svgIcon(String path, {double size = 24.0}) {
     return SvgPicture.asset(path, width: size, height: size);
@@ -46,26 +41,28 @@ class _JannahNavigationBarState extends State<JannahNavigationBar> {
 
   List<Widget> get _navBarScreens => [
     HomePageScreen(),
-    Center(child: Text('checkout Screen')),
+    Center(child: Text('Checkout Screen')),
     FavouritesScreen(),
     Center(child: Text('Profile Screen')),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _navBarScreens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: _navBarItems,
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
-        unselectedItemColor: const Color.fromARGB(255, 0, 0, 0),
-      ),
+    return BlocBuilder<NavigationCubit, int>(
+      builder: (context, currentIndex) {
+        return Scaffold(
+          body: _navBarScreens[currentIndex],
+          bottomNavigationBar: BottomNavigationBar(
+            items: _navBarItems,
+            currentIndex: currentIndex,
+            onTap: (index) {
+              context.read<NavigationCubit>().goToTab(index);
+            },
+            selectedItemColor: Colors.black,
+            unselectedItemColor: Colors.black,
+          ),
+        );
+      },
     );
   }
 }

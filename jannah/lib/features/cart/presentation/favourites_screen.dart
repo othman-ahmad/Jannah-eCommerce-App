@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:jannah/app/navigation/navigation_cubit.dart';
 
 class FavouritesScreen extends StatelessWidget {
   const FavouritesScreen({super.key});
@@ -15,7 +17,9 @@ class FavouritesScreen extends StatelessWidget {
             height: 20,
             colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
           ),
-          onPressed: () {},
+          onPressed: () {
+            context.read<NavigationCubit>().goHome();
+          },
         ),
         backgroundColor: Colors.white,
         elevation: 0,
