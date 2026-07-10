@@ -26,7 +26,6 @@ class HomePageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Home Page')),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
