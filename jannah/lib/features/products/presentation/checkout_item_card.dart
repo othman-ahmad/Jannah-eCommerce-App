@@ -54,8 +54,7 @@ class _CheckoutItemCardState extends State<CheckoutItemCard> {
               ),
             ),
             const SizedBox(width: 8),
-            SizedBox(
-              width: MediaQuery.of(context).size.width - 100 - 16 - 8 - 100,
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -83,9 +82,7 @@ class _CheckoutItemCardState extends State<CheckoutItemCard> {
                 ],
               ),
             ),
-            Spacer(),
             SizedBox(
-              width: 100,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [

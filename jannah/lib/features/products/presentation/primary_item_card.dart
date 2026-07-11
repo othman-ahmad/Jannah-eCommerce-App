@@ -55,8 +55,7 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
               ),
             ),
             const SizedBox(width: 8),
-            SizedBox(
-              width: MediaQuery.of(context).size.width - 100 - 16 - 8 - 100,
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -69,7 +68,7 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     widget.product.description,
                     style: const TextStyle(fontSize: 14, color: Colors.grey),
@@ -79,9 +78,7 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                 ],
               ),
             ),
-            Spacer(),
             SizedBox(
-              width: 100,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [

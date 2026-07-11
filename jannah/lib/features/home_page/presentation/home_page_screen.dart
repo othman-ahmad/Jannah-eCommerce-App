@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jannah/features/products/presentation/checkout_item_card.dart';
 import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
 import 'package:jannah/features/products/presentation/cubit/products_state.dart';
 import 'package:jannah/features/products/presentation/primary_item_card.dart';
@@ -131,7 +132,7 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                   separatorBuilder: (context, index) =>
                       const Divider(height: 16),
                   itemBuilder: (context, index) {
-                    return PrimaryItemCard(
+                    return CheckoutItemCard(
                       product: state.products[index],
                       count: 0,
                     );
