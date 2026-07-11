@@ -35,7 +35,7 @@ class _CheckoutItemCardState extends State<CheckoutItemCard> {
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                widget.product.ImagesList.first,
+                widget.product.imagesList.first,
                 width: 100,
                 height: 100,
                 fit: BoxFit.cover,
@@ -48,17 +48,19 @@ class _CheckoutItemCardState extends State<CheckoutItemCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.product.ProductName,
+                    widget.product.productName,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                   Spacer(),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4.5),
                     child: Text(
-                      '\$${(widget.product.Price).toStringAsFixed(2)}',
+                      '\$${(widget.product.price).toStringAsFixed(2)}',
                       style: const TextStyle(
                         fontSize: 16,
                         color: Color.fromARGB(255, 0, 0, 0),
@@ -76,7 +78,7 @@ class _CheckoutItemCardState extends State<CheckoutItemCard> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '\$${(widget.product.Price * widget.count).toStringAsFixed(2)}',
+                    '\$${(widget.product.price * widget.count).toStringAsFixed(2)}',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

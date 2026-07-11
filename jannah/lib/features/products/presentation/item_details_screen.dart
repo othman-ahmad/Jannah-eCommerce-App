@@ -18,7 +18,8 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: ListView(
+        padding: const EdgeInsets.only(top: 0),
         children: [
           buildProductImagesSlider(),
           SizedBox(height: 16),
@@ -30,7 +31,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
   }
 
   buildProductImagesSlider() {
-    return ProductImageSlider(images: widget.product.ImagesList);
+    return ProductImageSlider(images: widget.product.imagesList);
   }
 
   buildItemInfo() {
@@ -41,11 +42,17 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                widget.product.ProductName,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                child: Text(
+                  widget.product.productName,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 2,
+                  softWrap: true,
+                  overflow: TextOverflow
+                      .ellipsis, // optional, handles >2 lines gracefully
                 ),
               ),
               GestureDetector(
@@ -67,7 +74,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            widget.product.Description * 10,
+            widget.product.description,
             style: const TextStyle(
               fontSize: 16,
               color: Color.fromARGB(255, 0, 0, 0),
@@ -83,7 +90,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
             ),
             child: Center(
               child: Text(
-                '\$${widget.product.Price.toStringAsFixed(2)}  / ${widget.product.Unit}',
+                '\$${widget.product.price.toStringAsFixed(2)}  / ${widget.product.unit}',
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -186,7 +193,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                   child: Column(
                     children: [
                       Text(
-                        '\$${(widget.product.Price * widget.count).toStringAsFixed(2)}',
+                        '\$${(widget.product.price * widget.count).toStringAsFixed(2)}',
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,

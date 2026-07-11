@@ -34,7 +34,7 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                widget.product.ImagesList.first,
+                widget.product.imagesList.first,
                 width: 100,
                 height: 100,
                 fit: BoxFit.cover,
@@ -47,11 +47,13 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.product.ProductName,
+                    widget.product.productName,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ],
               ),
@@ -63,7 +65,7 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '\$${widget.product.Price.toStringAsFixed(2)}',
+                    '\$${widget.product.price.toStringAsFixed(2)}',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

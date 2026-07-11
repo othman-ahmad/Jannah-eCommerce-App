@@ -36,7 +36,7 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                widget.product.ImagesList.first,
+                widget.product.imagesList.first,
                 width: 100,
                 height: 100,
                 fit: BoxFit.cover,
@@ -49,16 +49,20 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.product.ProductName,
+                    widget.product.productName,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                   SizedBox(height: 8),
                   Text(
-                    widget.product.Description,
+                    widget.product.description,
                     style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
                 ],
               ),
@@ -70,7 +74,7 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '\$${widget.product.Price.toStringAsFixed(2)}',
+                    '\$${widget.product.price.toStringAsFixed(2)}',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

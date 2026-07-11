@@ -1,37 +1,37 @@
 class Product {
-  final int ProductId;
-  final int CategoryId;
-  final String ProductName;
-  final List<String> ImagesList;
-  final String Description;
-  final String Unit;
-  final double Price;
-  final bool IsActive;
-  final DateTime CreatedDate;
+  final int productId;
+  final int categoryId;
+  final String productName;
+  final List<String> imagesList;
+  final String description;
+  final String unit;
+  final double price;
+  final bool isActive;
+  final DateTime createdDate;
 
   Product({
-    required this.ProductId,
-    required this.CategoryId,
-    required this.ProductName,
-    required this.ImagesList,
-    required this.Description,
-    required this.Unit,
-    required this.Price,
-    required this.IsActive,
-    required this.CreatedDate,
+    required this.productId,
+    required this.categoryId,
+    required this.productName,
+    required this.imagesList,
+    required this.description,
+    required this.unit,
+    required this.price,
+    required this.isActive,
+    required this.createdDate,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      ProductId: json['ProductId'],
-      CategoryId: json['CategoryId'],
-      ProductName: json['ProductName'],
-      ImagesList: json['ImagesList'],
-      Description: json['ProductDescription'],
-      Unit: json['Unit'],
-      Price: (json['Price'] as num).toDouble(),
-      IsActive: json['IsActive'],
-      CreatedDate: DateTime.parse(json['CreatedDate']),
+      productId: json['ProductId'],
+      categoryId: json['CategoryId'],
+      productName: json['ProductName'],
+      imagesList: json['ImagesList'],
+      description: json['ProductDescription'],
+      unit: json['Unit'],
+      price: (json['Price'] as num).toDouble(),
+      isActive: json['IsActive'],
+      createdDate: DateTime.parse(json['CreatedDate']),
     );
   }
 }

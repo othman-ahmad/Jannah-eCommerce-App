@@ -7,21 +7,22 @@ import 'package:jannah/features/products/presentation/primary_item_card.dart';
 class HomePageScreen extends StatelessWidget {
   HomePageScreen({super.key});
   Product product = Product(
-    ProductId: 3,
-    CategoryId: 6,
-    ProductName: 'Watermelon',
-    ImagesList: [
+    productId: 1,
+    categoryId: 1,
+    productName: 'Watermelon Fresh and Juicy from Local Farms',
+    imagesList: [
       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
     ],
-    Description: 'Fresh and juicy watermelon.',
-    Unit: 'kg',
-    Price: 2.99,
-    IsActive: true,
-    CreatedDate: DateTime.now(),
+    description:
+        'Watermelon is a refreshing and hydrating fruit that is perfect for hot summer days. It is low in calories and high in vitamins A and C, making it a healthy choice for snacking or adding to salads. Watermelon is also rich in antioxidants, which can help protect your cells from damage and reduce inflammation in the body.',
+    unit: 'kg',
+    price: 2.89,
+    isActive: true,
+    createdDate: DateTime.now(),
   );
   @override
   Widget build(BuildContext context) {

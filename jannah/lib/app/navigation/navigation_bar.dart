@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jannah/app/navigation/navigation_cubit.dart';
-import 'package:jannah/features/cart/presentation/favourites_screen.dart';
+import 'package:jannah/features/favourites/presentation/favourites_screen.dart';
 import 'package:jannah/features/home_page/presentation/home_page_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
