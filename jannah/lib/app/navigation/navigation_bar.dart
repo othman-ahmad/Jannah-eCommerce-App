@@ -9,6 +9,12 @@ import 'package:jannah/features/favourites/domain/usecases/remove_from_favourite
 import 'package:jannah/features/favourites/presentation/cubit/favourites_cubit.dart';
 import 'package:jannah/features/favourites/presentation/favourites_screen.dart';
 import 'package:jannah/features/home_page/presentation/home_page_screen.dart';
+import 'package:jannah/features/products/data/products_remote_data_source.dart';
+import 'package:jannah/features/products/data/products_repository_impl.dart';
+import 'package:jannah/features/products/domain/usecases/get_product_by_id.dart';
+import 'package:jannah/features/products/domain/usecases/get_products_by_category_id.dart';
+import 'package:jannah/features/products/domain/usecases/get_products_by_name.dart';
+import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class JannahNavigationBar extends StatelessWidget {
@@ -29,12 +35,26 @@ class JannahNavigationBar extends StatelessWidget {
     )..loadFavourites();
   }
 
+  ProductsCubit _createProductsCubit() {
+    final remoteDataSource = MockProductsRemoteDataSource();
+    final repository = ProductsRepositoryImpl(
+      remoteDataSource: remoteDataSource,
+    );
+
+    return ProductsCubit(
+      getProductById: GetProductById(repository),
+      getProductsByCategoryId: GetProductsByCategoryId(repository),
+      getProductsByName: GetProductsByName(repository),
+    )..loadProductsByCategoryId(categoryId: 1);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => NavigationCubit()),
         BlocProvider(create: (_) => _createFavouritesCubit()),
+        BlocProvider(create: (_) => _createProductsCubit()),
       ],
       child: const _JannahNavigationScaffold(),
     );
@@ -76,7 +96,7 @@ class _JannahNavigationScaffold extends StatelessWidget {
   ];
 
   List<Widget> get _navBarScreens => [
-    HomePageScreen(),
+    const HomePageScreen(),
     Center(child: Text('Checkout Screen')),
     FavouritesScreen(),
     Center(child: Text('Profile Screen')),

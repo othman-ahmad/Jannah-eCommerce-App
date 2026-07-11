@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:jannah/app/navigation/navigation_bar.dart';
 import 'package:jannah/core/custom_widgets/Secondry_button.dart';
 import 'package:jannah/core/custom_widgets/primary_button.dart';
 import 'package:jannah/core/custom_widgets/primary_text_field.dart';
 import 'package:jannah/features/authentication/presentation/forgot_password_screen.dart';
 import 'package:jannah/features/authentication/presentation/register_screen.dart';
-import 'package:jannah/features/home_page/presentation/home_page_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -95,7 +95,9 @@ class LoginScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => HomePageScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const JannahNavigationBar(),
+                    ),
                   );
                 },
                 text: 'Login',

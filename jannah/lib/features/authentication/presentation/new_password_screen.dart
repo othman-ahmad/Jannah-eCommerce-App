@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:jannah/app/navigation/navigation_bar.dart';
 import 'package:jannah/core/custom_widgets/primary_button.dart';
 import 'package:jannah/core/custom_widgets/primary_text_field.dart';
-import 'package:jannah/features/home_page/presentation/home_page_screen.dart';
 
 class NewPasswordScreen extends StatelessWidget {
   const NewPasswordScreen({super.key});
@@ -65,7 +65,9 @@ class NewPasswordScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => HomePageScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const JannahNavigationBar(),
+                    ),
                     (route) => false,
                   );
                 },

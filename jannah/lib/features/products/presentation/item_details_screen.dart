@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jannah/core/custom_widgets/primary_button.dart';
 import 'package:jannah/features/favourites/presentation/widgets/favourite_toggle_button.dart';
 import 'package:jannah/features/products/data/item_model.dart';
+import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
+import 'package:jannah/features/products/presentation/cubit/products_state.dart';
 import 'package:jannah/features/products/presentation/product_images_slider.dart';
 
 class ItemDetailsScreen extends StatefulWidget {
-  ItemDetailsScreen({super.key, required this.product, this.count = 1});
-  final Product product;
+  ItemDetailsScreen({
+    super.key,
+    required this.productId,
+    this.initialProduct,
+    this.count = 1,
+  });
+  final int productId;
+  final Product? initialProduct;
   int count;
 
   @override
@@ -15,25 +24,73 @@ class ItemDetailsScreen extends StatefulWidget {
 
 class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProductsCubit>().loadProductById(
+        productId: widget.productId,
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        padding: const EdgeInsets.only(top: 0),
-        children: [
-          buildProductImagesSlider(),
-          SizedBox(height: 16),
-          buildItemInfo(),
-          buildCartSection(),
-        ],
+      body: BlocBuilder<ProductsCubit, ProductsState>(
+        builder: (context, state) {
+          final selectedProduct =
+              state.selectedProduct?.productId == widget.productId
+              ? state.selectedProduct
+              : null;
+          final product = selectedProduct ?? widget.initialProduct;
+
+          if (product == null &&
+              state.productStatus == ProductsStatus.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (product == null &&
+              state.productStatus == ProductsStatus.failure) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  state.productErrorMessage ?? 'Something went wrong',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+            );
+          }
+
+          if (product == null) {
+            return const Center(
+              child: Text(
+                'Product not found',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+            );
+          }
+
+          return ListView(
+            padding: const EdgeInsets.only(top: 0),
+            children: [
+              buildProductImagesSlider(product),
+              SizedBox(height: 16),
+              buildItemInfo(product),
+              buildCartSection(product),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget buildProductImagesSlider() {
-    return ProductImageSlider(images: widget.product.imagesList);
+  Widget buildProductImagesSlider(Product product) {
+    return ProductImageSlider(images: product.imagesList);
   }
 
-  Widget buildItemInfo() {
+  Widget buildItemInfo(Product product) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -43,7 +100,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
             children: [
               Expanded(
                 child: Text(
-                  widget.product.productName,
+                  product.productName,
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -54,12 +111,12 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                       .ellipsis, // optional, handles >2 lines gracefully
                 ),
               ),
-              FavouriteToggleButton(productId: widget.product.productId),
+              FavouriteToggleButton(productId: product.productId),
             ],
           ),
           const SizedBox(height: 16),
           Text(
-            widget.product.description,
+            product.description,
             style: const TextStyle(
               fontSize: 16,
               color: Color.fromARGB(255, 0, 0, 0),
@@ -75,7 +132,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
             ),
             child: Center(
               child: Text(
-                '\$${widget.product.price.toStringAsFixed(2)}  / ${widget.product.unit}',
+                '\$${product.price.toStringAsFixed(2)}  / ${product.unit}',
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -89,7 +146,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
     );
   }
 
-  Widget buildCartSection() {
+  Widget buildCartSection(Product product) {
     return Padding(
       padding: const EdgeInsets.all(18),
       child: Column(
@@ -174,7 +231,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                   child: Column(
                     children: [
                       Text(
-                        '\$${(widget.product.price * widget.count).toStringAsFixed(2)}',
+                        '\$${(product.price * widget.count).toStringAsFixed(2)}',
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,

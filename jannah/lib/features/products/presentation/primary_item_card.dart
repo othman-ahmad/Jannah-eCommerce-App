@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:jannah/features/favourites/presentation/cubit/favourites_cubit.dart';
 import 'package:jannah/features/products/data/item_model.dart';
+import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
 import 'package:jannah/features/products/presentation/item_details_screen.dart';
 
 class PrimaryItemCard extends StatefulWidget {
@@ -22,10 +23,14 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => BlocProvider.value(
-              value: context.read<FavouritesCubit>(),
+            builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider.value(value: context.read<FavouritesCubit>()),
+                BlocProvider.value(value: context.read<ProductsCubit>()),
+              ],
               child: ItemDetailsScreen(
-                product: widget.product,
+                productId: widget.product.productId,
+                initialProduct: widget.product,
                 count: widget.count,
               ),
             ),

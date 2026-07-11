@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:jannah/app/navigation/navigation_bar.dart';
 import 'package:jannah/core/custom_widgets/Secondry_button.dart';
 import 'package:jannah/core/custom_widgets/primary_button.dart';
 import 'package:jannah/features/authentication/presentation/login_screen.dart';
 import 'package:jannah/features/authentication/presentation/register_screen.dart';
-import 'package:jannah/features/home_page/presentation/home_page_screen.dart';
 
 class AuthenticationScreen extends StatelessWidget {
   const AuthenticationScreen({super.key});
@@ -35,7 +35,9 @@ class AuthenticationScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => HomePageScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const JannahNavigationBar(),
+                      ),
                     );
                   },
                   text: 'Continue as a Guest',
