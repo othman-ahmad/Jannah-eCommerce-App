@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jannah/features/favourites/presentation/cubit/favourites_cubit.dart';
+import 'package:jannah/features/favourites/presentation/widgets/favourite_toggle_button.dart';
 import 'package:jannah/features/products/data/item_model.dart';
 import 'package:jannah/features/products/presentation/item_details_screen.dart';
 
 class FavouriteItemCard extends StatefulWidget {
-  FavouriteItemCard({super.key, required this.product, this.isFavorite = true});
+  const FavouriteItemCard({super.key, required this.product});
   final Product product;
-  bool isFavorite;
   @override
   State<FavouriteItemCard> createState() => _FavouriteItemCardState();
 }
@@ -19,7 +20,10 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ItemDetailsScreen(product: widget.product),
+            builder: (_) => BlocProvider.value(
+              value: context.read<FavouritesCubit>(),
+              child: ItemDetailsScreen(product: widget.product),
+            ),
           ),
         );
       },
@@ -75,20 +79,8 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
                   Spacer(),
                   SizedBox(
                     height: 32,
-                    child: GestureDetector(
-                      child: SvgPicture.asset(
-                        width: 24,
-                        height: 24,
-                        widget.isFavorite
-                            ? 'assets/icons/like_filled_icon.svg'
-                            : 'assets/icons/like_border_icon.svg',
-                        color: const Color.fromARGB(255, 0, 0, 0),
-                      ),
-                      onTap: () {
-                        setState(() {
-                          widget.isFavorite = !widget.isFavorite;
-                        });
-                      },
+                    child: FavouriteToggleButton(
+                      productId: widget.product.productId,
                     ),
                   ),
                   SizedBox(height: 8),

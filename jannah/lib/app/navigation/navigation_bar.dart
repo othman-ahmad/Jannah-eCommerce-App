@@ -1,12 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jannah/app/navigation/navigation_cubit.dart';
+import 'package:jannah/features/favourites/data/favourites_remote_data_source.dart';
+import 'package:jannah/features/favourites/data/favourites_repository_impl.dart';
+import 'package:jannah/features/favourites/domain/usecases/add_to_favourites.dart';
+import 'package:jannah/features/favourites/domain/usecases/get_favourites.dart';
+import 'package:jannah/features/favourites/domain/usecases/remove_from_favourites.dart';
+import 'package:jannah/features/favourites/presentation/cubit/favourites_cubit.dart';
 import 'package:jannah/features/favourites/presentation/favourites_screen.dart';
 import 'package:jannah/features/home_page/presentation/home_page_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class JannahNavigationBar extends StatelessWidget {
   const JannahNavigationBar({super.key});
+
+  FavouritesCubit _createFavouritesCubit() {
+    final remoteDataSource = InMemoryFavouritesRemoteDataSource();
+    final repository = FavouritesRepositoryImpl(
+      remoteDataSource: remoteDataSource,
+    );
+
+    return FavouritesCubit(
+      getFavourites: GetFavourites(repository),
+      addToFavourites: AddToFavourites(repository),
+      removeFromFavourites: RemoveFromFavourites(repository),
+      // Replace this with the authenticated user id once auth exposes it.
+      currentUserId: 1,
+    )..loadFavourites();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => NavigationCubit()),
+        BlocProvider(create: (_) => _createFavouritesCubit()),
+      ],
+      child: const _JannahNavigationScaffold(),
+    );
+  }
+}
+
+class _JannahNavigationScaffold extends StatelessWidget {
+  const _JannahNavigationScaffold();
 
   Widget _svgIcon(String path, {double size = 24.0}) {
     return SvgPicture.asset(path, width: size, height: size);

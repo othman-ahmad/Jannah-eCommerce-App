@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jannah/core/custom_widgets/primary_button.dart';
+import 'package:jannah/features/favourites/presentation/widgets/favourite_toggle_button.dart';
 import 'package:jannah/features/products/data/item_model.dart';
 import 'package:jannah/features/products/presentation/product_images_slider.dart';
 
 class ItemDetailsScreen extends StatefulWidget {
   ItemDetailsScreen({super.key, required this.product, this.count = 1});
-  bool isFavorite = false;
   final Product product;
   int count;
 
@@ -30,11 +29,11 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
     );
   }
 
-  buildProductImagesSlider() {
+  Widget buildProductImagesSlider() {
     return ProductImageSlider(images: widget.product.imagesList);
   }
 
-  buildItemInfo() {
+  Widget buildItemInfo() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -55,21 +54,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                       .ellipsis, // optional, handles >2 lines gracefully
                 ),
               ),
-              GestureDetector(
-                child: SvgPicture.asset(
-                  width: 24,
-                  height: 24,
-                  widget.isFavorite
-                      ? 'assets/icons/like_filled_icon.svg'
-                      : 'assets/icons/like_border_icon.svg',
-                  color: const Color.fromARGB(255, 0, 0, 0),
-                ),
-                onTap: () {
-                  setState(() {
-                    widget.isFavorite = !widget.isFavorite;
-                  });
-                },
-              ),
+              FavouriteToggleButton(productId: widget.product.productId),
             ],
           ),
           const SizedBox(height: 16),
@@ -104,7 +89,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
     );
   }
 
-  buildCartSection() {
+  Widget buildCartSection() {
     return Padding(
       padding: const EdgeInsets.all(18),
       child: Column(
@@ -172,11 +157,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                     height: 40,
                     width: 40,
                     child: const Center(
-                      child: const Icon(
-                        Icons.add,
-                        color: Colors.white,
-                        size: 20,
-                      ),
+                      child: Icon(Icons.add, color: Colors.white, size: 20),
                     ),
                   ),
                 ),
