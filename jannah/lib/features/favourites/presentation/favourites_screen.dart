@@ -5,6 +5,10 @@ import 'package:jannah/app/navigation/navigation_cubit.dart';
 import 'package:jannah/features/favourites/presentation/cubit/favourites_cubit.dart';
 import 'package:jannah/features/favourites/presentation/cubit/favourites_state.dart';
 import 'package:jannah/features/favourites/presentation/widgets/favourite_toggle_button.dart';
+import 'package:jannah/features/products/data/item_model.dart';
+import 'package:jannah/features/products/presentation/checkout_item_card.dart';
+import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
+import 'package:jannah/features/products/presentation/favourite_item_card.dart';
 
 class FavouritesScreen extends StatelessWidget {
   const FavouritesScreen({super.key});
@@ -57,37 +61,42 @@ class FavouritesScreen extends StatelessWidget {
 
           if (state.favourites.isEmpty) {
             return const Center(
-              child: Text(
-                'No favourites yet',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.favorite_border, size: 64, color: Colors.grey),
+                  Text(
+                    'No favourites yet',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
               ),
             );
           }
 
           return RefreshIndicator(
             onRefresh: () => context.read<FavouritesCubit>().loadFavourites(),
-            child: ListView.separated(
+            child: ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: state.favourites.length,
-              separatorBuilder: (context, index) => const Divider(height: 24),
               itemBuilder: (context, index) {
-                final favourite = state.favourites[index];
-
-                return ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(
-                    'Product #${favourite.productId}',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                final productId = state.favourites[index].productId;
+                return FutureBuilder(
+                  future: context.read<ProductsCubit>().getProductById(
+                    productId: productId,
                   ),
-                  subtitle: Text(
-                    'Liked on ${favourite.date.toLocal()}'.split('.').first,
-                  ),
-                  trailing: FavouriteToggleButton(
-                    productId: favourite.productId,
-                  ),
+                  builder: (context, AsyncSnapshot snapshot) {
+                    if (!snapshot.hasData || snapshot.data == null) {
+                      return const SizedBox.shrink();
+                    }
+                    final product = snapshot.data;
+                    return FavouriteItemCard(product: product);
+                  },
                 );
               },
             ),
