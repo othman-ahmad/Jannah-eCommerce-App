@@ -17,6 +17,7 @@ import 'package:jannah/features/home_page/presentation/home_page_screen.dart';
 import 'package:jannah/features/products/data/products_remote_data_source.dart';
 import 'package:jannah/features/products/data/products_repository_impl.dart';
 import 'package:jannah/features/products/domain/usecases/get_product_by_id.dart';
+import 'package:jannah/features/products/domain/usecases/get_products.dart';
 import 'package:jannah/features/products/domain/usecases/get_products_by_category_id.dart';
 import 'package:jannah/features/products/domain/usecases/get_products_by_name.dart';
 import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
@@ -47,10 +48,11 @@ class JannahNavigationBar extends StatelessWidget {
     );
 
     return ProductsCubit(
+      getProducts: GetProducts(repository),
       getProductById: GetProductById(repository),
       getProductsByCategoryId: GetProductsByCategoryId(repository),
       getProductsByName: GetProductsByName(repository),
-    )..loadProductsByCategoryId(categoryId: 1);
+    )..loadProducts();
   }
 
   CategoriesCubit _createCategoriesCubit() {
@@ -129,16 +131,24 @@ class _JannahNavigationScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<NavigationCubit, int>(
       builder: (context, currentIndex) {
-        return Scaffold(
-          body: _navBarScreens[currentIndex],
-          bottomNavigationBar: BottomNavigationBar(
-            items: _navBarItems,
-            currentIndex: currentIndex,
-            onTap: (index) {
-              context.read<NavigationCubit>().goToTab(index);
-            },
-            selectedItemColor: Colors.black,
-            unselectedItemColor: Colors.black,
+        return PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) {
+            if (!didPop) {
+              context.read<NavigationCubit>().goHome();
+            }
+          },
+          child: Scaffold(
+            body: _navBarScreens[currentIndex],
+            bottomNavigationBar: BottomNavigationBar(
+              items: _navBarItems,
+              currentIndex: currentIndex,
+              onTap: (index) {
+                context.read<NavigationCubit>().goToTab(index);
+              },
+              selectedItemColor: Colors.black,
+              unselectedItemColor: Colors.black,
+            ),
           ),
         );
       },

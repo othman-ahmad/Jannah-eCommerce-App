@@ -1,6 +1,8 @@
 import 'package:jannah/features/products/data/item_model.dart';
 
 abstract class ProductsRemoteDataSource {
+  Future<List<Product>> fetchProducts();
+
   Future<Product> fetchProductById({required int productId});
 
   Future<List<Product>> fetchProductsByCategoryId({required int categoryId});
@@ -9,6 +11,11 @@ abstract class ProductsRemoteDataSource {
 }
 
 class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
+  @override
+  Future<List<Product>> fetchProducts() async {
+    return _mockProductsList();
+  }
+
   @override
   Future<Product> fetchProductById({required int productId}) async {
     return _mockProductsList()
@@ -20,7 +27,9 @@ class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
   Future<List<Product>> fetchProductsByCategoryId({
     required int categoryId,
   }) async {
-    return _mockProductsList();
+    return _mockProductsList()
+        .where((product) => product.categoryId == categoryId)
+        .toList();
   }
 
   @override

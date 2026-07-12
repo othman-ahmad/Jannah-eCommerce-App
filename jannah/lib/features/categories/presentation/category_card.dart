@@ -1,9 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:jannah/features/favourites/presentation/cubit/favourites_cubit.dart';
+import 'package:jannah/features/categories/presentation/category_items_screen.dart';
 import 'package:jannah/features/categories/data/category_model.dart';
-import 'package:jannah/features/categories/presentation/cubit/categories_cubit.dart';
+import 'package:jannah/features/favourites/data/favourites_remote_data_source.dart';
+import 'package:jannah/features/favourites/data/favourites_repository_impl.dart';
+import 'package:jannah/features/favourites/domain/usecases/add_to_favourites.dart';
+import 'package:jannah/features/favourites/domain/usecases/get_favourites.dart';
+import 'package:jannah/features/favourites/domain/usecases/remove_from_favourites.dart';
+import 'package:jannah/features/favourites/presentation/cubit/favourites_cubit.dart';
+import 'package:jannah/features/products/data/products_remote_data_source.dart';
+import 'package:jannah/features/products/data/products_repository_impl.dart';
+import 'package:jannah/features/products/domain/usecases/get_product_by_id.dart';
+import 'package:jannah/features/products/domain/usecases/get_products.dart';
+import 'package:jannah/features/products/domain/usecases/get_products_by_category_id.dart';
+import 'package:jannah/features/products/domain/usecases/get_products_by_name.dart';
 import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
 
 class CategoryCard extends StatelessWidget {
@@ -13,10 +24,22 @@ class CategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        //TODO: Navigate to the home page with the selected category ID
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider.value(value: context.read<FavouritesCubit>()),
+                BlocProvider.value(value: context.read<ProductsCubit>()),
+              ],
+              child: CategoryItemsScreen(category: category),
+            ),
+          ),
+        );
       },
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        color: Colors.white,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [

@@ -8,6 +8,11 @@ class ProductsRepositoryImpl implements ProductsRepository {
   const ProductsRepositoryImpl({required this.remoteDataSource});
 
   @override
+  Future<List<Product>> getProducts() {
+    return remoteDataSource.fetchProducts();
+  }
+
+  @override
   Future<Product> getProductById({required int productId}) {
     return remoteDataSource.fetchProductById(productId: productId);
   }

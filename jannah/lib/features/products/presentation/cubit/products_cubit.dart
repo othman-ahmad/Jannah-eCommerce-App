@@ -1,19 +1,51 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jannah/features/products/domain/usecases/get_product_by_id.dart';
+import 'package:jannah/features/products/domain/usecases/get_products.dart';
 import 'package:jannah/features/products/domain/usecases/get_products_by_category_id.dart';
 import 'package:jannah/features/products/domain/usecases/get_products_by_name.dart';
 import 'package:jannah/features/products/presentation/cubit/products_state.dart';
 
 class ProductsCubit extends Cubit<ProductsState> {
+  final GetProducts getProducts;
   final GetProductById getProductById;
   final GetProductsByCategoryId getProductsByCategoryId;
   final GetProductsByName getProductsByName;
 
   ProductsCubit({
+    required this.getProducts,
     required this.getProductById,
     required this.getProductsByCategoryId,
     required this.getProductsByName,
   }) : super(const ProductsState());
+
+  Future<void> loadProducts() async {
+    emit(
+      state.copyWith(
+        productsStatus: ProductsStatus.loading,
+        clearSearchQuery: true,
+        clearErrorMessage: true,
+      ),
+    );
+
+    try {
+      final products = await getProducts();
+      emit(
+        state.copyWith(
+          productsStatus: ProductsStatus.success,
+          products: products,
+          clearSearchQuery: true,
+          clearErrorMessage: true,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          productsStatus: ProductsStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
 
   Future<void> loadProductsByCategoryId({required int categoryId}) async {
     emit(

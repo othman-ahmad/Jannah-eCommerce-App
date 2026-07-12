@@ -45,9 +45,7 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
       );
     }
 
-    return context.read<ProductsCubit>().loadProductsByCategoryId(
-      categoryId: state.selectedCategoryId ?? 1,
-    );
+    return context.read<ProductsCubit>().loadProducts();
   }
 
   @override
@@ -63,9 +61,7 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
               onSubmitted: (_) => _searchProducts(),
               onChanged: (value) {
                 if (value.trim().isEmpty) {
-                  context.read<ProductsCubit>().loadProductsByCategoryId(
-                    categoryId: 1,
-                  );
+                  context.read<ProductsCubit>().loadProducts();
                 }
               },
               decoration: InputDecoration(
@@ -75,9 +71,7 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                   icon: const Icon(Icons.clear),
                   onPressed: () {
                     _searchController.clear();
-                    context.read<ProductsCubit>().loadProductsByCategoryId(
-                      categoryId: 1,
-                    );
+                    context.read<ProductsCubit>().loadProducts();
                   },
                 ),
                 border: OutlineInputBorder(
@@ -136,7 +130,7 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                     separatorBuilder: (context, index) =>
                         const Divider(height: 16),
                     itemBuilder: (context, index) {
-                      return CheckoutItemCard(
+                      return PrimaryItemCard(
                         product: state.products[index],
                         count: 0,
                       );
