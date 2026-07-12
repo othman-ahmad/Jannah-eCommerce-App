@@ -59,7 +59,7 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
                   Text(
                     widget.product.productName,
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -75,7 +75,7 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
                   Text(
                     '\$${widget.product.price.toStringAsFixed(2)}',
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Color.fromARGB(255, 0, 0, 0),
                     ),

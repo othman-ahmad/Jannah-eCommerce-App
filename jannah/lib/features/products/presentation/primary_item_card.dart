@@ -62,7 +62,7 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                   Text(
                     widget.product.productName,
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -85,7 +85,7 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                   Text(
                     '\$${widget.product.price.toStringAsFixed(2)}',
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Color.fromARGB(255, 0, 0, 0),
                     ),
@@ -141,7 +141,7 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                               Text(
                                 '  ${widget.count}  ',
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

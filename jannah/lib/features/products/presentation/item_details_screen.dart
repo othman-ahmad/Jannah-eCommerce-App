@@ -102,7 +102,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                 child: Text(
                   product.productName,
                   style: const TextStyle(
-                    fontSize: 24,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                   maxLines: 2,
@@ -241,8 +241,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                       Text(
                         'Total',
                         style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
                           color: Color.fromARGB(255, 0, 0, 0),
                         ),
                       ),

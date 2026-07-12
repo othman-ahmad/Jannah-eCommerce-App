@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jannah/features/categories/data/category_model.dart';
 import 'package:jannah/features/categories/presentation/category_items_screen.dart';
 import 'package:jannah/features/categories/presentation/cubit/categories_cubit.dart';
+import 'package:jannah/features/categories/presentation/cubit/categories_state.dart';
 import 'package:jannah/features/favourites/presentation/cubit/favourites_cubit.dart';
 import 'package:jannah/features/home_page/data/promotion_model.dart';
 import 'package:jannah/features/products/data/products_remote_data_source.dart';
@@ -44,6 +46,60 @@ class _PromotionsBannerState extends State<PromotionsBanner> {
     )..loadProducts();
   }
 
+  Category? _categoryForPromotion(List<Category> categories, int categoryId) {
+    for (final category in categories) {
+      if (category.categoryId == categoryId) {
+        return category;
+      }
+    }
+    return null;
+  }
+
+  Future<Category?> _loadPromotionCategory(int categoryId) async {
+    final categoriesCubit = context.read<CategoriesCubit>();
+    var categoriesState = categoriesCubit.state;
+
+    if (categoriesState.categories.isEmpty) {
+      if (categoriesState.categoriesStatus == CategoriesStatus.loading) {
+        categoriesState = await categoriesCubit.stream.firstWhere(
+          (state) => state.categoriesStatus != CategoriesStatus.loading,
+        );
+      } else {
+        await categoriesCubit.loadCategories();
+        categoriesState = categoriesCubit.state;
+      }
+    }
+
+    return _categoryForPromotion(categoriesState.categories, categoryId);
+  }
+
+  Future<void> _openCurrentPromotion() async {
+    final promotion = widget.promotions[_currentPage];
+    final category = await _loadPromotionCategory(promotion.categoryId);
+
+    if (!mounted) return;
+
+    if (category == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('This promotion category is unavailable')),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: context.read<FavouritesCubit>()),
+            BlocProvider(create: (_) => _createProductsCubit()),
+          ],
+          child: CategoryItemsScreen(category: category),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -62,34 +118,7 @@ class _PromotionsBannerState extends State<PromotionsBanner> {
           : Stack(
               children: [
                 GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => MultiBlocProvider(
-                          providers: [
-                            BlocProvider.value(
-                              value: context.read<FavouritesCubit>(),
-                            ),
-                            BlocProvider(create: (_) => _createProductsCubit()),
-                          ],
-                          child: CategoryItemsScreen(
-                            category: context
-                                .read<CategoriesCubit>()
-                                .state
-                                .categories
-                                .firstWhere(
-                                  (category) =>
-                                      category.categoryId ==
-                                      widget
-                                          .promotions[_currentPage]
-                                          .categoryId,
-                                ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
+                  onTap: _openCurrentPromotion,
                   child: PageView.builder(
                     controller: _pageController,
                     itemCount: widget.promotions.length,
