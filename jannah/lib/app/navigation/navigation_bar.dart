@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jannah/app/navigation/navigation_cubit.dart';
+import 'package:jannah/features/categories/data/categories_remote_data_source.dart';
+import 'package:jannah/features/categories/data/categories_repository_impl.dart';
+import 'package:jannah/features/categories/domain/usecases/get_categories.dart';
+import 'package:jannah/features/categories/presentation/categories_screen.dart';
+import 'package:jannah/features/categories/presentation/cubit/categories_cubit.dart';
 import 'package:jannah/features/favourites/data/favourites_remote_data_source.dart';
 import 'package:jannah/features/favourites/data/favourites_repository_impl.dart';
 import 'package:jannah/features/favourites/domain/usecases/add_to_favourites.dart';
@@ -48,6 +53,16 @@ class JannahNavigationBar extends StatelessWidget {
     )..loadProductsByCategoryId(categoryId: 1);
   }
 
+  CategoriesCubit _createCategoriesCubit() {
+    final remoteDataSource = MockCategoriesRemoteDataSource();
+    final repository = CategoriesRepositoryImpl(
+      remoteDataSource: remoteDataSource,
+    );
+
+    return CategoriesCubit(getCategories: GetCategories(repository))
+      ..loadCategories();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -55,6 +70,7 @@ class JannahNavigationBar extends StatelessWidget {
         BlocProvider(create: (_) => NavigationCubit()),
         BlocProvider(create: (_) => _createFavouritesCubit()),
         BlocProvider(create: (_) => _createProductsCubit()),
+        BlocProvider(create: (_) => _createCategoriesCubit()),
       ],
       child: const _JannahNavigationScaffold(),
     );
@@ -76,15 +92,21 @@ class _JannahNavigationScaffold extends StatelessWidget {
       backgroundColor: Colors.white,
     ),
     BottomNavigationBarItem(
+      icon: _svgIcon('assets/icons/categories_border.svg'),
+      activeIcon: _svgIcon('assets/icons/categories_filled.svg', size: 28),
+      label: 'Categories',
+      backgroundColor: Colors.white,
+    ),
+    BottomNavigationBarItem(
       icon: _svgIcon('assets/icons/checkout_border.svg'),
       activeIcon: _svgIcon('assets/icons/checkout_filled.svg', size: 28),
-      label: 'Search',
+      label: 'Checkout',
       backgroundColor: Colors.white,
     ),
     BottomNavigationBarItem(
       icon: _svgIcon('assets/icons/favourite_border.svg'),
       activeIcon: _svgIcon('assets/icons/favourite_filled.svg'),
-      label: 'Cart',
+      label: 'Favourites',
       backgroundColor: Colors.white,
     ),
     BottomNavigationBarItem(
@@ -97,6 +119,7 @@ class _JannahNavigationScaffold extends StatelessWidget {
 
   List<Widget> get _navBarScreens => [
     const HomePageScreen(),
+    CategoriesScreen(),
     Center(child: Text('Checkout Screen')),
     FavouritesScreen(),
     Center(child: Text('Profile Screen')),
