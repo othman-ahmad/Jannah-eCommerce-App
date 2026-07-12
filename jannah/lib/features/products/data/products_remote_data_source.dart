@@ -59,7 +59,7 @@ class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
       Product(
         // mango
         productId: 2,
-        categoryId: 1,
+        categoryId: 2,
         productName: 'Mango Fresh and Juicy from Local Farms',
         imagesList: [
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
@@ -78,7 +78,7 @@ class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
       Product(
         // banana
         productId: 3,
-        categoryId: 1,
+        categoryId: 2,
         productName: 'Banana Fresh and Juicy from Local Farms',
         imagesList: [
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
@@ -97,7 +97,7 @@ class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
       Product(
         // apple
         productId: 4,
-        categoryId: 1,
+        categoryId: 3,
         productName: 'Apple Fresh and Juicy from Local Farms',
         imagesList: [
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
@@ -110,6 +110,43 @@ class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
             'Apples are a popular fruit that are known for their crisp texture and sweet-tart flavor. They are rich in fiber, vitamin C, and antioxidants, making them a healthy choice for snacking or adding to salads and desserts. Apples are also versatile in cooking, as they can be used in both sweet and savory dishes.',
         unit: 'kg',
         price: 2.49,
+        isActive: true,
+        createdDate: DateTime.now(),
+      ),
+      Product(
+        // orange
+        productId: 5,
+        categoryId: 3,
+        productName: 'Orange Fresh and Juicy from Local Farms',
+        imagesList: [
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
+        ],
+        description:
+            'Oranges are a popular citrus fruit that are known for their sweet and tangy flavor',
+        unit: 'kg',
+        price: 2.99,
+        isActive: true,
+        createdDate: DateTime.now(),
+      ),
+      Product(
+        productId: 6,
+        categoryId: 3,
+        productName: 'Strawberry Fresh and Juicy from Local Farms',
+        imagesList: [
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
+        ],
+        description:
+            'Strawberries are sweet, juicy, and packed with vitamin C. They are ideal for snacking, smoothies, and desserts, and add a bright, fresh flavor to any meal.',
+        unit: 'kg',
+        price: 4.29,
         isActive: true,
         createdDate: DateTime.now(),
       ),
