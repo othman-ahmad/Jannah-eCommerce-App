@@ -20,6 +20,21 @@ import 'package:jannah/features/products/presentation/cubit/products_cubit.dart'
 class CategoryCard extends StatelessWidget {
   const CategoryCard({super.key, required this.category});
   final Category category;
+
+  ProductsCubit _createProductsCubit() {
+    final remoteDataSource = MockProductsRemoteDataSource();
+    final repository = ProductsRepositoryImpl(
+      remoteDataSource: remoteDataSource,
+    );
+
+    return ProductsCubit(
+      getProducts: GetProducts(repository),
+      getProductById: GetProductById(repository),
+      getProductsByCategoryId: GetProductsByCategoryId(repository),
+      getProductsByName: GetProductsByName(repository),
+    )..loadProductsByCategoryId(categoryId: category.categoryId);
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -30,7 +45,7 @@ class CategoryCard extends StatelessWidget {
             builder: (_) => MultiBlocProvider(
               providers: [
                 BlocProvider.value(value: context.read<FavouritesCubit>()),
-                BlocProvider.value(value: context.read<ProductsCubit>()),
+                BlocProvider(create: (_) => _createProductsCubit()),
               ],
               child: CategoryItemsScreen(category: category),
             ),

@@ -47,12 +47,12 @@ class CategoriesScreenState extends State<CategoriesScreen> {
       ),
       body: BlocBuilder<CategoriesCubit, CategoriesState>(
         builder: (context, state) {
-          if (state.categoriessStatus == CategoriesStatus.loading &&
+          if (state.categoriesStatus == CategoriesStatus.loading &&
               state.categories.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (state.categoriessStatus == CategoriesStatus.failure) {
+          if (state.categoriesStatus == CategoriesStatus.failure) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),

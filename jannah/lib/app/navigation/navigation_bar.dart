@@ -13,6 +13,10 @@ import 'package:jannah/features/favourites/domain/usecases/get_favourites.dart';
 import 'package:jannah/features/favourites/domain/usecases/remove_from_favourites.dart';
 import 'package:jannah/features/favourites/presentation/cubit/favourites_cubit.dart';
 import 'package:jannah/features/favourites/presentation/favourites_screen.dart';
+import 'package:jannah/features/home_page/data/promotions_remote_data_source.dart';
+import 'package:jannah/features/home_page/data/promotions_repository_impl.dart';
+import 'package:jannah/features/home_page/domain/usecases/get_promotions.dart';
+import 'package:jannah/features/home_page/presentation/cubit/promotions_cubit.dart';
 import 'package:jannah/features/home_page/presentation/home_page_screen.dart';
 import 'package:jannah/features/products/data/products_remote_data_source.dart';
 import 'package:jannah/features/products/data/products_repository_impl.dart';
@@ -65,6 +69,16 @@ class JannahNavigationBar extends StatelessWidget {
       ..loadCategories();
   }
 
+  PromotionsCubit _createPromotionsCubit() {
+    final remoteDataSource = MockPromotionsRemoteDataSource();
+    final repository = PromotionsRepositoryImpl(
+      remoteDataSource: remoteDataSource,
+    );
+
+    return PromotionsCubit(getPromotions: GetPromotions(repository))
+      ..loadPromotions();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -73,6 +87,7 @@ class JannahNavigationBar extends StatelessWidget {
         BlocProvider(create: (_) => _createFavouritesCubit()),
         BlocProvider(create: (_) => _createProductsCubit()),
         BlocProvider(create: (_) => _createCategoriesCubit()),
+        BlocProvider(create: (_) => _createPromotionsCubit()),
       ],
       child: const _JannahNavigationScaffold(),
     );

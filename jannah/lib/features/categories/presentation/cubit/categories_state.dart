@@ -3,12 +3,12 @@ import 'package:jannah/features/categories/data/category_model.dart';
 enum CategoriesStatus { initial, loading, success, failure }
 
 class CategoriesState {
-  final CategoriesStatus categoriessStatus;
+  final CategoriesStatus categoriesStatus;
   final List<Category> categories;
   final String? errorMessage;
 
   const CategoriesState({
-    this.categoriessStatus = CategoriesStatus.initial,
+    this.categoriesStatus = CategoriesStatus.initial,
     this.categories = const [],
     this.errorMessage,
   });
@@ -19,7 +19,7 @@ class CategoriesState {
     String? errorMessage,
   }) {
     return CategoriesState(
-      categoriessStatus: categoriesStatus ?? this.categoriessStatus,
+      categoriesStatus: categoriesStatus ?? this.categoriesStatus,
       categories: categories ?? this.categories,
       errorMessage: errorMessage ?? this.errorMessage,
     );
