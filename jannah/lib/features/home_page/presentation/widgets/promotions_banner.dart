@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jannah/features/categories/data/category_model.dart';
-import 'package:jannah/features/categories/presentation/category_items_screen.dart';
+import 'package:jannah/features/products/presentation/category_items_screen.dart';
 import 'package:jannah/features/categories/presentation/cubit/categories_cubit.dart';
 import 'package:jannah/features/categories/presentation/cubit/categories_state.dart';
 import 'package:jannah/features/favourites/presentation/cubit/favourites_cubit.dart';
