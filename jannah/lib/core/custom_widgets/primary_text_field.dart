@@ -8,11 +8,19 @@ class PrimaryTextField extends StatefulWidget {
     this.verticalPadding = 0,
     this.horizontalPadding = 0,
     this.isPassword = false,
+    this.controller,
+    this.keyboardType,
+    this.textInputAction,
+    this.onSubmitted,
   });
   String hintText;
   double verticalPadding;
   double horizontalPadding;
   bool isPassword = false;
+  TextEditingController? controller;
+  TextInputType? keyboardType;
+  TextInputAction? textInputAction;
+  ValueChanged<String>? onSubmitted;
 
   @override
   State<PrimaryTextField> createState() => _PrimaryTextFieldState();
@@ -29,6 +37,10 @@ class _PrimaryTextFieldState extends State<PrimaryTextField> {
         horizontal: widget.horizontalPadding,
       ),
       child: TextField(
+        controller: widget.controller,
+        keyboardType: widget.keyboardType,
+        textInputAction: widget.textInputAction,
+        onSubmitted: widget.onSubmitted,
         obscureText: widget.isPassword ? isObscureText : false,
         style: const TextStyle(fontSize: 16),
         decoration: InputDecoration(
