@@ -9,6 +9,7 @@ class ProductImageSlider extends StatefulWidget {
 
 class _ProductImageSliderState extends State<ProductImageSlider> {
   int currentImage = 0;
+  int ccurrentImage = 0;
 
   @override
   Widget build(BuildContext context) {
