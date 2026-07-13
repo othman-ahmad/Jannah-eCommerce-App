@@ -3,7 +3,6 @@ import 'package:jannah/app/navigation/navigation_bar.dart';
 import 'package:jannah/core/custom_widgets/Secondry_button.dart';
 import 'package:jannah/core/custom_widgets/primary_button.dart';
 import 'package:jannah/core/custom_widgets/primary_text_field.dart';
-import 'package:jannah/features/authentication/presentation/forgot_password_screen.dart';
 import 'package:jannah/features/authentication/presentation/register_screen.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -73,12 +72,12 @@ class LoginScreen extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ForgotPasswordScreen(),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => ForgotPasswordScreen(),
+                    //   ),
+                    // );
                   },
                   child: const Text(
                     'Forgot Password?',

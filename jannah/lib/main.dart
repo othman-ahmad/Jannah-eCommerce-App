@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:jannah/app/navigation/navigation_bar.dart';
+import 'package:jannah/features/onboarding/presentation/onboarding_parent_screen.dart';
 
 void main() {
   runApp(const Jannah());
@@ -18,7 +19,7 @@ class Jannah extends StatelessWidget {
         textTheme: GoogleFonts.nunitoTextTheme(Theme.of(context).textTheme),
       ),
       debugShowCheckedModeBanner: false,
-      home: const JannahNavigationBar(),
+      home: const onboardinginitiate(),
     );
   }
 }
