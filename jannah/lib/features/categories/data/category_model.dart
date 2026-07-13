@@ -3,14 +3,12 @@ class Category {
   String categoryName;
   String imageUrl;
   String description;
-  bool isActive;
 
   Category({
     required this.categoryId,
     required this.categoryName,
     required this.imageUrl,
     required this.description,
-    required this.isActive,
   });
 
   factory Category.fromJson(Map<String, dynamic> json) {
@@ -19,7 +17,6 @@ class Category {
       categoryName: json['CategoryName'],
       imageUrl: json['ImageUrl'],
       description: json['Description'],
-      isActive: json['IsActive'],
     );
   }
 }

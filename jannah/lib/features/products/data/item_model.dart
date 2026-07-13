@@ -6,7 +6,6 @@ class Product {
   final String description;
   final String unit;
   final double price;
-  final bool isActive;
   final DateTime createdDate;
 
   Product({
@@ -17,7 +16,6 @@ class Product {
     required this.description,
     required this.unit,
     required this.price,
-    required this.isActive,
     required this.createdDate,
   });
 
@@ -30,7 +28,6 @@ class Product {
       description: json['ProductDescription'],
       unit: json['Unit'],
       price: (json['Price'] as num).toDouble(),
-      isActive: json['IsActive'],
       createdDate: DateTime.parse(json['CreatedDate']),
     );
   }

@@ -22,7 +22,6 @@ class MockPromotionsRemoteDataSource implements PromotionsRemoteDataSource {
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
         startDate: DateTime(2024, 6, 1),
         endDate: DateTime(2029, 6, 30),
-        isActive: true,
       ),
       Promotion(
         promotionId: 2,
@@ -34,7 +33,6 @@ class MockPromotionsRemoteDataSource implements PromotionsRemoteDataSource {
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
         startDate: DateTime(2024, 12, 1),
         endDate: DateTime(2029, 12, 31),
-        isActive: true,
       ),
       Promotion(
         promotionId: 3,
@@ -46,7 +44,6 @@ class MockPromotionsRemoteDataSource implements PromotionsRemoteDataSource {
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
         startDate: DateTime(2024, 11, 29),
         endDate: DateTime(2029, 11, 30),
-        isActive: true,
       ),
     ];
   }

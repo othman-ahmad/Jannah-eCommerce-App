@@ -62,7 +62,7 @@ class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
             'Watermelon is a refreshing and hydrating fruit that is perfect for hot summer days. It is low in calories and high in vitamins A and C, making it a healthy choice for snacking or adding to salads. Watermelon is also rich in antioxidants, which can help protect your cells from damage and reduce inflammation in the body.',
         unit: 'kg',
         price: 2.89,
-        isActive: true,
+
         createdDate: DateTime.now(),
       ),
       Product(
@@ -81,7 +81,7 @@ class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
             'Mango is a tropical fruit that is known for its sweet and juicy flavor. It is rich in vitamins A and C, as well as fiber and antioxidants, making it a healthy choice for snacking or adding to smoothies and desserts. Mangoes are also versatile in cooking, as they can be used in both sweet and savory dishes.',
         unit: 'kg',
         price: 3.49,
-        isActive: true,
+
         createdDate: DateTime.now(),
       ),
       Product(
@@ -100,7 +100,7 @@ class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
             'Bananas are a popular fruit that are known for their sweet taste and convenient portability. They are rich in potassium, vitamin C, and dietary fiber, making them a healthy choice for snacking or adding to smoothies and desserts. Bananas are also versatile in cooking, as they can be used in both sweet and savory dishes.',
         unit: 'kg',
         price: 1.99,
-        isActive: true,
+
         createdDate: DateTime.now(),
       ),
       Product(
@@ -119,7 +119,7 @@ class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
             'Apples are a popular fruit that are known for their crisp texture and sweet-tart flavor. They are rich in fiber, vitamin C, and antioxidants, making them a healthy choice for snacking or adding to salads and desserts. Apples are also versatile in cooking, as they can be used in both sweet and savory dishes.',
         unit: 'kg',
         price: 2.49,
-        isActive: true,
+
         createdDate: DateTime.now(),
       ),
       Product(
@@ -138,7 +138,7 @@ class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
             'Oranges are a popular citrus fruit that are known for their sweet and tangy flavor',
         unit: 'kg',
         price: 2.99,
-        isActive: true,
+
         createdDate: DateTime.now(),
       ),
       Product(
@@ -156,7 +156,7 @@ class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
             'Strawberries are sweet, juicy, and packed with vitamin C. They are ideal for snacking, smoothies, and desserts, and add a bright, fresh flavor to any meal.',
         unit: 'kg',
         price: 4.29,
-        isActive: true,
+
         createdDate: DateTime.now(),
       ),
     ];

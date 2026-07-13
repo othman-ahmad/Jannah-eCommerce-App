@@ -7,7 +7,6 @@ class Promotion {
   String imageUrl;
   DateTime startDate;
   DateTime endDate;
-  bool isActive;
 
   Promotion({
     required this.promotionId,
@@ -18,7 +17,6 @@ class Promotion {
     required this.imageUrl,
     required this.startDate,
     required this.endDate,
-    required this.isActive,
   });
 
   factory Promotion.fromJson(Map<String, dynamic> json) {
@@ -31,7 +29,6 @@ class Promotion {
       imageUrl: json['imageUrl'],
       startDate: DateTime.parse(json['startDate']),
       endDate: DateTime.parse(json['endDate']),
-      isActive: json['isActive'],
     );
   }
 }

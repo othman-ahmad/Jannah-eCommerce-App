@@ -18,7 +18,6 @@ class MockCategoriesRemoteDataSource implements CategoriesRemoteDataSource {
         description: 'Explore our wide range of electronics products.',
         imageUrl:
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
-        isActive: true,
       ),
       Category(
         categoryId: 2,
@@ -26,7 +25,6 @@ class MockCategoriesRemoteDataSource implements CategoriesRemoteDataSource {
         description: 'Discover the latest trends in fashion.',
         imageUrl:
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
-        isActive: true,
       ),
       Category(
         categoryId: 3,
@@ -34,7 +32,6 @@ class MockCategoriesRemoteDataSource implements CategoriesRemoteDataSource {
         description: 'Find everything you need for your home and kitchen.',
         imageUrl:
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
-        isActive: true,
       ),
       Category(
         categoryId: 4,
@@ -42,7 +39,6 @@ class MockCategoriesRemoteDataSource implements CategoriesRemoteDataSource {
         description: 'Browse our collection of books across various genres.',
         imageUrl:
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
-        isActive: true,
       ),
       Category(
         categoryId: 5,
@@ -51,7 +47,6 @@ class MockCategoriesRemoteDataSource implements CategoriesRemoteDataSource {
             'Gear up for your outdoor adventures and sports activities.',
         imageUrl:
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
-        isActive: true,
       ),
       Category(
         categoryId: 6,
@@ -59,7 +54,6 @@ class MockCategoriesRemoteDataSource implements CategoriesRemoteDataSource {
         description: 'Enhance your beauty and personal care routine.',
         imageUrl:
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
-        isActive: true,
       ),
       Category(
         categoryId: 7,
@@ -67,7 +61,6 @@ class MockCategoriesRemoteDataSource implements CategoriesRemoteDataSource {
         description: 'Find fun and engaging toys and games for all ages.',
         imageUrl:
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
-        isActive: true,
       ),
       Category(
         categoryId: 8,
@@ -75,7 +68,6 @@ class MockCategoriesRemoteDataSource implements CategoriesRemoteDataSource {
         description: 'Explore products to support your health and wellness.',
         imageUrl:
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
-        isActive: true,
       ),
     ];
   }
