@@ -10,6 +10,8 @@ class OnboardingScreen1 extends StatelessWidget {
       body: Column(
         children: [
           const Spacer(),
+          Icon(Icons.eco, size: 40, color: const Color(0xFF212121)),
+          SizedBox(height: 12),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32.0),
             child: Text(

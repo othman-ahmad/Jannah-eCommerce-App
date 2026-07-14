@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jannah/app/navigation/navigation_cubit.dart';
 import 'package:jannah/features/profile/data/app_user_model.dart';
+import 'package:jannah/features/profile/presentation/about_screen.dart';
 import 'package:jannah/features/profile/presentation/addresses_screen.dart';
 import 'package:jannah/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:jannah/features/profile/presentation/cubit/profile_state.dart';
@@ -229,22 +230,70 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 const SizedBox(height: 12),
                 SettingsOption(
-                  icon: 'assets/icons/home_filled.svg',
+                  icon: 'assets/icons/location_pin_icon.svg',
                   title: 'My Addresses',
                   onTap: () => _openAddresses(context),
                 ),
                 SettingsOption(
                   icon: 'assets/icons/checkout_filled.svg',
                   title: 'Payment Methods',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => Scaffold(
+                          appBar: AppBar(
+                            leading: IconButton(
+                              icon: SvgPicture.asset(
+                                'assets/icons/back_button_icon.svg',
+                                width: 20,
+                                height: 20,
+                                colorFilter: const ColorFilter.mode(
+                                  Colors.black,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            backgroundColor: Colors.white,
+                            elevation: 0,
+                            centerTitle: true,
+                            title: const Text(
+                              'Payment Methods',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          body: const Center(
+                            child: Text(
+                              'Payment Methods Coming Soon',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 68, 68, 68),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 SettingsOption(
-                  icon: 'assets/icons/profile_filled.svg',
+                  icon: 'assets/icons/about_icon.svg',
                   title: 'About Jannah',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const AboutScreen()),
+                    );
+                  },
                 ),
                 SettingsOption(
-                  icon: 'assets/icons/back_button_icon.svg',
+                  icon: 'assets/icons/logout_icon.svg',
                   title: 'Logout',
                   onTap: () {},
                 ),
@@ -320,29 +369,23 @@ class _DefaultAddressPreview extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade300),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Row(
-        children: [
-          const Icon(Icons.location_on_outlined, color: Colors.black),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Default Address',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '$address, $city',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: Colors.grey.shade700),
-                ),
-              ],
+      child: Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Default Address',
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-          ),
-        ],
+            const SizedBox(height: 4),
+            Text(
+              '$address, $city',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: Colors.grey.shade700),
+            ),
+          ],
+        ),
       ),
     );
   }
