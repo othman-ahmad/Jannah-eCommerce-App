@@ -18,7 +18,9 @@ class SecondryButton extends StatelessWidget {
           foregroundColor: const WidgetStatePropertyAll(
             Color.fromARGB(255, 0, 0, 0),
           ),
-          overlayColor: WidgetStatePropertyAll(Colors.black.withOpacity(0.05)),
+          overlayColor: WidgetStatePropertyAll(
+            const Color.fromARGB(12, 0, 0, 0),
+          ),
           side: const WidgetStatePropertyAll(
             BorderSide(color: Color.fromARGB(255, 0, 0, 0), width: 1.2),
           ),

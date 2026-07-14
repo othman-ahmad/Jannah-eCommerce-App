@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jannah/app/navigation/navigation_bar.dart';
-import 'package:jannah/core/custom_widgets/Secondry_button.dart';
+import 'package:jannah/core/custom_widgets/secondry_button.dart';
 import 'package:jannah/core/custom_widgets/primary_button.dart';
 import 'package:jannah/features/authentication/data/authentication_remote_data_source.dart';
 import 'package:jannah/features/authentication/data/authentication_repository_impl.dart';

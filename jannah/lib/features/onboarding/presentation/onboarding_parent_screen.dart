@@ -8,8 +8,8 @@ import 'package:jannah/features/onboarding/presentation/onboarding_screen_1.dart
 import 'package:jannah/features/onboarding/presentation/onboarding_screen_2.dart';
 import 'package:jannah/features/onboarding/presentation/onboarding_screen_3.dart';
 
-class onboardinginitiate extends StatelessWidget {
-  const onboardinginitiate({super.key});
+class OnboardingInitiate extends StatelessWidget {
+  const OnboardingInitiate({super.key});
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -50,7 +50,7 @@ class OnboardingParentScreen extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      const Color(0xFFFAFAFA).withOpacity(0.0),
+                      const Color.fromARGB(0, 250, 250, 250),
                       const Color(0xFFFAFAFA),
                     ],
                   ),

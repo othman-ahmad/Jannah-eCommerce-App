@@ -16,7 +16,9 @@ class PrimaryButton extends StatelessWidget {
             Color.fromARGB(255, 0, 0, 0),
           ),
           foregroundColor: const WidgetStatePropertyAll(Colors.white),
-          overlayColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.08)),
+          overlayColor: WidgetStatePropertyAll(
+            const Color.fromARGB(20, 255, 255, 255),
+          ),
           elevation: const WidgetStatePropertyAll(0),
           padding: const WidgetStatePropertyAll(
             EdgeInsets.symmetric(vertical: 4, horizontal: 8),
