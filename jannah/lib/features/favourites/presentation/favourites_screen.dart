@@ -32,7 +32,7 @@ class FavouritesScreen extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         title: const Text(
-          'Favourites',
+          'My Favourites',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20,

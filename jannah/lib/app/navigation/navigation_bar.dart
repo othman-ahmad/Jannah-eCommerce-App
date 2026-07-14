@@ -26,6 +26,7 @@ import 'package:jannah/features/products/domain/usecases/get_products_by_categor
 import 'package:jannah/features/products/domain/usecases/get_products_by_name.dart';
 import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jannah/features/profile/presentation/profile_screen.dart';
 
 class JannahNavigationBar extends StatelessWidget {
   const JannahNavigationBar({super.key});
@@ -139,7 +140,7 @@ class _JannahNavigationScaffold extends StatelessWidget {
     CategoriesScreen(),
     Center(child: Text('Checkout Screen')),
     FavouritesScreen(),
-    Center(child: Text('Profile Screen')),
+    ProfileScreen(),
   ];
 
   @override
