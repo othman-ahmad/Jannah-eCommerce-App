@@ -26,6 +26,14 @@ import 'package:jannah/features/products/domain/usecases/get_products_by_categor
 import 'package:jannah/features/products/domain/usecases/get_products_by_name.dart';
 import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jannah/features/profile/data/profile_remote_data_source.dart';
+import 'package:jannah/features/profile/data/profile_repository_impl.dart';
+import 'package:jannah/features/profile/domain/usecases/delete_address.dart';
+import 'package:jannah/features/profile/domain/usecases/get_addresses.dart';
+import 'package:jannah/features/profile/domain/usecases/get_profile.dart';
+import 'package:jannah/features/profile/domain/usecases/save_address.dart';
+import 'package:jannah/features/profile/domain/usecases/update_profile.dart';
+import 'package:jannah/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:jannah/features/profile/presentation/profile_screen.dart';
 
 class JannahNavigationBar extends StatelessWidget {
@@ -80,6 +88,23 @@ class JannahNavigationBar extends StatelessWidget {
       ..loadPromotions();
   }
 
+  ProfileCubit _createProfileCubit() {
+    final remoteDataSource = MockProfileRemoteDataSource();
+    final repository = ProfileRepositoryImpl(
+      remoteDataSource: remoteDataSource,
+    );
+
+    return ProfileCubit(
+      getProfile: GetProfile(repository),
+      updateProfile: UpdateProfile(repository),
+      getAddresses: GetAddresses(repository),
+      saveAddress: SaveAddress(repository),
+      deleteAddress: DeleteAddress(repository),
+      // Replace this with the authenticated user id once auth exposes it.
+      currentUserId: 1,
+    )..loadProfileData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -89,6 +114,7 @@ class JannahNavigationBar extends StatelessWidget {
         BlocProvider(create: (_) => _createProductsCubit()),
         BlocProvider(create: (_) => _createCategoriesCubit()),
         BlocProvider(create: (_) => _createPromotionsCubit()),
+        BlocProvider(create: (_) => _createProfileCubit()),
       ],
       child: const _JannahNavigationScaffold(),
     );

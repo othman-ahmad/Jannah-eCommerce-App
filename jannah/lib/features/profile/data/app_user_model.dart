@@ -38,4 +38,28 @@ class AppUser {
       'created_at': createdAt?.toIso8601String(),
     };
   }
+
+  AppUser copyWith({
+    int? userId,
+    String? name,
+    String? email,
+    String? phone,
+    String? profileImage,
+    DateTime? createdAt,
+    bool clearEmail = false,
+    bool clearPhone = false,
+    bool clearProfileImage = false,
+    bool clearCreatedAt = false,
+  }) {
+    return AppUser(
+      userId: userId ?? this.userId,
+      name: name ?? this.name,
+      email: clearEmail ? null : email ?? this.email,
+      phone: clearPhone ? null : phone ?? this.phone,
+      profileImage: clearProfileImage
+          ? null
+          : profileImage ?? this.profileImage,
+      createdAt: clearCreatedAt ? null : createdAt ?? this.createdAt,
+    );
+  }
 }

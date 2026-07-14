@@ -1,7 +1,7 @@
 class Address {
   int addressId;
-  String addresType; // e.g. Home, Appartment, Office, etc.
-  String addressLine; // e.g. MyHome , Jimmy's Appartment, Office, etc.
+  String addressType; // e.g. Home, Apartment, Office, etc.
+  String addressLine; // e.g. My Home, Jimmy's Apartment, Office, etc.
   String city;
   String state;
   String country;
@@ -12,7 +12,7 @@ class Address {
 
   Address({
     required this.addressId,
-    required this.addresType,
+    required this.addressType,
     required this.addressLine,
     required this.city,
     required this.state,
@@ -26,7 +26,7 @@ class Address {
   factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
       addressId: json['address_id'] ?? 0,
-      addresType: json['address_type'] ?? '',
+      addressType: json['address_type'] ?? '',
       addressLine: json['address_line'] ?? '',
       city: json['city'] ?? '',
       state: json['state'] ?? '',
@@ -41,7 +41,7 @@ class Address {
   Map<String, dynamic> toJson() {
     return {
       'address_id': addressId,
-      'address_type': addresType,
+      'address_type': addressType,
       'address_line': addressLine,
       'city': city,
       'state': state,
@@ -51,5 +51,31 @@ class Address {
       'longitude': longitude,
       'is_default': isDefault,
     };
+  }
+
+  Address copyWith({
+    int? addressId,
+    String? addressType,
+    String? addressLine,
+    String? city,
+    String? state,
+    String? country,
+    String? postalCode,
+    double? latitude,
+    double? longitude,
+    bool? isDefault,
+  }) {
+    return Address(
+      addressId: addressId ?? this.addressId,
+      addressType: addressType ?? this.addressType,
+      addressLine: addressLine ?? this.addressLine,
+      city: city ?? this.city,
+      state: state ?? this.state,
+      country: country ?? this.country,
+      postalCode: postalCode ?? this.postalCode,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      isDefault: isDefault ?? this.isDefault,
+    );
   }
 }
