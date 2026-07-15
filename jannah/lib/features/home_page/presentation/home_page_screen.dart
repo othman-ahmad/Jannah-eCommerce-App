@@ -70,6 +70,8 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                   }
                 },
                 decoration: InputDecoration(
+                  filled: true,
+                  fillColor: const Color.fromARGB(30, 0, 0, 0),
                   hintText: 'Search products',
                   prefixIcon: const Icon(Icons.search),
                   suffixIcon: IconButton(
@@ -81,11 +83,15 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(0, 0, 0, 0),
+                    ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(0, 0, 0, 0),
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),

@@ -127,7 +127,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
           Container(
             height: 65,
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F5F5),
+              color: const Color.fromARGB(30, 0, 0, 0),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(

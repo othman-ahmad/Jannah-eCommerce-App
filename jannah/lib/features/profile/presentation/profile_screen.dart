@@ -235,7 +235,7 @@ class ProfileScreen extends StatelessWidget {
                   onTap: () => _openAddresses(context),
                 ),
                 SettingsOption(
-                  icon: 'assets/icons/checkout_filled.svg',
+                  icon: 'assets/icons/payment_icon.svg',
                   title: 'Payment Methods',
                   onTap: () {
                     Navigator.of(context).push(
