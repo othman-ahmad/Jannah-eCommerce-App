@@ -26,7 +26,6 @@ class ProductsCubit extends Cubit<ProductsState> {
         clearErrorMessage: true,
       ),
     );
-
     try {
       final products = await getProducts();
       emit(

@@ -30,7 +30,6 @@ class InMemoryCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
 
   @override
   Future<Cart?> fetchActiveCart({required int userId}) async {
-    print('othman : Fetching active cart for userId: $userId');
     final activeCarts = _carts.where(
       (cart) => cart.userId == userId && !cart.isOrdered,
     );
@@ -38,9 +37,7 @@ class InMemoryCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
     if (activeCarts.isEmpty) {
       return null;
     }
-    print(
-      'othman : Active cart found for userId: $userId, cartId: ${activeCarts.first.cartId}',
-    );
+
     return Cart.fromJson(activeCarts.first.toJson());
   }
 
@@ -60,9 +57,7 @@ class InMemoryCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
     );
 
     _carts.add(cart);
-    print(
-      'othman : Created new cart for userId: $userId, cartId: ${cart.cartId}',
-    );
+    _printDatabaseState('CREATE CART');
     return Cart.fromJson(cart.toJson());
   }
 
@@ -70,7 +65,7 @@ class InMemoryCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
   Future<void> deleteCart({required int cartId}) async {
     _cartItems.removeWhere((item) => item.cartId == cartId);
     _carts.removeWhere((cart) => cart.cartId == cartId);
-    print('othman : Deleted cart with cartId: $cartId');
+    _printDatabaseState('DELETE CART');
   }
 
   @override
@@ -80,9 +75,6 @@ class InMemoryCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
     required int quantity,
     required double price,
   }) async {
-    print(
-      'othman : Adding item to cart for userId: $userId, productId: $productId, quantity: $quantity, price: $price',
-    );
     final cart = await createCart(userId: userId);
     final index = _cartItems.indexWhere(
       (item) => item.cartId == cart.cartId && item.productId == productId,
@@ -98,6 +90,7 @@ class InMemoryCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
           price: price,
         ),
       );
+      _printDatabaseState('ADD ITEM');
       return;
     }
 
@@ -106,13 +99,11 @@ class InMemoryCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
       quantity: existingItem.quantity + quantity,
       price: price,
     );
+    _printDatabaseState('UPDATE ITEM QUANTITY');
   }
 
   @override
   Future<void> removeItem({required int userId, required int productId}) async {
-    print(
-      'othman : Removing item from cart for userId: $userId, productId: $productId',
-    );
     final cart = await fetchActiveCart(userId: userId);
 
     if (cart == null) {
@@ -131,8 +122,10 @@ class InMemoryCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
 
     if (item.quantity > 1) {
       _cartItems[index] = item.copyWith(quantity: item.quantity - 1);
+      _printDatabaseState('DECREASE ITEM QUANTITY');
     } else {
       _cartItems.removeAt(index);
+      _printDatabaseState('REMOVE ITEM');
     }
 
     final remainingItems = _cartItems.where(
@@ -146,7 +139,6 @@ class InMemoryCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
 
   @override
   Future<void> checkout({required int cartId}) async {
-    print('othman : Checking out cart with cartId: $cartId');
     final index = _carts.indexWhere((cart) => cart.cartId == cartId);
 
     if (index == -1) {
@@ -154,14 +146,88 @@ class InMemoryCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
     }
 
     _carts[index] = _carts[index].copyWith(isOrdered: true);
+    _printDatabaseState('CHECKOUT');
   }
 
   @override
   Future<List<CartItem>> fetchCartItems({required int cartId}) async {
-    print('othman : Fetching cart items for cartId: $cartId');
     return _cartItems
         .where((item) => item.cartId == cartId)
         .map((item) => CartItem.fromJson(item.toJson()))
         .toList(growable: false);
+  }
+
+  void _printDatabaseState(String operation) {
+    print('\n');
+    print('==================== MOCK DATABASE ====================');
+    print('Operation: $operation');
+    print('');
+
+    _printCartsTable();
+    print('');
+    _printCartItemsTable();
+
+    print('=======================================================\n');
+  }
+
+  void _printCartsTable() {
+    print('CARTS TABLE');
+
+    if (_carts.isEmpty) {
+      print('(empty)');
+      return;
+    }
+
+    print(
+      '--------------------------------------------------------------------------------',
+    );
+    print('| CartId | UserId | Created Date              | IsOrdered |');
+    print(
+      '--------------------------------------------------------------------------------',
+    );
+
+    for (final cart in _carts) {
+      print(
+        '| ${cart.cartId.toString().padRight(6)} '
+        '| ${cart.userId.toString().padRight(6)} '
+        '| ${cart.createdDate.toString().padRight(25)} '
+        '| ${cart.isOrdered.toString().padRight(9)} |',
+      );
+    }
+
+    print(
+      '--------------------------------------------------------------------------------',
+    );
+  }
+
+  void _printCartItemsTable() {
+    print('CART ITEMS TABLE');
+
+    if (_cartItems.isEmpty) {
+      print('(empty)');
+      return;
+    }
+
+    print(
+      '---------------------------------------------------------------------------------------------',
+    );
+    print('| ItemId | CartId | ProductId | Quantity | Price      |');
+    print(
+      '---------------------------------------------------------------------------------------------',
+    );
+
+    for (final item in _cartItems) {
+      print(
+        '| ${item.cartItemId.toString().padRight(6)} '
+        '| ${item.cartId.toString().padRight(6)} '
+        '| ${item.productId.toString().padRight(9)} '
+        '| ${item.quantity.toString().padRight(8)} '
+        '| ${item.price.toStringAsFixed(2).padRight(10)} |',
+      );
+    }
+
+    print(
+      '---------------------------------------------------------------------------------------------',
+    );
   }
 }

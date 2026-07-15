@@ -19,7 +19,7 @@ class Jannah extends StatelessWidget {
         textTheme: GoogleFonts.nunitoTextTheme(Theme.of(context).textTheme),
       ),
       debugShowCheckedModeBanner: false,
-      home: const JannahNavigationBar(),
+      home: OnboardingInitiate(),
     );
   }
 }
