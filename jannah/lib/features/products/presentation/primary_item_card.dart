@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
+import 'package:jannah/features/checkout/presentation/cubit/checkout_state.dart';
 import 'package:jannah/features/favourites/presentation/cubit/favourites_cubit.dart';
 import 'package:jannah/features/products/data/item_model.dart';
 import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
@@ -20,6 +22,10 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        final cartQuantity = context
+            .read<CheckoutCubit>()
+            .state
+            .quantityForProduct(widget.product.productId);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -27,11 +33,12 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
               providers: [
                 BlocProvider.value(value: context.read<FavouritesCubit>()),
                 BlocProvider.value(value: context.read<ProductsCubit>()),
+                BlocProvider.value(value: context.read<CheckoutCubit>()),
               ],
               child: ItemDetailsScreen(
                 productId: widget.product.productId,
                 initialProduct: widget.product,
-                count: widget.count,
+                count: cartQuantity == 0 ? 1 : cartQuantity,
               ),
             ),
           ),
@@ -78,87 +85,113 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                 ],
               ),
             ),
-            SizedBox(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    '\$${widget.product.price.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 0, 0, 0),
-                    ),
-                  ),
-                  Spacer(),
-                  SizedBox(
-                    height: 32,
-                    child: widget.count == 0
-                        ? GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                widget.count++;
-                              });
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 28,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 0, 0, 0),
-                                borderRadius: BorderRadius.circular(100),
-                              ),
-                              child: SvgPicture.asset(
-                                'assets/icons/cart_icon.svg',
-                                width: 24,
-                                height: 24,
-                              ),
-                            ),
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              InkWell(
-                                child: widget.count == 1
-                                    ? Padding(
-                                        padding: const EdgeInsets.all(2),
-                                        child: SvgPicture.asset(
-                                          'assets/icons/trash_icon.svg',
-                                          width: 20,
-                                          height: 20,
-                                        ),
-                                      )
-                                    : Icon(Icons.remove),
-                                onTap: () {
-                                  setState(() {
-                                    if (widget.count > 0) {
-                                      widget.count--;
-                                    }
-                                  });
-                                },
-                              ),
-                              Text(
-                                '  ${widget.count}  ',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+            BlocBuilder<CheckoutCubit, CheckoutState>(
+              builder: (context, state) {
+                final quantity = state.quantityForProduct(
+                  widget.product.productId,
+                );
+                final isPending = state.isPending(widget.product.productId);
+
+                return SizedBox(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '\$${widget.product.price.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        ),
+                      ),
+                      const Spacer(),
+                      SizedBox(
+                        height: 32,
+                        child: quantity == 0
+                            ? GestureDetector(
+                                onTap: isPending
+                                    ? null
+                                    : () {
+                                        context
+                                            .read<CheckoutCubit>()
+                                            .addCartItem(
+                                              productId:
+                                                  widget.product.productId,
+                                              quantity: 1,
+                                              price: widget.product.price,
+                                            );
+                                      },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 28,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color.fromARGB(255, 0, 0, 0),
+                                    borderRadius: BorderRadius.circular(100),
+                                  ),
+                                  child: SvgPicture.asset(
+                                    'assets/icons/cart_icon.svg',
+                                    width: 24,
+                                    height: 24,
+                                  ),
                                 ),
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  InkWell(
+                                    onTap: isPending
+                                        ? null
+                                        : () {
+                                            context
+                                                .read<CheckoutCubit>()
+                                                .removeCartItem(
+                                                  productId:
+                                                      widget.product.productId,
+                                                );
+                                          },
+                                    child: quantity == 1
+                                        ? Padding(
+                                            padding: const EdgeInsets.all(2),
+                                            child: SvgPicture.asset(
+                                              'assets/icons/trash_icon.svg',
+                                              width: 20,
+                                              height: 20,
+                                            ),
+                                          )
+                                        : const Icon(Icons.remove),
+                                  ),
+                                  Text(
+                                    '  $quantity  ',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: isPending
+                                        ? null
+                                        : () {
+                                            context
+                                                .read<CheckoutCubit>()
+                                                .addCartItem(
+                                                  productId:
+                                                      widget.product.productId,
+                                                  quantity: 1,
+                                                  price: widget.product.price,
+                                                );
+                                          },
+                                    child: const Icon(Icons.add),
+                                  ),
+                                ],
                               ),
-                              InkWell(
-                                child: const Icon(Icons.add),
-                                onTap: () {
-                                  setState(() {
-                                    widget.count++;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
                   ),
-                  SizedBox(height: 8),
-                ],
-              ),
+                );
+              },
             ),
           ],
         ),

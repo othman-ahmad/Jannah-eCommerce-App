@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jannah/core/custom_widgets/primary_button.dart';
+import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:jannah/features/favourites/presentation/widgets/favourite_toggle_button.dart';
 import 'package:jannah/features/products/data/item_model.dart';
 import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
@@ -26,6 +27,9 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.count < 1) {
+      widget.count = 1;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProductsCubit>().loadProductById(
         productId: widget.productId,
@@ -252,7 +256,20 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
             ),
           ),
           SizedBox(height: 24),
-          PrimaryButton(onPressed: () {}, text: 'Add to Cart'),
+          PrimaryButton(
+            onPressed: () {
+              context.read<CheckoutCubit>().addCartItem(
+                productId: product.productId,
+                quantity: widget.count,
+                price: product.price,
+              );
+
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Added to cart')));
+            },
+            text: 'Add to Cart',
+          ),
         ],
       ),
     );

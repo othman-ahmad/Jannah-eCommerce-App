@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jannah/features/home_page/presentation/cubit/promotions_cubit.dart';
 import 'package:jannah/features/home_page/presentation/cubit/promotions_state.dart';
 import 'package:jannah/features/home_page/presentation/widgets/promotions_banner.dart';
-import 'package:jannah/features/products/presentation/checkout_item_card.dart';
 import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
 import 'package:jannah/features/products/presentation/cubit/products_state.dart';
 import 'package:jannah/features/products/presentation/primary_item_card.dart';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:jannah/features/favourites/presentation/cubit/favourites_cubit.dart';
 import 'package:jannah/features/favourites/presentation/widgets/favourite_toggle_button.dart';
 import 'package:jannah/features/products/data/item_model.dart';
@@ -18,6 +19,10 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        final cartQuantity = context
+            .read<CheckoutCubit>()
+            .state
+            .quantityForProduct(widget.product.productId);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -25,10 +30,12 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
               providers: [
                 BlocProvider.value(value: context.read<FavouritesCubit>()),
                 BlocProvider.value(value: context.read<ProductsCubit>()),
+                BlocProvider.value(value: context.read<CheckoutCubit>()),
               ],
               child: ItemDetailsScreen(
                 productId: widget.product.productId,
                 initialProduct: widget.product,
+                count: cartQuantity == 0 ? 1 : cartQuantity,
               ),
             ),
           ),

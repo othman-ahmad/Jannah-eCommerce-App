@@ -6,6 +6,17 @@ import 'package:jannah/features/categories/data/categories_repository_impl.dart'
 import 'package:jannah/features/categories/domain/usecases/get_categories.dart';
 import 'package:jannah/features/categories/presentation/categories_screen.dart';
 import 'package:jannah/features/categories/presentation/cubit/categories_cubit.dart';
+import 'package:jannah/features/checkout/data/checkout_remote_data_source.dart';
+import 'package:jannah/features/checkout/data/checkout_repository_impl.dart';
+import 'package:jannah/features/checkout/domain/usecases/add_item.dart';
+import 'package:jannah/features/checkout/domain/usecases/checkout.dart';
+import 'package:jannah/features/checkout/domain/usecases/create_cart.dart';
+import 'package:jannah/features/checkout/domain/usecases/delete_cart.dart';
+import 'package:jannah/features/checkout/domain/usecases/load_cart.dart';
+import 'package:jannah/features/checkout/domain/usecases/load_cart_items.dart';
+import 'package:jannah/features/checkout/domain/usecases/remove_item.dart';
+import 'package:jannah/features/checkout/presentation/checkout_screen.dart';
+import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:jannah/features/favourites/data/favourites_remote_data_source.dart';
 import 'package:jannah/features/favourites/data/favourites_repository_impl.dart';
 import 'package:jannah/features/favourites/domain/usecases/add_to_favourites.dart';
@@ -68,6 +79,25 @@ class JannahNavigationBar extends StatelessWidget {
     )..loadProducts();
   }
 
+  CheckoutCubit _createCheckoutCubit() {
+    final remoteDataSource = InMemoryCheckoutRemoteDataSource();
+    final repository = CheckoutRepositoryImpl(
+      remoteDataSource: remoteDataSource,
+    );
+
+    return CheckoutCubit(
+      loadCartUseCase: LoadCart(repository),
+      createCartUseCase: CreateCart(repository),
+      deleteCartUseCase: DeleteCart(repository),
+      addItemUseCase: AddItem(repository),
+      removeItemUseCase: RemoveItem(repository),
+      checkoutUseCase: Checkout(repository),
+      loadCartItemsUseCase: LoadCartItems(repository),
+      // Replace this with the authenticated user id once auth exposes it.
+      currentUserId: 1,
+    )..loadCart();
+  }
+
   CategoriesCubit _createCategoriesCubit() {
     final remoteDataSource = MockCategoriesRemoteDataSource();
     final repository = CategoriesRepositoryImpl(
@@ -112,6 +142,7 @@ class JannahNavigationBar extends StatelessWidget {
         BlocProvider(create: (_) => NavigationCubit()),
         BlocProvider(create: (_) => _createFavouritesCubit()),
         BlocProvider(create: (_) => _createProductsCubit()),
+        BlocProvider(create: (_) => _createCheckoutCubit()),
         BlocProvider(create: (_) => _createCategoriesCubit()),
         BlocProvider(create: (_) => _createPromotionsCubit()),
         BlocProvider(create: (_) => _createProfileCubit()),
@@ -164,7 +195,7 @@ class _JannahNavigationScaffold extends StatelessWidget {
   List<Widget> get _navBarScreens => [
     const HomePageScreen(),
     CategoriesScreen(),
-    Center(child: Text('Checkout Screen')),
+    CheckoutScreen(),
     FavouritesScreen(),
     ProfileScreen(),
   ];

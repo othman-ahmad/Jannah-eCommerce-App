@@ -6,7 +6,6 @@ import 'package:jannah/features/favourites/presentation/cubit/favourites_cubit.d
 import 'package:jannah/features/favourites/presentation/cubit/favourites_state.dart';
 import 'package:jannah/features/favourites/presentation/widgets/favourite_toggle_button.dart';
 import 'package:jannah/features/products/data/item_model.dart';
-import 'package:jannah/features/products/presentation/checkout_item_card.dart';
 import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
 import 'package:jannah/features/products/presentation/favourite_item_card.dart';
 
