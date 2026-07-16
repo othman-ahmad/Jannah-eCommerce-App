@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:jannah/features/checkout/data/cart_item_model.dart';
 import 'package:jannah/features/checkout/data/cart_model.dart';
 

@@ -40,6 +40,17 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
     try {
       final cart = await loadCartUseCase(effectiveUserId);
+      if (cart == null) {
+        emit(
+          state.copyWith(
+            status: CheckoutStatus.success,
+            cart: null,
+            cartItems: const [],
+            clearErrorMessage: true,
+          ),
+        );
+        return;
+      }
       final cartItems = await loadCartItemsUseCase(cart.cartId);
       emit(
         state.copyWith(
@@ -208,6 +219,18 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
   Future<void> _refreshCart(int userId) async {
     final cart = await loadCartUseCase(userId);
+    if (cart == null) {
+      emit(
+        state.copyWith(
+          status: CheckoutStatus.success,
+          cart: null,
+          cartItems: const [],
+          pendingProductIds: const {},
+          clearErrorMessage: true,
+        ),
+      );
+      return;
+    }
     final cartItems = await loadCartItemsUseCase(cart.cartId);
 
     emit(

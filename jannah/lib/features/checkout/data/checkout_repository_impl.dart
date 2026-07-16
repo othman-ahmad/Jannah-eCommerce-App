@@ -9,9 +9,9 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
   const CheckoutRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Cart> loadCart(int userId) async {
+  Future<Cart?> loadCart(int userId) async {
     final cart = await remoteDataSource.fetchActiveCart(userId: userId);
-    return cart ?? remoteDataSource.createCart(userId: userId);
+    return cart;
   }
 
   @override
