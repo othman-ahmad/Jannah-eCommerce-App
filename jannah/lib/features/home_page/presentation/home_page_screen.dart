@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jannah/app/navigation/navigation_cubit.dart';
 import 'package:jannah/features/categories/data/category_model.dart';
 import 'package:jannah/features/categories/presentation/cubit/categories_cubit.dart';
 import 'package:jannah/features/categories/presentation/cubit/categories_state.dart';
@@ -230,9 +231,27 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                           },
                         ),
                       ),
-                      SizedBox(height: 8),
+                      SizedBox(height: 20),
                       SizedBox(height: 30, child: _buildCategoryFilters(state)),
-                      SizedBox(height: 8),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            context.read<NavigationCubit>().goToTab(1);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(2, 12, 8, 2),
+                            child: Text(
+                              'Se All >>',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: const Color.fromARGB(255, 0, 0, 0),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                       if (state.products.isEmpty)
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 80),
