@@ -4,6 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jannah/features/profile/data/address_model.dart';
 import 'package:jannah/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:jannah/features/profile/presentation/cubit/profile_state.dart';
+import 'package:jannah/features/profile/presentation/location_picker_screen.dart';
+import 'package:latlong2/latlong.dart';
 
 class AddressesScreen extends StatelessWidget {
   const AddressesScreen({super.key});
@@ -47,6 +49,51 @@ class AddressesScreen extends StatelessWidget {
           value: cubit,
           child: StatefulBuilder(
             builder: (context, setSheetState) {
+              Future<void> pickOnMap() async {
+                final lat = double.tryParse(latitudeController.text.trim());
+                final lng = double.tryParse(longitudeController.text.trim());
+
+                final result = await Navigator.of(context).push<PickedLocation>(
+                  MaterialPageRoute(
+                    builder: (_) => LocationPickerScreen(
+                      initialLatLng: (lat != null && lng != null)
+                          ? LatLng(lat, lng)
+                          : null,
+                    ),
+                  ),
+                );
+
+                if (result == null) return;
+
+                setSheetState(() {
+                  latitudeController.text = result.latitude.toString();
+                  longitudeController.text = result.longitude.toString();
+
+                  // Only overwrite fields the user hasn't already filled in,
+                  // so we don't clobber manual edits with a reverse-geocode guess.
+                  // if (lineController.text.trim().isEmpty &&
+                  //     result.addressLine.isNotEmpty) {
+                  lineController.text = result.addressLine;
+                  // }
+                  // if (cityController.text.trim().isEmpty &&
+                  //     result.city.isNotEmpty) {
+                  cityController.text = result.city;
+                  // }
+                  // if (stateController.text.trim().isEmpty &&
+                  //     result.state.isNotEmpty) {
+                  stateController.text = result.state;
+                  // }
+                  // if (countryController.text.trim().isEmpty &&
+                  //     result.country.isNotEmpty) {
+                  countryController.text = result.country;
+                  // }
+                  // if (postalCodeController.text.trim().isEmpty &&
+                  //     result.postalCode.isNotEmpty) {
+                  postalCodeController.text = result.postalCode;
+                  // }
+                });
+              }
+
               return BlocBuilder<ProfileCubit, ProfileState>(
                 builder: (context, state) {
                   return SingleChildScrollView(
@@ -66,6 +113,20 @@ class AddressesScreen extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        OutlinedButton.icon(
+                          onPressed: pickOnMap,
+                          icon: const Icon(Icons.map_outlined, size: 20),
+                          label: const Text('Pick location on map'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.black,
+                            side: BorderSide(color: Colors.grey.shade400),
+                            minimumSize: const Size.fromHeight(48),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
                           ),
                         ),
                         const SizedBox(height: 16),
