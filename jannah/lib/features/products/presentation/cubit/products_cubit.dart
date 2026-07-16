@@ -24,6 +24,7 @@ class ProductsCubit extends Cubit<ProductsState> {
         productsStatus: ProductsStatus.loading,
         clearSearchQuery: true,
         clearErrorMessage: true,
+        clearSelectedCategoryId: true,
       ),
     );
     try {
@@ -34,6 +35,7 @@ class ProductsCubit extends Cubit<ProductsState> {
           products: products,
           clearSearchQuery: true,
           clearErrorMessage: true,
+          clearSelectedCategoryId: true,
         ),
       );
     } catch (e) {
@@ -81,9 +83,13 @@ class ProductsCubit extends Cubit<ProductsState> {
     final searchQuery = productName.trim();
 
     if (searchQuery.isEmpty) {
-      return loadProductsByCategoryId(
-        categoryId: state.selectedCategoryId ?? 1,
-      );
+      final selectedCategoryId = state.selectedCategoryId;
+
+      if (selectedCategoryId == null) {
+        return loadProducts();
+      }
+
+      return loadProductsByCategoryId(categoryId: selectedCategoryId);
     }
 
     emit(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jannah/features/categories/data/category_model.dart';
 import 'package:jannah/features/categories/presentation/cubit/categories_cubit.dart';
+import 'package:jannah/features/categories/presentation/cubit/categories_state.dart';
 import 'package:jannah/features/home_page/presentation/cubit/promotions_cubit.dart';
 import 'package:jannah/features/home_page/presentation/cubit/promotions_state.dart';
 import 'package:jannah/features/home_page/presentation/widgets/promotions_banner.dart';
@@ -26,6 +27,8 @@ class _HomePageProductsView extends StatefulWidget {
 }
 
 class _HomePageProductsViewState extends State<_HomePageProductsView> {
+  static const int _allCategoryId = -1;
+
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -40,6 +43,21 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
     );
   }
 
+  Future<void> _loadCurrentProducts() {
+    final selectedCategoryId = context
+        .read<ProductsCubit>()
+        .state
+        .selectedCategoryId;
+
+    if (selectedCategoryId == null) {
+      return context.read<ProductsCubit>().loadProducts();
+    }
+
+    return context.read<ProductsCubit>().loadProductsByCategoryId(
+      categoryId: selectedCategoryId,
+    );
+  }
+
   Future<void> _refreshProducts() {
     final state = context.read<ProductsCubit>().state;
 
@@ -49,17 +67,77 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
       );
     }
 
-    return context.read<ProductsCubit>().loadProducts();
+    return _loadCurrentProducts();
+  }
+
+  void _selectCategory(Category category) {
+    _searchController.clear();
+
+    if (category.categoryId == _allCategoryId) {
+      context.read<ProductsCubit>().loadProducts();
+      return;
+    }
+
+    context.read<ProductsCubit>().loadProductsByCategoryId(
+      categoryId: category.categoryId,
+    );
+  }
+
+  Widget _buildCategoryFilters(ProductsState productsState) {
+    final all = Category(
+      categoryId: _allCategoryId,
+      categoryName: 'All',
+      description: '',
+      imageUrl: '',
+    );
+
+    return BlocBuilder<CategoriesCubit, CategoriesState>(
+      builder: (context, categoriesState) {
+        final categories = [all, ...categoriesState.categories];
+
+        return ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: categories.length,
+          separatorBuilder: (_, _) => const SizedBox(width: 8),
+          itemBuilder: (context, index) {
+            final category = categories[index];
+            final isSelected = category.categoryId == _allCategoryId
+                ? productsState.selectedCategoryId == null
+                : productsState.selectedCategoryId == category.categoryId;
+
+            return GestureDetector(
+              onTap: () => _selectCategory(category),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.black : Colors.white,
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 1,
+                    strokeAlign: BorderSide.strokeAlignInside,
+                  ),
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Center(
+                  child: Text(
+                    category.categoryName,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    Category all = Category(
-      categoryId: -1,
-      categoryName: 'All',
-      description: "",
-      imageUrl: "",
-    );
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: _refreshProducts,
@@ -73,7 +151,7 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                 onSubmitted: (_) => _searchProducts(),
                 onChanged: (value) {
                   if (value.trim().isEmpty) {
-                    context.read<ProductsCubit>().loadProducts();
+                    _loadCurrentProducts();
                   }
                 },
                 decoration: InputDecoration(
@@ -85,7 +163,7 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                     icon: const Icon(Icons.clear),
                     onPressed: () {
                       _searchController.clear();
-                      context.read<ProductsCubit>().loadProducts();
+                      _loadCurrentProducts();
                     },
                   ),
                   border: OutlineInputBorder(
@@ -128,17 +206,6 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                     );
                   }
 
-                  if (state.products.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'No products found',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    );
-                  }
                   return ListView(
                     padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
                     children: [
@@ -164,68 +231,24 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                         ),
                       ),
                       SizedBox(height: 8),
-                      SizedBox(
-                        height: 30,
-                        child: Builder(
-                          builder: (context) {
-                            context.read<CategoriesCubit>().getCategories;
-                            final List<Category> categories = [
-                              all,
-                              ...context
-                                  .read<CategoriesCubit>()
-                                  .state
-                                  .categories,
-                            ];
-                            return ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: [
-                                for (final category in categories)
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 8),
-                                    child: GestureDetector(
-                                      onTap: () {},
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 20,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: const Color.fromARGB(
-                                            255,
-                                            0,
-                                            0,
-                                            0,
-                                          ),
-                                          border: Border.all(
-                                            color: Colors.black,
-                                            width: 1,
-                                            strokeAlign:
-                                                BorderSide.strokeAlignInside,
-                                          ),
-                                          borderRadius: BorderRadius.circular(
-                                            100,
-                                          ),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            category.categoryName,
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
+                      SizedBox(height: 30, child: _buildCategoryFilters(state)),
                       SizedBox(height: 8),
-                      for (var product in state.products)
-                        PrimaryItemCard(product: product, count: 0),
+                      if (state.products.isEmpty)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 80),
+                          child: Center(
+                            child: Text(
+                              'No products found',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        )
+                      else
+                        for (var product in state.products)
+                          PrimaryItemCard(product: product, count: 0),
                     ],
                   );
                 },

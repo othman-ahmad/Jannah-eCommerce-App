@@ -36,6 +36,7 @@ class ProductsState {
     bool clearSearchQuery = false,
     bool clearErrorMessage = false,
     bool clearProductErrorMessage = false,
+    bool clearSelectedCategoryId = false,
   }) {
     return ProductsState(
       productsStatus: productsStatus ?? this.productsStatus,
@@ -44,7 +45,9 @@ class ProductsState {
       selectedProduct: clearSelectedProduct
           ? null
           : selectedProduct ?? this.selectedProduct,
-      selectedCategoryId: selectedCategoryId ?? this.selectedCategoryId,
+      selectedCategoryId: clearSelectedCategoryId
+          ? null
+          : selectedCategoryId ?? this.selectedCategoryId,
       searchQuery: clearSearchQuery ? null : searchQuery ?? this.searchQuery,
       errorMessage: clearErrorMessage
           ? null
