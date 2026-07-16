@@ -99,20 +99,6 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: BlocBuilder<PromotionsCubit, PromotionsState>(
-                builder: (context, state) {
-                  if (state.promotionsStatus == PromotionsStatus.loading) {
-                    return PromotionsBanner(promotions: []);
-                  }
-                  if (state.promotionsStatus == PromotionsStatus.failure) {
-                    return PromotionsBanner(promotions: []);
-                  }
-                  return PromotionsBanner(promotions: state.promotions);
-                },
-              ),
-            ),
             Expanded(
               child: BlocBuilder<ProductsCubit, ProductsState>(
                 builder: (context, state) {
@@ -145,17 +131,26 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                       ),
                     );
                   }
-
-                  return ListView.builder(
+                  return ListView(
                     padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
-                    itemCount: state.products.length,
-
-                    itemBuilder: (context, index) {
-                      return PrimaryItemCard(
-                        product: state.products[index],
-                        count: 0,
-                      );
-                    },
+                    children: [
+                      BlocBuilder<PromotionsCubit, PromotionsState>(
+                        builder: (context, state) {
+                          if (state.promotionsStatus ==
+                              PromotionsStatus.loading) {
+                            return PromotionsBanner(promotions: []);
+                          }
+                          if (state.promotionsStatus ==
+                              PromotionsStatus.failure) {
+                            return PromotionsBanner(promotions: []);
+                          }
+                          return PromotionsBanner(promotions: state.promotions);
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      for (var product in state.products)
+                        PrimaryItemCard(product: product, count: 0),
+                    ],
                   );
                 },
               ),

@@ -81,7 +81,7 @@ class FavouritesScreen extends StatelessWidget {
           return RefreshIndicator(
             onRefresh: () => context.read<FavouritesCubit>().loadFavourites(),
             child: ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.only(top: 8),
               itemCount: state.favourites.length,
               itemBuilder: (context, index) {
                 final productId = state.favourites[index].productId;

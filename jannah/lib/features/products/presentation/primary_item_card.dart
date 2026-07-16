@@ -45,7 +45,7 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
         );
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8),
+        margin: const EdgeInsets.only(right: 8),
         height: 100,
         width: double.infinity,
         child: Row(

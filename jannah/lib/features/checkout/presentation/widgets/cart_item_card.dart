@@ -50,7 +50,7 @@ class CheckoutItemCard extends StatelessWidget {
             );
           },
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8),
+            margin: const EdgeInsets.only(left: 8, right: 8),
             height: 100,
             width: double.infinity,
             child: Row(
@@ -111,12 +111,15 @@ class CheckoutItemCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           const SizedBox(height: 8),
-                          Text(
-                            '\$${(product.price * quantity).toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 0, 0, 0),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 6),
+                            child: Text(
+                              '\$${(product.price * quantity).toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 0, 0, 0),
+                              ),
                             ),
                           ),
                           const Spacer(),

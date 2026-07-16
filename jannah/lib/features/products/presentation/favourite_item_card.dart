@@ -42,20 +42,23 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
         );
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        margin: const EdgeInsets.only(left: 8, right: 16),
         height: 100,
         width: double.infinity,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                widget.product.imagesList.first,
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  widget.product.imagesList.first,
+                  width: 84,
+                  height: 84,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             const SizedBox(width: 8),
@@ -63,6 +66,7 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  SizedBox(height: 8),
                   Text(
                     widget.product.productName,
                     style: const TextStyle(
@@ -79,6 +83,7 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
+                  SizedBox(height: 8),
                   Text(
                     '\$${widget.product.price.toStringAsFixed(2)}',
                     style: const TextStyle(
