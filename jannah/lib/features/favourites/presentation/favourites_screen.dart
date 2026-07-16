@@ -34,7 +34,7 @@ class FavouritesScreen extends StatelessWidget {
           'My Favourites',
           style: TextStyle(
             color: Colors.black,
-            fontSize: 20,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
