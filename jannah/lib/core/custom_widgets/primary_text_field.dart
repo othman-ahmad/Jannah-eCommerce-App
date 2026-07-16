@@ -53,15 +53,15 @@ class _PrimaryTextFieldState extends State<PrimaryTextField> {
             horizontal: 24,
           ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14.0),
+            borderRadius: BorderRadius.circular(8.0),
             borderSide: BorderSide(color: mainGray),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14.0),
+            borderRadius: BorderRadius.circular(8.0),
             borderSide: BorderSide(color: mainGray),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14.0),
+            borderRadius: BorderRadius.circular(8.0),
             borderSide: const BorderSide(color: Colors.black, width: 1.5),
           ),
           suffixIcon: widget.isPassword

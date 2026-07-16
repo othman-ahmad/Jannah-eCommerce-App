@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jannah/features/categories/data/category_model.dart';
+import 'package:jannah/features/categories/presentation/cubit/categories_cubit.dart';
 import 'package:jannah/features/home_page/presentation/cubit/promotions_cubit.dart';
 import 'package:jannah/features/home_page/presentation/cubit/promotions_state.dart';
 import 'package:jannah/features/home_page/presentation/widgets/promotions_banner.dart';
@@ -52,6 +54,12 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
 
   @override
   Widget build(BuildContext context) {
+    Category all = Category(
+      categoryId: -1,
+      categoryName: 'All',
+      description: "",
+      imageUrl: "",
+    );
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: _refreshProducts,
@@ -81,19 +89,19 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                     },
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(8),
                     borderSide: const BorderSide(
                       color: Color.fromARGB(0, 0, 0, 0),
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(8),
                     borderSide: const BorderSide(
                       color: Color.fromARGB(0, 0, 0, 0),
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(8),
                     borderSide: const BorderSide(color: Colors.black),
                   ),
                 ),
@@ -134,20 +142,88 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                   return ListView(
                     padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
                     children: [
-                      BlocBuilder<PromotionsCubit, PromotionsState>(
-                        builder: (context, state) {
-                          if (state.promotionsStatus ==
-                              PromotionsStatus.loading) {
-                            return PromotionsBanner(promotions: []);
-                          }
-                          if (state.promotionsStatus ==
-                              PromotionsStatus.failure) {
-                            return PromotionsBanner(promotions: []);
-                          }
-                          return PromotionsBanner(promotions: state.promotions);
-                        },
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        child: BlocBuilder<PromotionsCubit, PromotionsState>(
+                          builder: (context, state) {
+                            if (state.promotionsStatus ==
+                                PromotionsStatus.loading) {
+                              return PromotionsBanner(promotions: []);
+                            }
+                            if (state.promotionsStatus ==
+                                PromotionsStatus.failure) {
+                              return PromotionsBanner(promotions: []);
+                            }
+                            return PromotionsBanner(
+                              promotions: state.promotions,
+                            );
+                          },
+                        ),
                       ),
-                      SizedBox(height: 16),
+                      SizedBox(height: 8),
+                      SizedBox(
+                        height: 30,
+                        child: Builder(
+                          builder: (context) {
+                            context.read<CategoriesCubit>().getCategories;
+                            final List<Category> categories = [
+                              all,
+                              ...context
+                                  .read<CategoriesCubit>()
+                                  .state
+                                  .categories,
+                            ];
+                            return ListView(
+                              scrollDirection: Axis.horizontal,
+                              children: [
+                                for (final category in categories)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 8),
+                                    child: GestureDetector(
+                                      onTap: () {},
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 20,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: const Color.fromARGB(
+                                            255,
+                                            0,
+                                            0,
+                                            0,
+                                          ),
+                                          border: Border.all(
+                                            color: Colors.black,
+                                            width: 1,
+                                            strokeAlign:
+                                                BorderSide.strokeAlignInside,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            100,
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            category.categoryName,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                      SizedBox(height: 8),
                       for (var product in state.products)
                         PrimaryItemCard(product: product, count: 0),
                     ],

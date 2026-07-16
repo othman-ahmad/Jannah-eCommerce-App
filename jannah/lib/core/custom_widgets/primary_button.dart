@@ -24,7 +24,7 @@ class PrimaryButton extends StatelessWidget {
             EdgeInsets.symmetric(vertical: 4, horizontal: 8),
           ),
           shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
         ),
         child: Text(
