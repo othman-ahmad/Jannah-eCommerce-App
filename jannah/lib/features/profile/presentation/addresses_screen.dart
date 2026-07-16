@@ -8,6 +8,7 @@ import 'package:jannah/features/profile/data/address_model.dart';
 import 'package:jannah/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:jannah/features/profile/presentation/cubit/profile_state.dart';
 import 'package:jannah/features/profile/presentation/location_picker_screen.dart';
+import 'package:jannah/features/profile/presentation/widgets/location_preview.dart';
 import 'package:latlong2/latlong.dart';
 
 class AddressesScreen extends StatelessWidget {
@@ -119,7 +120,7 @@ class AddressesScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          _LocationPreview(
+                          LocationPreview(
                             latitude: latitude,
                             longitude: longitude,
                             onTap: pickOnMap,
@@ -530,145 +531,6 @@ class _AddressTextField extends StatelessWidget {
           borderSide: const BorderSide(color: Colors.red, width: 1.5),
         ),
       ),
-    );
-  }
-}
-
-/// 150px container that shows the currently selected map location, or a
-/// prompt to pick one. Tapping anywhere on it opens the map picker.
-class _LocationPreview extends StatelessWidget {
-  final double? latitude;
-  final double? longitude;
-  final VoidCallback onTap;
-  final bool showError;
-
-  const _LocationPreview({
-    required this.latitude,
-    required this.longitude,
-    required this.onTap,
-    required this.showError,
-  });
-
-  bool get _hasLocation => latitude != null && longitude != null;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(14),
-          child: Container(
-            height: 150,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: showError ? Colors.red : Colors.grey.shade400,
-              ),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: _hasLocation
-                ? Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      // The mini map is purely a preview — all gestures on
-                      // it are ignored so the InkWell above handles taps
-                      // and opens the full picker instead.
-                      IgnorePointer(
-                        child: FlutterMap(
-                          options: MapOptions(
-                            initialCenter: LatLng(latitude!, longitude!),
-                            initialZoom: 15,
-                            interactionOptions: const InteractionOptions(
-                              flags: InteractiveFlag.none,
-                            ),
-                          ),
-                          children: [
-                            TileLayer(
-                              urlTemplate:
-                                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                              userAgentPackageName: 'com.jannah.app',
-                            ),
-                            MarkerLayer(
-                              markers: [
-                                Marker(
-                                  point: LatLng(latitude!, longitude!),
-                                  width: 40,
-                                  height: 40,
-                                  alignment: Alignment.topCenter,
-                                  child: const Icon(
-                                    Icons.location_on,
-                                    size: 36,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 6),
-                          color: Colors.black.withValues(alpha: 0.55),
-                          child: const Text(
-                            'Tap to change location',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.map_outlined,
-                          size: 28,
-                          color: Colors.grey.shade600,
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Pick location on map',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Tap to open the map and drop a pin',
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-          ),
-        ),
-        if (showError)
-          Padding(
-            padding: const EdgeInsets.only(top: 6, left: 4),
-            child: Text(
-              'Please pick a location on the map',
-              style: TextStyle(color: Colors.red.shade700, fontSize: 12),
-            ),
-          ),
-      ],
     );
   }
 }

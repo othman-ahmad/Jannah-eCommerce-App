@@ -50,7 +50,7 @@ class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
       Product(
         productId: 1,
         categoryId: 1,
-        productName: 'Watermelon Fresh and Juicy from Local Farms',
+        productName: 'Watermelon',
         imagesList: [
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
@@ -69,7 +69,7 @@ class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
         // mango
         productId: 2,
         categoryId: 2,
-        productName: 'Mango Fresh and Juicy from Local Farms',
+        productName: 'Mango',
         imagesList: [
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
@@ -88,7 +88,7 @@ class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
         // banana
         productId: 3,
         categoryId: 2,
-        productName: 'Banana Fresh and Juicy from Local Farms',
+        productName: 'Banana',
         imagesList: [
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
@@ -107,7 +107,7 @@ class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
         // apple
         productId: 4,
         categoryId: 3,
-        productName: 'Apple Fresh and Juicy from Local Farms',
+        productName: 'Apple',
         imagesList: [
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
@@ -126,7 +126,7 @@ class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
         // orange
         productId: 5,
         categoryId: 3,
-        productName: 'Orange Fresh and Juicy from Local Farms',
+        productName: 'Orange',
         imagesList: [
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
@@ -144,7 +144,7 @@ class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
       Product(
         productId: 6,
         categoryId: 3,
-        productName: 'Strawberry Fresh and Juicy from Local Farms',
+        productName: 'Strawberry',
         imagesList: [
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
           'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',

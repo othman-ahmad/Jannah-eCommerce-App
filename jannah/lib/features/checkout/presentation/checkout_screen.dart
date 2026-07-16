@@ -5,6 +5,10 @@ import 'package:jannah/app/navigation/navigation_cubit.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_state.dart';
 import 'package:jannah/features/checkout/presentation/widgets/cart_item_card.dart';
+import 'package:jannah/features/checkout/presentation/widgets/checkout_summary.dart';
+import 'package:jannah/features/profile/data/address_model.dart';
+import 'package:jannah/features/profile/presentation/addresses_screen.dart';
+import 'package:jannah/features/profile/presentation/widgets/location_preview.dart';
 
 class CheckoutScreen extends StatelessWidget {
   const CheckoutScreen({super.key});
@@ -97,105 +101,117 @@ class CheckoutScreen extends StatelessWidget {
             );
           }
 
-          return Column(
-            children: [
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () => _refreshCart(context),
-                  child: ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 16),
-                    itemCount: state.cartItems.length,
-                    separatorBuilder: (context, index) =>
-                        const Divider(height: 16),
-                    itemBuilder: (context, index) {
-                      return CheckoutItemCard(cartItem: state.cartItems[index]);
-                    },
+          return Expanded(
+            child: RefreshIndicator(
+              onRefresh: () => _refreshCart(context),
+              child: ListView(
+                children: [
+                  _buildDeliveryAddressSection(),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 22, bottom: 12),
+                    child: Container(
+                      height: 1,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.white, Colors.black, Colors.white],
+                          stops: [0.1, 0.5, 0.9],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  for (final item in state.cartItems)
+                    CheckoutItemCard(cartItem: item),
+                  SizedBox(
+                    height:
+                        (MediaQuery.of(context).size.height -
+                                534 -
+                                state.cartItems.length * 100) >
+                            0
+                        ? (MediaQuery.of(context).size.height -
+                              534 -
+                              state.cartItems.length * 100)
+                        : 0,
+                  ),
+                  CheckoutSummary(
+                    subtotal: state.total,
+                    itemsCount: state.cartItems.length,
+                    isCheckingOut: state.isCheckingOut,
+                    onCheckout: () =>
+                        context.read<CheckoutCubit>().completeCheckout(),
+                  ),
+                ],
               ),
-              _CheckoutSummary(
-                total: state.total,
-                isCheckingOut: state.isCheckingOut,
-                onCheckout: () =>
-                    context.read<CheckoutCubit>().completeCheckout(),
-              ),
-            ],
+            ),
           );
         },
       ),
     );
   }
-}
 
-class _CheckoutSummary extends StatelessWidget {
-  final double total;
-  final bool isCheckingOut;
-  final VoidCallback onCheckout;
-
-  const _CheckoutSummary({
-    required this.total,
-    required this.isCheckingOut,
-    required this.onCheckout,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.grey.shade300)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+  Widget _buildDeliveryAddressSection() {
+    final Address deliveryAddress = Address(
+      addressId: 1,
+      addressType: 'Home',
+      addressLine: '123 Main St',
+      city: 'Anytown',
+      state: 'Anystate',
+      country: 'Anycountry',
+      postalCode: '12345',
+      latitude: 0.0,
+      longitude: 0.0,
+      isDefault: true,
+    );
+    return SizedBox(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Total',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                '\$${total.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 8),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(
+                    'Delivering to ${deliveryAddress.addressType}',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 54,
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: isCheckingOut ? null : onCheckout,
-              style: FilledButton.styleFrom(
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              child: isCheckingOut
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Text(
-                      'Complete Checkout',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    '${deliveryAddress.addressLine}, ${deliveryAddress.city}, gsdgsdg sdgsdgdsg dsg dsgds gdsg dsg sdgdg sdg sdg sdgsd gsdg sdg ${deliveryAddress.country}',
+                    softWrap: true,
+                    maxLines: 3,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                      overflow: TextOverflow.ellipsis,
                     ),
+                  ),
+                ),
+              ],
             ),
           ),
+          SizedBox(width: 50),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              width: 100,
+              child: Expanded(
+                child: LocationPreview(
+                  height: 100,
+                  latitude: 32.32,
+                  longitude: 12.654,
+                  onTap: () {},
+                  showError: false,
+                  isClickable: false,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: 8),
         ],
       ),
     );

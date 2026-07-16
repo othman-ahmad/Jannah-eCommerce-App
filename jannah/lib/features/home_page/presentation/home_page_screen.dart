@@ -146,11 +146,10 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                     );
                   }
 
-                  return ListView.separated(
+                  return ListView.builder(
                     padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
                     itemCount: state.products.length,
-                    separatorBuilder: (context, index) =>
-                        const Divider(height: 16),
+
                     itemBuilder: (context, index) {
                       return PrimaryItemCard(
                         product: state.products[index],

@@ -50,20 +50,23 @@ class CheckoutItemCard extends StatelessWidget {
             );
           },
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            margin: const EdgeInsets.symmetric(horizontal: 8),
             height: 100,
             width: double.infinity,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    product.imagesList.first,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      product.imagesList.first,
+                      width: 84,
+                      height: 84,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -71,6 +74,7 @@ class CheckoutItemCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const SizedBox(height: 8),
                       Text(
                         product.productName,
                         style: const TextStyle(
@@ -106,6 +110,7 @@ class CheckoutItemCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
+                          const SizedBox(height: 8),
                           Text(
                             '\$${(product.price * quantity).toStringAsFixed(2)}',
                             style: const TextStyle(

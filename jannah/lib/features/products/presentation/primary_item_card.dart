@@ -45,20 +45,23 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
         );
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        margin: const EdgeInsets.symmetric(horizontal: 8),
         height: 100,
         width: double.infinity,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                widget.product.imagesList.first,
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  widget.product.imagesList.first,
+                  width: 84,
+                  height: 84,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             const SizedBox(width: 8),
@@ -66,6 +69,7 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 8),
                   Text(
                     widget.product.productName,
                     style: const TextStyle(
@@ -75,16 +79,17 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
-                  const SizedBox(height: 8),
+                  // const SizedBox(height: 4),
                   Text(
                     widget.product.description,
                     style: const TextStyle(fontSize: 14, color: Colors.grey),
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
+                    maxLines: 3,
                   ),
                 ],
               ),
             ),
+            SizedBox(width: 8),
             BlocBuilder<CheckoutCubit, CheckoutState>(
               builder: (context, state) {
                 final quantity = state.quantityForProduct(
@@ -96,12 +101,16 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
-                        '\$${widget.product.price.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 0, 0, 0),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 6),
+                        child: Text(
+                          '\$${widget.product.price.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 0, 0, 0),
+                          ),
                         ),
                       ),
                       const Spacer(),
@@ -123,7 +132,7 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                                       },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 28,
+                                    horizontal: 21,
                                     vertical: 4,
                                   ),
                                   decoration: BoxDecoration(
@@ -163,7 +172,7 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                                         : const Icon(Icons.remove),
                                   ),
                                   Text(
-                                    '  $quantity  ',
+                                    ' $quantity ',
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
