@@ -4,7 +4,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jannah/app/navigation/navigation_cubit.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_state.dart';
+import 'package:jannah/features/checkout/presentation/place_order_screen.dart';
 import 'package:jannah/features/checkout/presentation/widgets/cart_item_card.dart';
+import 'package:jannah/features/profile/presentation/cubit/profile_cubit.dart';
 
 class CheckoutSummary extends StatelessWidget {
   final double subtotal;
@@ -100,10 +102,36 @@ class CheckoutSummary extends StatelessWidget {
             child: FilledButton(
               onPressed: isCheckingOut
                   ? null
-                  : () async {
-                      await onCheckout(
-                        deliveryFee: deliveryFee,
-                        pakagingFee: serviceFee,
+                  : () {
+                      final profileCubit = context.read<ProfileCubit>();
+                      final navigationCubit = context.read<NavigationCubit>();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (routeContext) => MultiBlocProvider(
+                            providers: [
+                              BlocProvider.value(value: profileCubit),
+                              BlocProvider.value(value: navigationCubit),
+                            ],
+                            child: PlaceOrderScreen(
+                              itemsCount: itemsCount,
+                              subtotal: subtotal,
+                              deliveryFee: deliveryFee,
+                              serviceFee: serviceFee,
+                              total: total,
+                              isCheckingOut: isCheckingOut,
+                              onCheckout:
+                                  ({
+                                    required double deliveryFee,
+                                    required double pakagingFee,
+                                  }) async {
+                                    await onCheckout(
+                                      deliveryFee: deliveryFee,
+                                      pakagingFee: pakagingFee,
+                                    );
+                                  },
+                            ),
+                          ),
+                        ),
                       );
                     },
               style: FilledButton.styleFrom(

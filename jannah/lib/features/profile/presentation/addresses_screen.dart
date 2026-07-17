@@ -373,7 +373,7 @@ class AddressesScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final address = state.addresses[index];
 
-                return _AddressTile(
+                return AddressTile(
                   address: address,
                   onEdit: () => _showAddressSheet(context, address: address),
                   onDelete: () => _confirmDelete(context, address),
@@ -387,15 +387,18 @@ class AddressesScreen extends StatelessWidget {
   }
 }
 
-class _AddressTile extends StatelessWidget {
+class AddressTile extends StatelessWidget {
   final Address address;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final bool isEditable;
 
-  const _AddressTile({
+  const AddressTile({
+    super.key,
     required this.address,
     required this.onEdit,
     required this.onDelete,
+    this.isEditable = true,
   });
 
   @override
@@ -466,21 +469,22 @@ class _AddressTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                onPressed: onEdit,
-                icon: const Icon(Icons.edit_outlined),
-                tooltip: 'Edit address',
-              ),
-              IconButton(
-                onPressed: onDelete,
-                icon: const Icon(Icons.delete_outline),
-                tooltip: 'Delete address',
-              ),
-            ],
-          ),
+          if (isEditable)
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: onEdit,
+                  icon: const Icon(Icons.edit_outlined),
+                  tooltip: 'Edit address',
+                ),
+                IconButton(
+                  onPressed: onDelete,
+                  icon: const Icon(Icons.delete_outline),
+                  tooltip: 'Delete address',
+                ),
+              ],
+            ),
         ],
       ),
     );
