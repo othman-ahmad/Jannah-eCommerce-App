@@ -9,9 +9,8 @@ import 'package:jannah/features/products/presentation/cubit/products_cubit.dart'
 import 'package:jannah/features/products/presentation/item_details_screen.dart';
 
 class PrimaryItemCard extends StatefulWidget {
-  PrimaryItemCard({super.key, required this.product, required this.count});
+  PrimaryItemCard({super.key, required this.product});
   final Product product;
-  int count;
 
   @override
   State<PrimaryItemCard> createState() => _PrimaryItemCardState();

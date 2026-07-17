@@ -19,6 +19,7 @@ class LocationPreview extends StatelessWidget {
   final bool isClickable;
 
   const LocationPreview({
+    super.key,
     required this.latitude,
     required this.longitude,
     required this.onTap,

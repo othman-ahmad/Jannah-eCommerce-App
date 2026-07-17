@@ -88,10 +88,7 @@ class CategoriesScreenState extends State<CategoryItemsScreen> {
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
               itemCount: state.products.length,
               itemBuilder: (context, index) {
-                return PrimaryItemCard(
-                  product: state.products[index],
-                  count: 0,
-                );
+                return PrimaryItemCard(product: state.products[index]);
               },
             ),
           );

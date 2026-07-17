@@ -92,6 +92,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
 
       // 3. We're clear — get the position and recenter the map on it.
       final position = await Geolocator.getCurrentPosition(
+        // ignore: deprecated_member_use
         desiredAccuracy: LocationAccuracy.high,
       ).timeout(const Duration(seconds: 10));
 

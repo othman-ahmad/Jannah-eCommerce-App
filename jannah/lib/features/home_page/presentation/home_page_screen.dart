@@ -267,7 +267,7 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                         )
                       else
                         for (var product in state.products)
-                          PrimaryItemCard(product: product, count: 0),
+                          PrimaryItemCard(product: product),
                     ],
                   );
                 },

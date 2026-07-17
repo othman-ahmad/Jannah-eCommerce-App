@@ -101,46 +101,44 @@ class CheckoutScreen extends StatelessWidget {
             );
           }
 
-          return Expanded(
-            child: RefreshIndicator(
-              onRefresh: () => _refreshCart(context),
-              child: ListView(
-                children: [
-                  _buildDeliveryAddressSection(),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 22, bottom: 12),
-                    child: Container(
-                      height: 1,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.white, Colors.black, Colors.white],
-                          stops: [0.1, 0.5, 0.9],
-                        ),
+          return RefreshIndicator(
+            onRefresh: () => _refreshCart(context),
+            child: ListView(
+              children: [
+                _buildDeliveryAddressSection(),
+                Padding(
+                  padding: const EdgeInsets.only(top: 22, bottom: 12),
+                  child: Container(
+                    height: 1,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.white, Colors.black, Colors.white],
+                        stops: [0.1, 0.5, 0.9],
                       ),
                     ),
                   ),
-                  for (final item in state.cartItems)
-                    CheckoutItemCard(cartItem: item),
-                  SizedBox(
-                    height:
-                        (MediaQuery.of(context).size.height -
-                                534 -
-                                state.cartItems.length * 100) >
-                            0
-                        ? (MediaQuery.of(context).size.height -
+                ),
+                for (final item in state.cartItems)
+                  CheckoutItemCard(cartItem: item),
+                SizedBox(
+                  height:
+                      (MediaQuery.of(context).size.height -
                               534 -
-                              state.cartItems.length * 100)
-                        : 0,
-                  ),
-                  CheckoutSummary(
-                    subtotal: state.total,
-                    itemsCount: state.cartItems.length,
-                    isCheckingOut: state.isCheckingOut,
-                    onCheckout: () =>
-                        context.read<CheckoutCubit>().completeCheckout(),
-                  ),
-                ],
-              ),
+                              state.cartItems.length * 100) >
+                          0
+                      ? (MediaQuery.of(context).size.height -
+                            534 -
+                            state.cartItems.length * 100)
+                      : 0,
+                ),
+                CheckoutSummary(
+                  subtotal: state.total,
+                  itemsCount: state.cartItems.length,
+                  isCheckingOut: state.isCheckingOut,
+                  onCheckout: () =>
+                      context.read<CheckoutCubit>().completeCheckout(),
+                ),
+              ],
             ),
           );
         },
@@ -199,15 +197,13 @@ class CheckoutScreen extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
               width: 100,
-              child: Expanded(
-                child: LocationPreview(
-                  height: 100,
-                  latitude: 32.32,
-                  longitude: 12.654,
-                  onTap: () {},
-                  showError: false,
-                  isClickable: false,
-                ),
+              child: LocationPreview(
+                height: 100,
+                latitude: 32.32,
+                longitude: 12.654,
+                onTap: () {},
+                showError: false,
+                isClickable: false,
               ),
             ),
           ),
