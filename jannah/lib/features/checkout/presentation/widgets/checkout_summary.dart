@@ -14,6 +14,7 @@ class CheckoutSummary extends StatelessWidget {
   final Future<void> Function({
     required double deliveryFee,
     required double pakagingFee,
+    required String paymentMethod,
   })
   onCheckout;
   final double deliveryFee = 0;
@@ -123,10 +124,12 @@ class CheckoutSummary extends StatelessWidget {
                                   ({
                                     required double deliveryFee,
                                     required double pakagingFee,
+                                    required String paymentMethod,
                                   }) async {
                                     await onCheckout(
                                       deliveryFee: deliveryFee,
                                       pakagingFee: pakagingFee,
+                                      paymentMethod: paymentMethod,
                                     );
                                   },
                             ),

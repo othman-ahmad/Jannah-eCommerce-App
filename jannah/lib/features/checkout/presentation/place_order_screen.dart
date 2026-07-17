@@ -30,6 +30,7 @@ class PlaceOrderScreen extends StatefulWidget {
   final Future<void> Function({
     required double deliveryFee,
     required double pakagingFee,
+    required String paymentMethod,
   })
   onCheckout;
   String selectedPayment = 'Cash on Delivery';
@@ -270,6 +271,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                   .onCheckout(
                     deliveryFee: widget.deliveryFee,
                     pakagingFee: widget.serviceFee,
+                    paymentMethod: widget.selectedPayment,
                   )
                   .then((_) {
                     context.read<NavigationCubit>().goToTab(4);

@@ -13,7 +13,13 @@ class OrdersRepositoryImpl implements OrdersRepository {
   }
 
   @override
-  Future<Order> postOrder({required Order order}) {
-    return remoteDataSource.postOrder(order: order);
+  Future<Order> postOrder({
+    required Order order,
+    required String paymentMethod,
+  }) {
+    return remoteDataSource.postOrder(
+      order: order,
+      paymentMethod: paymentMethod,
+    );
   }
 }

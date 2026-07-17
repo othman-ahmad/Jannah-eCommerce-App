@@ -194,6 +194,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     required int addressId,
     required double deliveryFee,
     required double pakagingFee,
+    required String paymentMethod,
   }) async {
     final cart = state.cart;
 
@@ -215,10 +216,10 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         deliveryFee: deliveryFee,
         pakagingFee: pakagingFee,
         total: subtotal + deliveryFee + pakagingFee,
-        status: 'Pending',
+        status: 'Delivered',
       );
 
-      await postOrderUseCase(order: order);
+      await postOrderUseCase(order: order, paymentMethod: paymentMethod);
       await checkoutUseCase(cart.cartId);
       emit(
         state.copyWith(

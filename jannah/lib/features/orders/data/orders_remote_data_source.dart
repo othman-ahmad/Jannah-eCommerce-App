@@ -1,11 +1,15 @@
 // ignore_for_file: avoid_print
 
 import 'package:jannah/features/orders/data/order_model.dart';
+import 'package:jannah/features/orders/data/payment_model.dart';
 
 abstract class OrdersRemoteDataSource {
   Future<List<Order>> fetchOrders({required int userId});
 
-  Future<Order> postOrder({required Order order});
+  Future<Order> postOrder({
+    required Order order,
+    required String paymentMethod,
+  });
 }
 
 class InMemoryOrdersRemoteDataSource implements OrdersRemoteDataSource {
@@ -23,6 +27,7 @@ class InMemoryOrdersRemoteDataSource implements OrdersRemoteDataSource {
       status: 'Delivered',
     ),
   ];
+  static final List<Payment> _payments = [];
 
   static int _nextOrderId = 2;
 
@@ -44,7 +49,10 @@ class InMemoryOrdersRemoteDataSource implements OrdersRemoteDataSource {
   }
 
   @override
-  Future<Order> postOrder({required Order order}) async {
+  Future<Order> postOrder({
+    required Order order,
+    required String paymentMethod,
+  }) async {
     final orderId = order.orderId == 0 ? _nextOrderId++ : order.orderId;
     final orderNumber = order.orderNumber.isEmpty
         ? 'ORD-${(1000 + orderId).toString()}'
@@ -55,6 +63,17 @@ class InMemoryOrdersRemoteDataSource implements OrdersRemoteDataSource {
     );
 
     _orders.add(Order.fromJson(orderToSave.toJson()));
+    _payments.add(
+      Payment(
+        orderId: orderId,
+        amount: orderToSave.total,
+        paymentMethod: paymentMethod,
+        transactionId: 'No_Transaction_ID',
+        status: 'Success',
+        paymentDate: DateTime.now(),
+      ),
+    );
+
     _printDatabaseState('POST ORDER');
     return Order.fromJson(orderToSave.toJson());
   }
@@ -95,7 +114,14 @@ class InMemoryOrdersRemoteDataSource implements OrdersRemoteDataSource {
         '-------------------------------------------------------------------------------------------------------',
       );
     }
-
+    // Print payments table
+    print('');
+    print('PAYMENTS TABLE');
+    for (final payment in _payments) {
+      print(
+        'OrderId: ${payment.orderId}, PaymentMethod: ${payment.paymentMethod}, Amount: ${payment.amount.toStringAsFixed(2)}, TransactionId: ${payment.transactionId}, Status: ${payment.status}, PaymentDate: ${payment.paymentDate}',
+      );
+    }
     print('==============================================================\n');
   }
 }

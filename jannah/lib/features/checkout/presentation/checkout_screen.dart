@@ -140,11 +140,13 @@ class CheckoutScreen extends StatelessWidget {
                       ({
                         required double deliveryFee,
                         required double pakagingFee,
+                        required String paymentMethod,
                       }) async {
                         await context.read<CheckoutCubit>().completeCheckout(
                           addressId: 1,
                           deliveryFee: deliveryFee,
                           pakagingFee: pakagingFee,
+                          paymentMethod: paymentMethod,
                         );
                         if (context.mounted) {
                           await context.read<OrdersCubit>().loadOrders();

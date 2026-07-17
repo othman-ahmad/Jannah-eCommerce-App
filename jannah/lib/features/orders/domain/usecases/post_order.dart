@@ -6,7 +6,7 @@ class PostOrder {
 
   const PostOrder(this.repository);
 
-  Future<Order> call({required Order order}) {
-    return repository.postOrder(order: order);
+  Future<Order> call({required Order order, required String paymentMethod}) {
+    return repository.postOrder(order: order, paymentMethod: paymentMethod);
   }
 }

@@ -41,11 +41,17 @@ class OrdersCubit extends Cubit<OrdersState> {
     }
   }
 
-  Future<Order?> postUserOrder(Order order) async {
+  Future<Order?> postUserOrder({
+    required Order order,
+    required String paymentMethod,
+  }) async {
     emit(state.copyWith(isPosting: true, clearErrorMessage: true));
 
     try {
-      final postedOrder = await postOrder(order: order);
+      final postedOrder = await postOrder(
+        order: order,
+        paymentMethod: paymentMethod,
+      );
       final orders = await getOrders(userId: postedOrder.userId);
       currentUserId = postedOrder.userId;
       emit(
