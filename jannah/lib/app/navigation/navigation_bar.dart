@@ -162,31 +162,37 @@ class _JannahNavigationScaffold extends StatelessWidget {
   List<BottomNavigationBarItem> get _navBarItems => [
     BottomNavigationBarItem(
       icon: _svgIcon('assets/icons/home_border.svg', size: 20),
-      activeIcon: _svgIcon('assets/icons/home_filled.svg', size: 26),
+      activeIcon: _svgIcon('assets/icons/home_filled.svg'),
       label: 'Home',
       backgroundColor: Colors.white,
     ),
     BottomNavigationBarItem(
       icon: _svgIcon('assets/icons/categories_border.svg'),
-      activeIcon: _svgIcon('assets/icons/categories_filled.svg', size: 28),
+      activeIcon: _svgIcon('assets/icons/categories_filled.svg'),
       label: 'Categories',
       backgroundColor: Colors.white,
     ),
     BottomNavigationBarItem(
       icon: _svgIcon('assets/icons/checkout_border.svg'),
-      activeIcon: _svgIcon('assets/icons/checkout_filled.svg', size: 28),
+      activeIcon: _svgIcon('assets/icons/checkout_filled.svg'),
       label: 'Checkout',
       backgroundColor: Colors.white,
     ),
     BottomNavigationBarItem(
       icon: _svgIcon('assets/icons/favourite_border.svg'),
-      activeIcon: _svgIcon('assets/icons/favourite_filled.svg'),
+      activeIcon: _svgIcon('assets/icons/favourite_filled.svg', size: 20),
       label: 'Favourites',
       backgroundColor: Colors.white,
     ),
     BottomNavigationBarItem(
+      icon: _svgIcon('assets/icons/orders_border.svg'),
+      activeIcon: _svgIcon('assets/icons/orders_filled.svg'),
+      label: 'orders',
+      backgroundColor: Colors.white,
+    ),
+    BottomNavigationBarItem(
       icon: _svgIcon('assets/icons/profile_border.svg'),
-      activeIcon: _svgIcon('assets/icons/profile_filled.svg', size: 28),
+      activeIcon: _svgIcon('assets/icons/profile_filled.svg'),
       label: 'Profile',
       backgroundColor: Colors.white,
     ),
@@ -197,6 +203,7 @@ class _JannahNavigationScaffold extends StatelessWidget {
     CategoriesScreen(),
     CheckoutScreen(),
     FavouritesScreen(),
+    Center(child: Text('Orders Screen')),
     ProfileScreen(),
   ];
 
