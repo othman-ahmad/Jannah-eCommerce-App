@@ -77,10 +77,9 @@ class CheckoutScreen extends StatelessWidget {
           if (state.cartItems.isEmpty) {
             return RefreshIndicator(
               onRefresh: () => _refreshCart(context),
-              child: ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
-                  SizedBox(height: 180),
                   Icon(
                     Icons.shopping_cart_outlined,
                     size: 64,
