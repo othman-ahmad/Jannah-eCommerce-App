@@ -29,6 +29,13 @@ import 'package:jannah/features/home_page/data/promotions_repository_impl.dart';
 import 'package:jannah/features/home_page/domain/usecases/get_promotions.dart';
 import 'package:jannah/features/home_page/presentation/cubit/promotions_cubit.dart';
 import 'package:jannah/features/home_page/presentation/home_page_screen.dart';
+import 'package:jannah/features/orders/data/orders_remote_data_source.dart';
+import 'package:jannah/features/orders/data/orders_repository_impl.dart';
+import 'package:jannah/features/orders/domain/orders_repository.dart';
+import 'package:jannah/features/orders/domain/usecases/get_orders.dart';
+import 'package:jannah/features/orders/domain/usecases/post_order.dart';
+import 'package:jannah/features/orders/presentation/cubit/orders_cubit.dart';
+import 'package:jannah/features/orders/presentation/orders_screen.dart';
 import 'package:jannah/features/products/data/products_remote_data_source.dart';
 import 'package:jannah/features/products/data/products_repository_impl.dart';
 import 'package:jannah/features/products/domain/usecases/get_product_by_id.dart';
@@ -50,6 +57,12 @@ import 'package:jannah/features/profile/presentation/profile_screen.dart';
 class JannahNavigationBar extends StatelessWidget {
   const JannahNavigationBar({super.key});
 
+  static final OrdersRemoteDataSource _ordersRemoteDataSource =
+      InMemoryOrdersRemoteDataSource();
+  static final OrdersRepository _ordersRepository = OrdersRepositoryImpl(
+    remoteDataSource: _ordersRemoteDataSource,
+  );
+
   FavouritesCubit _createFavouritesCubit() {
     final remoteDataSource = InMemoryFavouritesRemoteDataSource();
     final repository = FavouritesRepositoryImpl(
@@ -60,7 +73,7 @@ class JannahNavigationBar extends StatelessWidget {
       getFavourites: GetFavourites(repository),
       addToFavourites: AddToFavourites(repository),
       removeFromFavourites: RemoveFromFavourites(repository),
-      // Replace this with the authenticated user id once auth exposes it.
+      // TODO : Replace this with the authenticated user id once auth exposes it.
       currentUserId: 1,
     )..loadFavourites();
   }
@@ -79,7 +92,7 @@ class JannahNavigationBar extends StatelessWidget {
     )..loadProducts();
   }
 
-  CheckoutCubit _createCheckoutCubit() {
+  CheckoutCubit _createCheckoutCubit({required PostOrder postOrderUseCase}) {
     final remoteDataSource = InMemoryCheckoutRemoteDataSource();
     final repository = CheckoutRepositoryImpl(
       remoteDataSource: remoteDataSource,
@@ -93,9 +106,19 @@ class JannahNavigationBar extends StatelessWidget {
       removeItemUseCase: RemoveItem(repository),
       checkoutUseCase: Checkout(repository),
       loadCartItemsUseCase: LoadCartItems(repository),
-      // Replace this with the authenticated user id once auth exposes it.
+      postOrderUseCase: postOrderUseCase,
+      // TODO : Replace this with the authenticated user id once auth exposes it.
       currentUserId: 1,
     )..loadCart();
+  }
+
+  OrdersCubit _createOrdersCubit(OrdersRepository repository) {
+    return OrdersCubit(
+      getOrders: GetOrders(repository),
+      postOrder: PostOrder(repository),
+      // TODO : Replace this with the authenticated user id once auth exposes it.
+      currentUserId: 1,
+    )..loadOrders();
   }
 
   CategoriesCubit _createCategoriesCubit() {
@@ -130,7 +153,7 @@ class JannahNavigationBar extends StatelessWidget {
       getAddresses: GetAddresses(repository),
       saveAddress: SaveAddress(repository),
       deleteAddress: DeleteAddress(repository),
-      // Replace this with the authenticated user id once auth exposes it.
+      // TODO : Replace this with the authenticated user id once auth exposes it.
       currentUserId: 1,
     )..loadProfileData();
   }
@@ -142,7 +165,12 @@ class JannahNavigationBar extends StatelessWidget {
         BlocProvider(create: (_) => NavigationCubit()),
         BlocProvider(create: (_) => _createFavouritesCubit()),
         BlocProvider(create: (_) => _createProductsCubit()),
-        BlocProvider(create: (_) => _createCheckoutCubit()),
+        BlocProvider(
+          create: (_) => _createCheckoutCubit(
+            postOrderUseCase: PostOrder(_ordersRepository),
+          ),
+        ),
+        BlocProvider(create: (_) => _createOrdersCubit(_ordersRepository)),
         BlocProvider(create: (_) => _createCategoriesCubit()),
         BlocProvider(create: (_) => _createPromotionsCubit()),
         BlocProvider(create: (_) => _createProfileCubit()),
@@ -203,7 +231,7 @@ class _JannahNavigationScaffold extends StatelessWidget {
     CategoriesScreen(),
     CheckoutScreen(),
     FavouritesScreen(),
-    Center(child: Text('Orders Screen')),
+    OrdersScreen(),
     ProfileScreen(),
   ];
 

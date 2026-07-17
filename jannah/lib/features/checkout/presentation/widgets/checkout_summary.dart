@@ -9,7 +9,11 @@ import 'package:jannah/features/checkout/presentation/widgets/cart_item_card.dar
 class CheckoutSummary extends StatelessWidget {
   final double subtotal;
   final bool isCheckingOut;
-  final VoidCallback onCheckout;
+  final Future<void> Function({
+    required double deliveryFee,
+    required double pakagingFee,
+  })
+  onCheckout;
   final double deliveryFee = 0;
   final double serviceFee = 2;
   final int itemsCount;
@@ -94,7 +98,14 @@ class CheckoutSummary extends StatelessWidget {
             height: 54,
             width: double.infinity,
             child: FilledButton(
-              onPressed: isCheckingOut ? null : onCheckout,
+              onPressed: isCheckingOut
+                  ? null
+                  : () async {
+                      await onCheckout(
+                        deliveryFee: deliveryFee,
+                        pakagingFee: serviceFee,
+                      );
+                    },
               style: FilledButton.styleFrom(
                 backgroundColor: Colors.black,
                 foregroundColor: Colors.white,

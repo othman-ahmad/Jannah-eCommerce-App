@@ -52,4 +52,30 @@ class Order {
       'status': status,
     };
   }
+
+  Order copyWith({
+    int? orderId,
+    int? userId,
+    int? addressId,
+    String? orderNumber,
+    DateTime? date,
+    double? subtotal,
+    double? deliveryFee,
+    double? pakagingFee,
+    double? total,
+    String? status,
+  }) {
+    return Order(
+      orderId: orderId ?? this.orderId,
+      userId: userId ?? this.userId,
+      addressId: addressId ?? this.addressId,
+      orderNumber: orderNumber ?? this.orderNumber,
+      date: date ?? this.date,
+      subtotal: subtotal ?? this.subtotal,
+      deliveryFee: deliveryFee ?? this.deliveryFee,
+      pakagingFee: pakagingFee ?? this.pakagingFee,
+      total: total ?? this.total,
+      status: status ?? this.status,
+    );
+  }
 }

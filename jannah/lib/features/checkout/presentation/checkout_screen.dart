@@ -6,6 +6,7 @@ import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart'
 import 'package:jannah/features/checkout/presentation/cubit/checkout_state.dart';
 import 'package:jannah/features/checkout/presentation/widgets/cart_item_card.dart';
 import 'package:jannah/features/checkout/presentation/widgets/checkout_summary.dart';
+import 'package:jannah/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:jannah/features/profile/data/address_model.dart';
 import 'package:jannah/features/profile/presentation/addresses_screen.dart';
 import 'package:jannah/features/profile/presentation/widgets/location_preview.dart';
@@ -135,8 +136,20 @@ class CheckoutScreen extends StatelessWidget {
                   subtotal: state.total,
                   itemsCount: state.cartItems.length,
                   isCheckingOut: state.isCheckingOut,
-                  onCheckout: () =>
-                      context.read<CheckoutCubit>().completeCheckout(),
+                  onCheckout:
+                      ({
+                        required double deliveryFee,
+                        required double pakagingFee,
+                      }) async {
+                        await context.read<CheckoutCubit>().completeCheckout(
+                          addressId: 1,
+                          deliveryFee: deliveryFee,
+                          pakagingFee: pakagingFee,
+                        );
+                        if (context.mounted) {
+                          await context.read<OrdersCubit>().loadOrders();
+                        }
+                      },
                 ),
               ],
             ),

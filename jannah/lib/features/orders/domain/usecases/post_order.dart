@@ -1,12 +1,12 @@
 import 'package:jannah/features/orders/data/order_model.dart';
 import 'package:jannah/features/orders/domain/orders_repository.dart';
 
-class GetOrders {
+class PostOrder {
   final OrdersRepository repository;
 
-  const GetOrders(this.repository);
+  const PostOrder(this.repository);
 
-  Future<List<Order>> call({required int userId}) {
-    return repository.fetchOrders(userId: userId);
+  Future<Order> call({required Order order}) {
+    return repository.postOrder(order: order);
   }
 }

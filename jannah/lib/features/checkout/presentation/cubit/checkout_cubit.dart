@@ -7,6 +7,8 @@ import 'package:jannah/features/checkout/domain/usecases/load_cart.dart';
 import 'package:jannah/features/checkout/domain/usecases/load_cart_items.dart';
 import 'package:jannah/features/checkout/domain/usecases/remove_item.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_state.dart';
+import 'package:jannah/features/orders/data/order_model.dart';
+import 'package:jannah/features/orders/domain/usecases/post_order.dart';
 
 class CheckoutCubit extends Cubit<CheckoutState> {
   final LoadCart loadCartUseCase;
@@ -16,6 +18,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   final RemoveItem removeItemUseCase;
   final Checkout checkoutUseCase;
   final LoadCartItems loadCartItemsUseCase;
+  final PostOrder postOrderUseCase;
 
   int currentUserId;
 
@@ -27,6 +30,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     required this.removeItemUseCase,
     required this.checkoutUseCase,
     required this.loadCartItemsUseCase,
+    required this.postOrderUseCase,
     required this.currentUserId,
   }) : super(const CheckoutState());
 
@@ -186,7 +190,11 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     }
   }
 
-  Future<void> completeCheckout() async {
+  Future<void> completeCheckout({
+    required int addressId,
+    required double deliveryFee,
+    required double pakagingFee,
+  }) async {
     final cart = state.cart;
 
     if (cart == null || state.cartItems.isEmpty || state.isCheckingOut) {
@@ -196,6 +204,21 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     emit(state.copyWith(isCheckingOut: true, clearErrorMessage: true));
 
     try {
+      final subtotal = state.total;
+      final order = Order(
+        orderId: 0,
+        userId: cart.userId,
+        addressId: addressId,
+        orderNumber: '',
+        date: DateTime.now(),
+        subtotal: subtotal,
+        deliveryFee: deliveryFee,
+        pakagingFee: pakagingFee,
+        total: subtotal + deliveryFee + pakagingFee,
+        status: 'Pending',
+      );
+
+      await postOrderUseCase(order: order);
       await checkoutUseCase(cart.cartId);
       emit(
         state.copyWith(
