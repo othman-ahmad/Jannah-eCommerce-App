@@ -210,26 +210,18 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                   return ListView(
                     padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        child: BlocBuilder<PromotionsCubit, PromotionsState>(
-                          builder: (context, state) {
-                            if (state.promotionsStatus ==
-                                PromotionsStatus.loading) {
-                              return PromotionsBanner(promotions: []);
-                            }
-                            if (state.promotionsStatus ==
-                                PromotionsStatus.failure) {
-                              return PromotionsBanner(promotions: []);
-                            }
-                            return PromotionsBanner(
-                              promotions: state.promotions,
-                            );
-                          },
-                        ),
+                      BlocBuilder<PromotionsCubit, PromotionsState>(
+                        builder: (context, state) {
+                          if (state.promotionsStatus ==
+                              PromotionsStatus.loading) {
+                            return PromotionsBanner(promotions: []);
+                          }
+                          if (state.promotionsStatus ==
+                              PromotionsStatus.failure) {
+                            return PromotionsBanner(promotions: []);
+                          }
+                          return PromotionsBanner(promotions: state.promotions);
+                        },
                       ),
                       SizedBox(height: 20),
                       SizedBox(height: 30, child: _buildCategoryFilters(state)),

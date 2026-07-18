@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jannah/core/custom_widgets/primary_button.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:jannah/features/favourites/presentation/widgets/favourite_toggle_button.dart';
+import 'package:jannah/features/home_page/data/promotion_model.dart';
+import 'package:jannah/features/home_page/presentation/cubit/promotions_cubit.dart';
 import 'package:jannah/features/products/data/item_model.dart';
 import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
 import 'package:jannah/features/products/presentation/cubit/products_state.dart';
@@ -80,9 +82,8 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
             padding: const EdgeInsets.only(top: 0),
             children: [
               buildProductImagesSlider(product),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               buildItemInfo(product),
-              buildCartSection(product),
             ],
           );
         },
@@ -95,62 +96,114 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
   }
 
   Widget buildItemInfo(Product product) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    final basePrice = product.price;
+    return FutureBuilder<List<Promotion>>(
+      future: context.read<PromotionsCubit>().getPromotions(),
+      builder: (context, promotionSnapshot) {
+        if (!promotionSnapshot.hasData) {
+          return const SizedBox(
+            height: 100,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final promotions = promotionSnapshot.data!;
+        Promotion? promotion;
+        try {
+          promotion = promotions.firstWhere(
+            (p) => p.categoryId == product.categoryId,
+          );
+        } catch (_) {
+          promotion = null;
+        }
+
+        final displayPrice = promotion == null
+            ? basePrice
+            : basePrice * ((100 - promotion.discountPercentage) / 100);
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
             children: [
-              Expanded(
-                child: Text(
-                  product.productName,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      product.productName,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 2,
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  maxLines: 2,
-                  softWrap: true,
-                  overflow: TextOverflow
-                      .ellipsis, // optional, handles >2 lines gracefully
+                  FavouriteToggleButton(productId: product.productId),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                product.description,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Color.fromARGB(255, 0, 0, 0),
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              FavouriteToggleButton(productId: product.productId),
+              const SizedBox(height: 16),
+              Container(
+                height: 65,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(30, 0, 0, 0),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        '\$${basePrice.toStringAsFixed(2)}  ',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color.from(
+                            alpha: 1,
+                            red: 0,
+                            green: 0,
+                            blue: 0,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        '\$${displayPrice.toStringAsFixed(2)}  / ${product.unit}',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color.from(
+                            alpha: 1,
+                            red: 0,
+                            green: 0,
+                            blue: 0,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              buildCartSection(product, displayPrice),
             ],
           ),
-          const SizedBox(height: 16),
-          Text(
-            product.description,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Color.fromARGB(255, 0, 0, 0),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            height: 65,
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(30, 0, 0, 0),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Center(
-              child: Text(
-                '\$${product.price.toStringAsFixed(2)}  / ${product.unit}',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color.from(alpha: 1, red: 0, green: 0, blue: 0),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget buildCartSection(Product product) {
+  Widget buildCartSection(Product product, double unitPrice) {
     return Padding(
       padding: const EdgeInsets.all(18),
       child: Column(
@@ -235,7 +288,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                   child: Column(
                     children: [
                       Text(
-                        '\$${(product.price * widget.count).toStringAsFixed(2)}',
+                        '\$${(unitPrice * widget.count).toStringAsFixed(2)}',
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -261,7 +314,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               context.read<CheckoutCubit>().addCartItem(
                 productId: product.productId,
                 quantity: widget.count,
-                price: product.price,
+                price: unitPrice,
               );
 
               ScaffoldMessenger.of(

@@ -105,9 +105,9 @@ class _PromotionsBannerState extends State<PromotionsBanner> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 150,
+      height: 166,
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 209, 209, 209),
+        color: const Color.fromARGB(255, 255, 255, 255),
         borderRadius: BorderRadius.circular(8),
       ),
       child: widget.promotions.isEmpty
@@ -131,42 +131,54 @@ class _PromotionsBannerState extends State<PromotionsBanner> {
                     },
                     itemBuilder: (context, index) {
                       final promotion = widget.promotions[index];
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          promotion.imageUrl,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.asset(
+                                promotion.imageUrl,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                              ),
+                            ),
+                            Positioned(
+                              top: 8,
+                              left: 16,
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      widget.promotions[_currentPage].title,
+                                      style: const TextStyle(
+                                        color: Color.fromARGB(255, 0, 0, 0),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      widget
+                                          .promotions[_currentPage]
+                                          .description,
+                                      style: const TextStyle(
+                                        color: Color.fromARGB(255, 0, 0, 0),
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     },
-                  ),
-                ),
-                Positioned(
-                  top: 8,
-                  left: 16,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 8),
-                      Text(
-                        widget.promotions[_currentPage].title,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        widget.promotions[_currentPage].description,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
                   ),
                 ),
                 Positioned(
@@ -185,8 +197,8 @@ class _PromotionsBannerState extends State<PromotionsBanner> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: _currentPage == index
-                              ? const Color.fromARGB(255, 255, 255, 255)
-                              : const Color.fromARGB(127, 255, 255, 255),
+                              ? const Color.fromARGB(80, 0, 0, 0)
+                              : const Color.fromARGB(255, 255, 255, 255),
                         ),
                       ),
                     ),

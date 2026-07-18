@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:jannah/features/favourites/presentation/cubit/favourites_cubit.dart';
 import 'package:jannah/features/favourites/presentation/widgets/favourite_toggle_button.dart';
+import 'package:jannah/features/home_page/data/promotion_model.dart';
+import 'package:jannah/features/home_page/presentation/cubit/promotions_cubit.dart';
 import 'package:jannah/features/products/data/item_model.dart';
 import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
 import 'package:jannah/features/products/presentation/item_details_screen.dart';
@@ -17,95 +19,134 @@ class FavouriteItemCard extends StatefulWidget {
 class _FavouriteItemCardState extends State<FavouriteItemCard> {
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        final cartQuantity = context
-            .read<CheckoutCubit>()
-            .state
-            .quantityForProduct(widget.product.productId);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => MultiBlocProvider(
-              providers: [
-                BlocProvider.value(value: context.read<FavouritesCubit>()),
-                BlocProvider.value(value: context.read<ProductsCubit>()),
-                BlocProvider.value(value: context.read<CheckoutCubit>()),
-              ],
-              child: ItemDetailsScreen(
-                productId: widget.product.productId,
-                initialProduct: widget.product,
-                count: cartQuantity == 0 ? 1 : cartQuantity,
+    final basePrice = widget.product.price;
+
+    return FutureBuilder<List<Promotion>>(
+      future: context.read<PromotionsCubit>().getPromotions(),
+      builder: (context, promotionSnapshot) {
+        double displayPrice = basePrice;
+        if (promotionSnapshot.hasData) {
+          final promotions = promotionSnapshot.data!;
+          Promotion? promotion;
+          try {
+            promotion = promotions.firstWhere(
+              (p) => p.categoryId == widget.product.categoryId,
+            );
+          } catch (_) {
+            promotion = null;
+          }
+
+          if (promotion != null) {
+            displayPrice =
+                basePrice * ((100 - promotion.discountPercentage) / 100);
+          }
+        }
+
+        return GestureDetector(
+          onTap: () {
+            final cartQuantity = context
+                .read<CheckoutCubit>()
+                .state
+                .quantityForProduct(widget.product.productId);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider.value(value: context.read<FavouritesCubit>()),
+                    BlocProvider.value(value: context.read<ProductsCubit>()),
+                    BlocProvider.value(value: context.read<CheckoutCubit>()),
+                    BlocProvider.value(value: context.read<PromotionsCubit>()),
+                  ],
+                  child: ItemDetailsScreen(
+                    productId: widget.product.productId,
+                    initialProduct: widget.product,
+                    count: cartQuantity == 0 ? 1 : cartQuantity,
+                  ),
+                ),
               ),
+            );
+          },
+          child: Container(
+            margin: const EdgeInsets.only(left: 8, right: 16),
+            height: 100,
+            width: double.infinity,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      widget.product.imagesList.first,
+                      width: 84,
+                      height: 84,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 8),
+                      Text(
+                        widget.product.productName,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      const SizedBox(height: 8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            '\$${basePrice.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Color.fromARGB(180, 0, 0, 0),
+                              decoration: TextDecoration.lineThrough,
+                            ),
+                          ),
+                          Text(
+                            '\$${displayPrice.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Spacer(),
+                      SizedBox(
+                        height: 32,
+                        child: FavouriteToggleButton(
+                          productId: widget.product.productId,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         );
       },
-      child: Container(
-        margin: const EdgeInsets.only(left: 8, right: 16),
-        height: 100,
-        width: double.infinity,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  widget.product.imagesList.first,
-                  width: 84,
-                  height: 84,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 8),
-                  Text(
-                    widget.product.productName,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  SizedBox(height: 8),
-                  Text(
-                    '\$${widget.product.price.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 0, 0, 0),
-                    ),
-                  ),
-                  Spacer(),
-                  SizedBox(
-                    height: 32,
-                    child: FavouriteToggleButton(
-                      productId: widget.product.productId,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

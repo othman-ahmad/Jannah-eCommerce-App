@@ -5,7 +5,7 @@ class Product {
   final List<String> imagesList;
   final String description;
   final String unit;
-  final double price;
+  double price;
   final DateTime createdDate;
 
   Product({
