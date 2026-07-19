@@ -19,6 +19,7 @@ import 'package:jannah/features/checkout/presentation/checkout_screen.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:jannah/features/authentication/data/auth_user_model.dart';
 import 'package:jannah/features/authentication/presentation/cubit/authentication_cubit.dart';
+import 'package:jannah/features/authentication/presentation/guest_guard.dart';
 import 'package:jannah/features/favourites/data/favourites_remote_data_source.dart';
 import 'package:jannah/features/favourites/data/favourites_repository_impl.dart';
 import 'package:jannah/features/favourites/domain/usecases/add_to_favourites.dart';
@@ -296,6 +297,17 @@ class _JannahNavigationScaffold extends StatelessWidget {
               items: _navBarItems,
               currentIndex: currentIndex,
               onTap: (index) {
+                final isProtectedTab =
+                    index == 2 || index == 3 || index == 4 || index == 5;
+
+                if (isProtectedTab &&
+                    !requireAuthenticatedUser(
+                      context,
+                      message: 'Please login to access this section.',
+                    )) {
+                  return;
+                }
+
                 context.read<NavigationCubit>().goToTab(index);
               },
               selectedItemColor: Colors.black,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:jannah/core/helpers/cloudinary_Image.dart';
+import 'package:jannah/features/authentication/presentation/guest_guard.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_state.dart';
 import 'package:jannah/features/favourites/presentation/cubit/favourites_cubit.dart';
@@ -12,7 +13,7 @@ import 'package:jannah/features/products/presentation/cubit/products_cubit.dart'
 import 'package:jannah/features/products/presentation/item_details_screen.dart';
 
 class PrimaryItemCard extends StatefulWidget {
-  PrimaryItemCard({super.key, required this.product});
+  const PrimaryItemCard({super.key, required this.product});
   final Product product;
 
   @override
@@ -165,6 +166,14 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                                     onTap: isPending
                                         ? null
                                         : () {
+                                            if (!requireAuthenticatedUser(
+                                              context,
+                                              message:
+                                                  'Please login to add items to cart.',
+                                            )) {
+                                              return;
+                                            }
+
                                             context
                                                 .read<CheckoutCubit>()
                                                 .addCartItem(
@@ -204,6 +213,14 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                                         onTap: isPending
                                             ? null
                                             : () {
+                                                if (!requireAuthenticatedUser(
+                                                  context,
+                                                  message:
+                                                      'Please login to update your cart.',
+                                                )) {
+                                                  return;
+                                                }
+
                                                 context
                                                     .read<CheckoutCubit>()
                                                     .removeCartItem(
@@ -236,6 +253,14 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                                         onTap: isPending
                                             ? null
                                             : () {
+                                                if (!requireAuthenticatedUser(
+                                                  context,
+                                                  message:
+                                                      'Please login to add items to cart.',
+                                                )) {
+                                                  return;
+                                                }
+
                                                 context
                                                     .read<CheckoutCubit>()
                                                     .addCartItem(

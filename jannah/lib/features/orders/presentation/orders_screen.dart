@@ -66,10 +66,10 @@ class OrdersScreen extends StatelessWidget {
           if (state.orders.isEmpty) {
             return RefreshIndicator(
               onRefresh: () => context.read<OrdersCubit>().loadOrders(),
-              child: ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
                 children: const [
-                  SizedBox(height: 180),
                   Icon(
                     Icons.receipt_long_outlined,
                     size: 64,
