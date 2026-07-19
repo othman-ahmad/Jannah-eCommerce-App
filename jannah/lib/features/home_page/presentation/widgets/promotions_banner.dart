@@ -144,20 +144,19 @@ class _PromotionsBannerState extends State<PromotionsBanner> {
                               ),
                             ),
                             Positioned(
-                              top: 8,
-                              left: 16,
+                              top: 24,
+                              left: 32,
                               child: SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.4,
+                                width: MediaQuery.of(context).size.width * 0.43,
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const SizedBox(height: 8),
                                     Text(
                                       widget.promotions[_currentPage].title,
                                       style: const TextStyle(
                                         color: Color.fromARGB(255, 0, 0, 0),
-                                        fontSize: 16,
+                                        fontSize: 32,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -169,6 +168,7 @@ class _PromotionsBannerState extends State<PromotionsBanner> {
                                       style: const TextStyle(
                                         color: Color.fromARGB(255, 0, 0, 0),
                                         fontSize: 14,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ],

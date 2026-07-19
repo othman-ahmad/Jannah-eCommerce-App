@@ -9,6 +9,7 @@ import 'package:jannah/features/checkout/presentation/widgets/checkout_summary.d
 import 'package:jannah/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:jannah/features/profile/data/address_model.dart';
 import 'package:jannah/features/profile/presentation/addresses_screen.dart';
+import 'package:jannah/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:jannah/features/profile/presentation/widgets/location_preview.dart';
 
 class CheckoutScreen extends StatelessWidget {
@@ -105,7 +106,7 @@ class CheckoutScreen extends StatelessWidget {
             onRefresh: () => _refreshCart(context),
             child: ListView(
               children: [
-                _buildDeliveryAddressSection(),
+                _buildDeliveryAddressSection(context),
                 Padding(
                   padding: const EdgeInsets.only(top: 22, bottom: 12),
                   child: Container(
@@ -160,19 +161,18 @@ class CheckoutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDeliveryAddressSection() {
-    final Address deliveryAddress = Address(
-      addressId: 1,
-      addressType: 'Home',
-      addressLine: '123 Main St',
-      city: 'Anytown',
-      state: 'Anystate',
-      country: 'Anycountry',
-      postalCode: '12345',
-      latitude: 0.0,
-      longitude: 0.0,
-      isDefault: true,
+  Widget _buildDeliveryAddressSection(BuildContext context) {
+    final deliveryAddress = context.select<ProfileCubit, Address?>(
+      (cubit) => cubit.state.defaultAddress(),
     );
+
+    final addressText = [
+      deliveryAddress?.addressLine,
+      deliveryAddress?.city,
+      deliveryAddress?.state,
+      deliveryAddress?.country,
+    ].whereType<String>().where((value) => value.isNotEmpty).join(', ');
+
     return SizedBox(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -182,18 +182,26 @@ class CheckoutScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: Text(
-                    'Delivering to ${deliveryAddress.addressType}',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    'Delivering to ${deliveryAddress?.addressType ?? 'Address'}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    '${deliveryAddress.addressLine}, ${deliveryAddress.city}, gsdgsdg sdgsdgdsg dsg dsgds gdsg dsg sdgdg sdg sdg sdgsd gsdg sdg ${deliveryAddress.country}',
+                    addressText.isNotEmpty
+                        ? addressText
+                        : 'No default address selected',
                     softWrap: true,
                     maxLines: 3,
                     style: TextStyle(
@@ -206,22 +214,22 @@ class CheckoutScreen extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(width: 50),
+          const SizedBox(width: 50),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
               width: 100,
               child: LocationPreview(
                 height: 100,
-                latitude: 32.32,
-                longitude: 12.654,
+                latitude: deliveryAddress?.latitude ?? 32.32,
+                longitude: deliveryAddress?.longitude ?? 12.654,
                 onTap: () {},
                 showError: false,
                 isClickable: false,
               ),
             ),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
         ],
       ),
     );
