@@ -392,6 +392,8 @@ class AddressTile extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final bool isEditable;
+  final bool isSelected;
+  final VoidCallback? onTap;
 
   const AddressTile({
     super.key,
@@ -399,15 +401,20 @@ class AddressTile extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
     this.isEditable = true,
+    this.isSelected = false,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final tile = Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(
+          color: isSelected ? Colors.black : Colors.grey.shade300,
+          width: isSelected ? 1.5 : 1,
+        ),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -484,9 +491,25 @@ class AddressTile extends StatelessWidget {
                   tooltip: 'Delete address',
                 ),
               ],
+            )
+          else if (isSelected)
+            const Icon(
+              Icons.check_circle,
+              color: Colors.black,
+              semanticLabel: 'Selected address',
             ),
         ],
       ),
+    );
+
+    if (onTap == null) {
+      return tile;
+    }
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: tile,
     );
   }
 }

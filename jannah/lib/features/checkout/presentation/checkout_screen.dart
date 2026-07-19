@@ -4,12 +4,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jannah/app/navigation/navigation_cubit.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_state.dart';
+import 'package:jannah/features/checkout/presentation/select_delivery_address_screen.dart';
 import 'package:jannah/features/checkout/presentation/widgets/cart_item_card.dart';
 import 'package:jannah/features/checkout/presentation/widgets/checkout_summary.dart';
 import 'package:jannah/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:jannah/features/profile/data/address_model.dart';
-import 'package:jannah/features/profile/presentation/addresses_screen.dart';
 import 'package:jannah/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:jannah/features/profile/presentation/cubit/profile_state.dart';
 import 'package:jannah/features/profile/presentation/widgets/location_preview.dart';
 
 class CheckoutScreen extends StatelessWidget {
@@ -17,6 +18,52 @@ class CheckoutScreen extends StatelessWidget {
 
   Future<void> _refreshCart(BuildContext context) {
     return context.read<CheckoutCubit>().loadCart();
+  }
+
+  Address? _effectiveDeliveryAddress({
+    required Address? selectedAddress,
+    required ProfileState profileState,
+  }) {
+    if (selectedAddress != null) {
+      for (final address in profileState.addresses) {
+        if (address.addressId == selectedAddress.addressId) {
+          return address;
+        }
+      }
+    }
+
+    return profileState.defaultAddress();
+  }
+
+  Address? _currentDeliveryAddress(BuildContext context) {
+    final checkoutState = context.read<CheckoutCubit>().state;
+    final profileState = context.read<ProfileCubit>().state;
+
+    return _effectiveDeliveryAddress(
+      selectedAddress: checkoutState.selectedDeliveryAddress,
+      profileState: profileState,
+    );
+  }
+
+  Future<void> _openDeliveryAddressSelector(
+    BuildContext context,
+    Address? currentAddress,
+  ) async {
+    final profileCubit = context.read<ProfileCubit>();
+    final selectedAddress = await Navigator.of(context).push<Address>(
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: profileCubit,
+          child: SelectDeliveryAddressScreen(selectedAddress: currentAddress),
+        ),
+      ),
+    );
+
+    if (selectedAddress == null || !context.mounted) {
+      return;
+    }
+
+    context.read<CheckoutCubit>().selectDeliveryAddress(selectedAddress);
   }
 
   @override
@@ -135,6 +182,7 @@ class CheckoutScreen extends StatelessWidget {
                 CheckoutSummary(
                   subtotal: state.total,
                   itemsCount: state.cartItems.length,
+                  deliveryAddress: _currentDeliveryAddress(context),
                   isCheckingOut: state.isCheckingOut,
                   onCheckout:
                       ({
@@ -142,8 +190,21 @@ class CheckoutScreen extends StatelessWidget {
                         required double pakagingFee,
                         required String paymentMethod,
                       }) async {
+                        final deliveryAddress = _currentDeliveryAddress(
+                          context,
+                        );
+
+                        if (deliveryAddress == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Select a delivery address'),
+                            ),
+                          );
+                          return;
+                        }
+
                         await context.read<CheckoutCubit>().completeCheckout(
-                          addressId: 1,
+                          addressId: deliveryAddress.addressId,
                           deliveryFee: deliveryFee,
                           pakagingFee: pakagingFee,
                           paymentMethod: paymentMethod,
@@ -162,8 +223,15 @@ class CheckoutScreen extends StatelessWidget {
   }
 
   Widget _buildDeliveryAddressSection(BuildContext context) {
-    final deliveryAddress = context.select<ProfileCubit, Address?>(
-      (cubit) => cubit.state.defaultAddress(),
+    final selectedDeliveryAddress = context.select<CheckoutCubit, Address?>(
+      (cubit) => cubit.state.selectedDeliveryAddress,
+    );
+    final profileState = context.select<ProfileCubit, ProfileState>(
+      (cubit) => cubit.state,
+    );
+    final deliveryAddress = _effectiveDeliveryAddress(
+      selectedAddress: selectedDeliveryAddress,
+      profileState: profileState,
     );
 
     final addressText = [
@@ -173,7 +241,9 @@ class CheckoutScreen extends StatelessWidget {
       deliveryAddress?.country,
     ].whereType<String>().where((value) => value.isNotEmpty).join(', ');
 
-    return SizedBox(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => _openDeliveryAddressSelector(context, deliveryAddress),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,7 +293,8 @@ class CheckoutScreen extends StatelessWidget {
                 height: 100,
                 latitude: deliveryAddress?.latitude ?? 32.32,
                 longitude: deliveryAddress?.longitude ?? 12.654,
-                onTap: () {},
+                onTap: () =>
+                    _openDeliveryAddressSelector(context, deliveryAddress),
                 showError: false,
                 isClickable: false,
               ),

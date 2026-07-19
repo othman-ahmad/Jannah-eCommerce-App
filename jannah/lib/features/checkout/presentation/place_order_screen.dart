@@ -3,12 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:http/http.dart';
 import 'package:jannah/app/navigation/navigation_cubit.dart';
 import 'package:jannah/core/custom_widgets/primary_button.dart';
 import 'package:jannah/features/profile/data/address_model.dart';
 import 'package:jannah/features/profile/presentation/addresses_screen.dart';
-import 'package:jannah/features/profile/presentation/cubit/profile_cubit.dart';
 
 class PlaceOrderScreen extends StatefulWidget {
   PlaceOrderScreen({
@@ -18,6 +16,7 @@ class PlaceOrderScreen extends StatefulWidget {
     required this.deliveryFee,
     required this.serviceFee,
     required this.total,
+    required this.deliveryAddress,
     required this.isCheckingOut,
     required this.onCheckout,
   });
@@ -26,6 +25,7 @@ class PlaceOrderScreen extends StatefulWidget {
   final double deliveryFee;
   final double serviceFee;
   final double total;
+  final Address deliveryAddress;
   final bool isCheckingOut;
   final Future<void> Function({
     required double deliveryFee,
@@ -95,9 +95,6 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
   }
 
   Widget _buildDeleiveryAddressSection() {
-    Address? address = context.read<ProfileCubit>().state.addresses.firstWhere(
-      (address) => address.isDefault,
-    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -108,12 +105,9 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
         SizedBox(height: 16),
         AddressTile(
           isEditable: false,
-          address: address,
-          onEdit: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const AddressesScreen()),
-            );
-          },
+          isSelected: true,
+          address: widget.deliveryAddress,
+          onEdit: () {},
           onDelete: () {},
         ),
         const SizedBox(height: 8),

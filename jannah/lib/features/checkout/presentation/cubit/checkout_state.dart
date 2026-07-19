@@ -1,5 +1,6 @@
 import 'package:jannah/features/checkout/data/cart_item_model.dart';
 import 'package:jannah/features/checkout/data/cart_model.dart';
+import 'package:jannah/features/profile/data/address_model.dart';
 
 enum CheckoutStatus { initial, loading, success, failure }
 
@@ -8,6 +9,7 @@ class CheckoutState {
   final Cart? cart;
   final List<CartItem> cartItems;
   final Set<int> pendingProductIds;
+  final Address? selectedDeliveryAddress;
   final bool isCheckingOut;
   final String? errorMessage;
 
@@ -16,6 +18,7 @@ class CheckoutState {
     this.cart,
     this.cartItems = const [],
     this.pendingProductIds = const {},
+    this.selectedDeliveryAddress,
     this.isCheckingOut = false,
     this.errorMessage,
   });
@@ -46,9 +49,11 @@ class CheckoutState {
     Cart? cart,
     List<CartItem>? cartItems,
     Set<int>? pendingProductIds,
+    Address? selectedDeliveryAddress,
     bool? isCheckingOut,
     String? errorMessage,
     bool clearCart = false,
+    bool clearSelectedDeliveryAddress = false,
     bool clearErrorMessage = false,
   }) {
     return CheckoutState(
@@ -56,6 +61,9 @@ class CheckoutState {
       cart: clearCart ? null : cart ?? this.cart,
       cartItems: cartItems ?? this.cartItems,
       pendingProductIds: pendingProductIds ?? this.pendingProductIds,
+      selectedDeliveryAddress: clearSelectedDeliveryAddress
+          ? null
+          : selectedDeliveryAddress ?? this.selectedDeliveryAddress,
       isCheckingOut: isCheckingOut ?? this.isCheckingOut,
       errorMessage: clearErrorMessage
           ? null

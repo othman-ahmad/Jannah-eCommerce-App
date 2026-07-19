@@ -9,6 +9,7 @@ import 'package:jannah/features/checkout/domain/usecases/remove_item.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_state.dart';
 import 'package:jannah/features/orders/data/order_model.dart';
 import 'package:jannah/features/orders/domain/usecases/post_order.dart';
+import 'package:jannah/features/profile/data/address_model.dart';
 
 class CheckoutCubit extends Cubit<CheckoutState> {
   final LoadCart loadCartUseCase;
@@ -239,6 +240,10 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         ),
       );
     }
+  }
+
+  void selectDeliveryAddress(Address address) {
+    emit(state.copyWith(selectedDeliveryAddress: address));
   }
 
   Future<void> _refreshCart(int userId) async {

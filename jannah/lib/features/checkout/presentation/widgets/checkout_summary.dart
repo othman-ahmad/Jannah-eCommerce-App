@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jannah/app/navigation/navigation_cubit.dart';
-import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
-import 'package:jannah/features/checkout/presentation/cubit/checkout_state.dart';
 import 'package:jannah/features/checkout/presentation/place_order_screen.dart';
-import 'package:jannah/features/checkout/presentation/widgets/cart_item_card.dart';
+import 'package:jannah/features/profile/data/address_model.dart';
 import 'package:jannah/features/profile/presentation/cubit/profile_cubit.dart';
 
 class CheckoutSummary extends StatelessWidget {
   final double subtotal;
+  final Address? deliveryAddress;
   final bool isCheckingOut;
   final Future<void> Function({
     required double deliveryFee,
@@ -24,6 +22,7 @@ class CheckoutSummary extends StatelessWidget {
   const CheckoutSummary({
     super.key,
     required this.subtotal,
+    required this.deliveryAddress,
     required this.isCheckingOut,
     required this.onCheckout,
     required this.itemsCount,
@@ -104,6 +103,16 @@ class CheckoutSummary extends StatelessWidget {
               onPressed: isCheckingOut
                   ? null
                   : () {
+                      final selectedAddress = deliveryAddress;
+                      if (selectedAddress == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Select a delivery address'),
+                          ),
+                        );
+                        return;
+                      }
+
                       final profileCubit = context.read<ProfileCubit>();
                       final navigationCubit = context.read<NavigationCubit>();
                       Navigator.of(context).push(
@@ -119,6 +128,7 @@ class CheckoutSummary extends StatelessWidget {
                               deliveryFee: deliveryFee,
                               serviceFee: serviceFee,
                               total: total,
+                              deliveryAddress: selectedAddress,
                               isCheckingOut: isCheckingOut,
                               onCheckout:
                                   ({
