@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
+import 'package:jannah/features/home_page/presentation/cubit/promotions_cubit.dart';
 import 'package:jannah/features/products/presentation/category_items_screen.dart';
 import 'package:jannah/features/categories/data/category_model.dart';
 import 'package:jannah/features/favourites/data/favourites_remote_data_source.dart';
@@ -47,6 +48,7 @@ class CategoryCard extends StatelessWidget {
               providers: [
                 BlocProvider.value(value: context.read<FavouritesCubit>()),
                 BlocProvider.value(value: context.read<CheckoutCubit>()),
+                BlocProvider.value(value: context.read<PromotionsCubit>()),
                 BlocProvider(create: (_) => _createProductsCubit()),
               ],
               child: CategoryItemsScreen(category: category),
