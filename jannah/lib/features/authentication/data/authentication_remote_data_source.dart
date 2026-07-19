@@ -1,6 +1,9 @@
 import 'package:jannah/features/authentication/data/auth_user_model.dart';
+import 'package:bcrypt/bcrypt.dart';
 
 abstract class AuthenticationRemoteDataSource {
+  String hashPassword({required String password});
+
   Future<AuthUser> login({
     required String emailOrPhone,
     required String password,
@@ -15,17 +18,21 @@ abstract class AuthenticationRemoteDataSource {
 
 class MockAuthenticationRemoteDataSource
     implements AuthenticationRemoteDataSource {
+  String hashPassword({required String password}) {
+    return BCrypt.hashpw(password, BCrypt.gensalt());
+  }
+
   final List<_MockAuthAccount> _accounts = [
-    _MockAuthAccount(
-      user: AuthUser(
-        userId: 1,
-        fullName: 'Jannah Customer',
-        emailOrPhone: 'customer@jannah.com',
-        token: 'mock-token-1',
-        createdDate: DateTime(2026, 1, 1),
-      ),
-      password: 'password123',
-    ),
+    // _MockAuthAccount(
+    //   user: AuthUser(
+    //     userId: 1,
+    //     fullName: 'Jannah Customer',
+    //     emailOrPhone: 'customer@jannah.com',
+    //     passwordHash: 'mock-token-1',
+    //     createdDate: DateTime(2026, 1, 1),
+    //   ),
+    //   password: 'password123',
+    // ),
   ];
 
   int _nextUserId = 2;
@@ -40,13 +47,13 @@ class MockAuthenticationRemoteDataSource
     final account = _accounts.where(
       (account) =>
           _normalize(account.user.emailOrPhone) == normalizedIdentifier &&
-          account.password == password,
+          account.passwordHash == hashPassword(password: password),
     );
 
     if (account.isEmpty) {
       throw Exception('Invalid email or password.');
     }
-
+    _printAccounts(_accounts);
     return account.first.user;
   }
 
@@ -70,13 +77,15 @@ class MockAuthenticationRemoteDataSource
       userId: _nextUserId,
       fullName: fullName,
       emailOrPhone: emailOrPhone,
-      token: 'mock-token-$_nextUserId',
+      passwordHash: hashPassword(password: password),
       createdDate: DateTime.now(),
     );
 
     _nextUserId++;
-    _accounts.add(_MockAuthAccount(user: user, password: password));
-
+    _accounts.add(
+      _MockAuthAccount(user: user, passwordHash: user.passwordHash),
+    );
+    _printAccounts(_accounts);
     return user;
   }
 
@@ -87,7 +96,24 @@ class MockAuthenticationRemoteDataSource
 
 class _MockAuthAccount {
   final AuthUser user;
-  String password;
+  String passwordHash;
 
-  _MockAuthAccount({required this.user, required this.password});
+  _MockAuthAccount({required this.user, required this.passwordHash});
+}
+
+void _printAccounts(List<_MockAuthAccount> accounts) {
+  print(
+    '============================== Accounts ======================================',
+  );
+  for (var account in accounts) {
+    print('User ID: ${account.user.userId}');
+    print('Full Name: ${account.user.fullName}');
+    print('Email/Phone: ${account.user.emailOrPhone}');
+    print('Password Hash: ${account.passwordHash}');
+    print('Created Date: ${account.user.createdDate}');
+    print('-----------------------------');
+  }
+  print(
+    '==============================================================================',
+  );
 }
