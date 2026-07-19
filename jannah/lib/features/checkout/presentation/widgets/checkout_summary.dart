@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jannah/app/navigation/navigation_cubit.dart';
+import 'package:jannah/features/authentication/presentation/guest_guard.dart';
 import 'package:jannah/features/checkout/presentation/place_order_screen.dart';
 import 'package:jannah/features/profile/data/address_model.dart';
 import 'package:jannah/features/profile/presentation/cubit/profile_cubit.dart';
@@ -103,6 +104,13 @@ class CheckoutSummary extends StatelessWidget {
               onPressed: isCheckingOut
                   ? null
                   : () {
+                      if (!requireAuthenticatedUser(
+                        context,
+                        message: 'Please sign in to place your order.',
+                      )) {
+                        return;
+                      }
+
                       final selectedAddress = deliveryAddress;
                       if (selectedAddress == null) {
                         ScaffoldMessenger.of(context).showSnackBar(

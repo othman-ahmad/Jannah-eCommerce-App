@@ -16,7 +16,7 @@ class Favourite {
       likeId: json['LikeId'] ?? json['likeId'] ?? json['like_id'],
       userId: json['UserId'] ?? json['userId'] ?? json['user_id'],
       productId: json['ProductId'] ?? json['productId'] ?? json['product_id'],
-      date: DateTime.parse(json['createdDate']),
+      date: DateTime.parse(json['Date'] ?? json['createdDate']),
     );
   }
 

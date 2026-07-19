@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:jannah/features/authentication/presentation/guest_guard.dart';
 import 'package:jannah/features/favourites/presentation/cubit/favourites_cubit.dart';
 import 'package:jannah/features/favourites/presentation/cubit/favourites_state.dart';
 
@@ -32,13 +31,6 @@ class FavouriteToggleButton extends StatelessWidget {
           onTap: isPending
               ? null
               : () {
-                  if (!requireAuthenticatedUser(
-                    context,
-                    message: 'Please login to add items to favourites.',
-                  )) {
-                    return;
-                  }
-
                   context.read<FavouritesCubit>().toggleFavourite(productId);
                 },
           child: Opacity(

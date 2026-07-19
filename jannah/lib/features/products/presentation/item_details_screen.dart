@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jannah/core/custom_widgets/primary_button.dart';
-import 'package:jannah/features/authentication/presentation/guest_guard.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:jannah/features/favourites/presentation/widgets/favourite_toggle_button.dart';
 import 'package:jannah/features/home_page/data/promotion_model.dart';
@@ -310,13 +309,6 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
           SizedBox(height: 24),
           PrimaryButton(
             onPressed: () {
-              if (!requireAuthenticatedUser(
-                context,
-                message: 'Please login to add items to cart.',
-              )) {
-                return;
-              }
-
               context.read<CheckoutCubit>().addCartItem(
                 productId: product.productId,
                 quantity: widget.count,

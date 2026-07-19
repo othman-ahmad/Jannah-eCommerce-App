@@ -16,6 +16,8 @@ Future<void> main() async {
   await Hive.initFlutter();
   await Hive.openBox<bool>(AppPreferences.boxName);
   await Hive.openBox<dynamic>(AppPreferences.authBoxName);
+  await Hive.openBox<dynamic>(AppPreferences.guestCartBoxName);
+  await Hive.openBox<dynamic>(AppPreferences.guestFavouritesBoxName);
   runApp(const Jannah());
 }
 

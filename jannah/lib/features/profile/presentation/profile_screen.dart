@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jannah/app/navigation/navigation_cubit.dart';
 import 'package:jannah/features/authentication/presentation/cubit/authentication_cubit.dart';
+import 'package:jannah/features/authentication/presentation/cubit/authentication_state.dart';
 import 'package:jannah/features/profile/data/app_user_model.dart';
 import 'package:jannah/features/profile/presentation/about_screen.dart';
 import 'package:jannah/features/profile/presentation/addresses_screen.dart';
@@ -163,6 +164,10 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isGuest = context.select<AuthenticationCubit, bool>(
+      (cubit) => cubit.state.status == AuthenticationStatus.guest,
+    );
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -188,122 +193,201 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: BlocBuilder<ProfileCubit, ProfileState>(
-        builder: (context, state) {
-          if (state.profileStatus == ProfileStatus.loading &&
-              state.user == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: isGuest
+          ? const _GuestProfilePrompt()
+          : BlocBuilder<ProfileCubit, ProfileState>(
+              builder: (context, state) {
+                if (state.profileStatus == ProfileStatus.loading &&
+                    state.user == null) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          if (state.profileStatus == ProfileStatus.failure &&
-              state.user == null) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(
-                  state.errorMessage ?? 'Something went wrong',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ),
-            );
-          }
+                if (state.profileStatus == ProfileStatus.failure &&
+                    state.user == null) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        state.errorMessage ?? 'Something went wrong',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  );
+                }
 
-          final user = state.user;
+                final user = state.user;
 
-          if (user == null) {
-            return const Center(child: Text('No profile found'));
-          }
+                if (user == null) {
+                  return const Center(child: Text('No profile found'));
+                }
 
-          return RefreshIndicator(
-            onRefresh: () => context.read<ProfileCubit>().loadProfileData(),
-            child: ListView(
-              padding: const EdgeInsets.only(bottom: 24),
-              children: [
-                _ProfileHeaderCard(
-                  user: user,
-                  onEdit: () => _showEditProfileSheet(context, user),
-                ),
-                if (state.defaultAddress() != null)
-                  _DefaultAddressPreview(
-                    address: state.defaultAddress()!.addressLine,
-                    city: state.defaultAddress()!.city,
-                  ),
-                const SizedBox(height: 12),
-                SettingsOption(
-                  icon: 'assets/icons/location_pin_icon.svg',
-                  title: 'My Addresses',
-                  onTap: () => _openAddresses(context),
-                ),
-                SettingsOption(
-                  icon: 'assets/icons/payment_icon.svg',
-                  title: 'Payment Methods',
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => Scaffold(
-                          appBar: AppBar(
-                            leading: IconButton(
-                              icon: SvgPicture.asset(
-                                'assets/icons/back_button_icon.svg',
-                                width: 20,
-                                height: 20,
-                                colorFilter: const ColorFilter.mode(
-                                  Colors.black,
-                                  BlendMode.srcIn,
+                return RefreshIndicator(
+                  onRefresh: () =>
+                      context.read<ProfileCubit>().loadProfileData(),
+                  child: ListView(
+                    padding: const EdgeInsets.only(bottom: 24),
+                    children: [
+                      _ProfileHeaderCard(
+                        user: user,
+                        onEdit: () => _showEditProfileSheet(context, user),
+                      ),
+                      if (state.defaultAddress() != null)
+                        _DefaultAddressPreview(
+                          address: state.defaultAddress()!.addressLine,
+                          city: state.defaultAddress()!.city,
+                        ),
+                      const SizedBox(height: 12),
+                      SettingsOption(
+                        icon: 'assets/icons/location_pin_icon.svg',
+                        title: 'My Addresses',
+                        onTap: () => _openAddresses(context),
+                      ),
+                      SettingsOption(
+                        icon: 'assets/icons/payment_icon.svg',
+                        title: 'Payment Methods',
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => Scaffold(
+                                appBar: AppBar(
+                                  leading: IconButton(
+                                    icon: SvgPicture.asset(
+                                      'assets/icons/back_button_icon.svg',
+                                      width: 20,
+                                      height: 20,
+                                      colorFilter: const ColorFilter.mode(
+                                        Colors.black,
+                                        BlendMode.srcIn,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  backgroundColor: Colors.white,
+                                  elevation: 0,
+                                  centerTitle: true,
+                                  title: const Text(
+                                    'Payment Methods',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                body: const Center(
+                                  child: Text(
+                                    'Payment Methods Coming Soon',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 68, 68, 68),
+                                    ),
+                                  ),
                                 ),
                               ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
                             ),
-                            backgroundColor: Colors.white,
-                            elevation: 0,
-                            centerTitle: true,
-                            title: const Text(
-                              'Payment Methods',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          body: const Center(
-                            child: Text(
-                              'Payment Methods Coming Soon',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 68, 68, 68),
-                              ),
-                            ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-                SettingsOption(
-                  icon: 'assets/icons/about_icon.svg',
-                  title: 'About Jannah',
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const AboutScreen()),
-                    );
-                  },
-                ),
-                SettingsOption(
-                  icon: 'assets/icons/logout_icon.svg',
-                  title: 'Logout',
-                  onTap: () {
-                    context.read<AuthenticationCubit>().logout();
-                  },
-                ),
-              ],
+                      SettingsOption(
+                        icon: 'assets/icons/about_icon.svg',
+                        title: 'About Jannah',
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const AboutScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      SettingsOption(
+                        icon: 'assets/icons/logout_icon.svg',
+                        title: 'Logout',
+                        onTap: () {
+                          context.read<AuthenticationCubit>().logout();
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
-          );
-        },
+    );
+  }
+}
+
+class _GuestProfilePrompt extends StatelessWidget {
+  const _GuestProfilePrompt();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Icon(Icons.person_outline, size: 64, color: Colors.black),
+            const SizedBox(height: 20),
+            const Text(
+              "You're browsing as a guest.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Sign in to:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 12),
+            const _GuestBenefit(text: 'Save items'),
+            const _GuestBenefit(text: 'Add products to your cart'),
+            const _GuestBenefit(text: 'Track orders'),
+            const _GuestBenefit(text: 'Sync across devices'),
+            const SizedBox(height: 28),
+            SizedBox(
+              height: 54,
+              child: FilledButton(
+                onPressed: () {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  context.read<AuthenticationCubit>().logout();
+                },
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  'Sign In',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GuestBenefit extends StatelessWidget {
+  final String text;
+
+  const _GuestBenefit({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Text(
+        '✓ $text',
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
       ),
     );
   }

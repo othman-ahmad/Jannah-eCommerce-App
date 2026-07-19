@@ -19,7 +19,7 @@ import 'package:jannah/features/checkout/presentation/checkout_screen.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:jannah/features/authentication/data/auth_user_model.dart';
 import 'package:jannah/features/authentication/presentation/cubit/authentication_cubit.dart';
-import 'package:jannah/features/authentication/presentation/guest_guard.dart';
+import 'package:jannah/features/authentication/presentation/cubit/authentication_state.dart';
 import 'package:jannah/features/favourites/data/favourites_remote_data_source.dart';
 import 'package:jannah/features/favourites/data/favourites_repository_impl.dart';
 import 'package:jannah/features/favourites/domain/usecases/add_to_favourites.dart';
@@ -66,11 +66,18 @@ class JannahNavigationBar extends StatelessWidget {
   static final OrdersRepository _ordersRepository = OrdersRepositoryImpl(
     remoteDataSource: _ordersRemoteDataSource,
   );
+  static final InMemoryCheckoutRemoteDataSource _checkoutRemoteDataSource =
+      InMemoryCheckoutRemoteDataSource();
+  static final InMemoryFavouritesRemoteDataSource _favouritesRemoteDataSource =
+      InMemoryFavouritesRemoteDataSource();
 
-  FavouritesCubit _createFavouritesCubit({required int currentUserId}) {
-    final remoteDataSource = InMemoryFavouritesRemoteDataSource();
+  FavouritesCubit _createFavouritesCubit({
+    required int currentUserId,
+    required bool isGuest,
+  }) {
     final repository = FavouritesRepositoryImpl(
-      remoteDataSource: remoteDataSource,
+      remoteDataSource: _favouritesRemoteDataSource,
+      isGuest: isGuest,
     );
 
     return FavouritesCubit(
@@ -98,10 +105,11 @@ class JannahNavigationBar extends StatelessWidget {
   CheckoutCubit _createCheckoutCubit({
     required PostOrder postOrderUseCase,
     required int currentUserId,
+    required bool isGuest,
   }) {
-    final remoteDataSource = InMemoryCheckoutRemoteDataSource();
     final repository = CheckoutRepositoryImpl(
-      remoteDataSource: remoteDataSource,
+      remoteDataSource: _checkoutRemoteDataSource,
+      isGuest: isGuest,
     );
 
     return CheckoutCubit(
@@ -188,21 +196,27 @@ class JannahNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authUser = context.read<AuthenticationCubit>().state.user;
-    final currentUserId = authUser?.userId ?? 1;
+    final authState = context.read<AuthenticationCubit>().state;
+    final authUser = authState.user;
+    final isGuest = authState.status == AuthenticationStatus.guest;
+    final currentUserId = authUser?.userId ?? 0;
     final initialProfileUser = _appUserFromAuthUser(authUser);
 
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => NavigationCubit()),
         BlocProvider(
-          create: (_) => _createFavouritesCubit(currentUserId: currentUserId),
+          create: (_) => _createFavouritesCubit(
+            currentUserId: currentUserId,
+            isGuest: isGuest,
+          ),
         ),
         BlocProvider(create: (_) => _createProductsCubit()),
         BlocProvider(
           create: (_) => _createCheckoutCubit(
             postOrderUseCase: PostOrder(_ordersRepository),
             currentUserId: currentUserId,
+            isGuest: isGuest,
           ),
         ),
         BlocProvider(
@@ -215,7 +229,7 @@ class JannahNavigationBar extends StatelessWidget {
         BlocProvider(create: (_) => _createPromotionsCubit()),
         BlocProvider(
           create: (_) => _createProfileCubit(
-            currentUserId: currentUserId,
+            currentUserId: isGuest ? 1 : currentUserId,
             initialUser: initialProfileUser,
           ),
         ),
@@ -232,58 +246,71 @@ class _JannahNavigationScaffold extends StatelessWidget {
     return SvgPicture.asset(path, width: size, height: size);
   }
 
-  List<BottomNavigationBarItem> get _navBarItems => [
-    BottomNavigationBarItem(
-      icon: _svgIcon('assets/icons/home_border.svg', size: 20),
-      activeIcon: _svgIcon('assets/icons/home_filled.svg'),
-      label: 'Home',
-      backgroundColor: Colors.white,
-    ),
-    BottomNavigationBarItem(
-      icon: _svgIcon('assets/icons/categories_border.svg'),
-      activeIcon: _svgIcon('assets/icons/categories_filled.svg'),
-      label: 'Categories',
-      backgroundColor: Colors.white,
-    ),
-    BottomNavigationBarItem(
-      icon: _svgIcon('assets/icons/checkout_border.svg'),
-      activeIcon: _svgIcon('assets/icons/checkout_filled.svg'),
-      label: 'Checkout',
-      backgroundColor: Colors.white,
-    ),
-    BottomNavigationBarItem(
-      icon: _svgIcon('assets/icons/favourite_border.svg'),
-      activeIcon: _svgIcon('assets/icons/favourite_filled.svg', size: 20),
-      label: 'Favourites',
-      backgroundColor: Colors.white,
-    ),
-    BottomNavigationBarItem(
-      icon: _svgIcon('assets/icons/orders_border.svg'),
-      activeIcon: _svgIcon('assets/icons/orders_filled.svg'),
-      label: 'orders',
-      backgroundColor: Colors.white,
-    ),
-    BottomNavigationBarItem(
-      icon: _svgIcon('assets/icons/profile_border.svg'),
-      activeIcon: _svgIcon('assets/icons/profile_filled.svg'),
-      label: 'Profile',
-      backgroundColor: Colors.white,
-    ),
-  ];
+  List<BottomNavigationBarItem> _navBarItems({required bool isGuest}) {
+    return [
+      BottomNavigationBarItem(
+        icon: _svgIcon('assets/icons/home_border.svg', size: 20),
+        activeIcon: _svgIcon('assets/icons/home_filled.svg'),
+        label: 'Home',
+        backgroundColor: Colors.white,
+      ),
+      BottomNavigationBarItem(
+        icon: _svgIcon('assets/icons/categories_border.svg'),
+        activeIcon: _svgIcon('assets/icons/categories_filled.svg'),
+        label: 'Categories',
+        backgroundColor: Colors.white,
+      ),
+      BottomNavigationBarItem(
+        icon: _svgIcon('assets/icons/checkout_border.svg'),
+        activeIcon: _svgIcon('assets/icons/checkout_filled.svg'),
+        label: 'Checkout',
+        backgroundColor: Colors.white,
+      ),
+      BottomNavigationBarItem(
+        icon: _svgIcon('assets/icons/favourite_border.svg'),
+        activeIcon: _svgIcon('assets/icons/favourite_filled.svg', size: 20),
+        label: 'Favourites',
+        backgroundColor: Colors.white,
+      ),
+      if (!isGuest)
+        BottomNavigationBarItem(
+          icon: _svgIcon('assets/icons/orders_border.svg'),
+          activeIcon: _svgIcon('assets/icons/orders_filled.svg'),
+          label: 'Orders',
+          backgroundColor: Colors.white,
+        ),
+      BottomNavigationBarItem(
+        icon: _svgIcon('assets/icons/profile_border.svg'),
+        activeIcon: _svgIcon('assets/icons/profile_filled.svg'),
+        label: 'Profile',
+        backgroundColor: Colors.white,
+      ),
+    ];
+  }
 
-  List<Widget> get _navBarScreens => [
-    const HomePageScreen(),
-    CategoriesScreen(),
-    CheckoutScreen(),
-    FavouritesScreen(),
-    OrdersScreen(),
-    ProfileScreen(),
-  ];
+  List<Widget> _navBarScreens({required bool isGuest}) {
+    return [
+      const HomePageScreen(),
+      CategoriesScreen(),
+      CheckoutScreen(),
+      FavouritesScreen(),
+      if (!isGuest) OrdersScreen(),
+      ProfileScreen(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final isGuest = context.select<AuthenticationCubit, bool>(
+      (cubit) => cubit.state.status == AuthenticationStatus.guest,
+    );
+    final navBarItems = _navBarItems(isGuest: isGuest);
+    final navBarScreens = _navBarScreens(isGuest: isGuest);
+
     return BlocBuilder<NavigationCubit, int>(
       builder: (context, currentIndex) {
+        final effectiveIndex = currentIndex.clamp(0, navBarScreens.length - 1);
+
         return PopScope(
           canPop: false,
           onPopInvokedWithResult: (didPop, result) {
@@ -292,22 +319,11 @@ class _JannahNavigationScaffold extends StatelessWidget {
             }
           },
           child: Scaffold(
-            body: _navBarScreens[currentIndex],
+            body: navBarScreens[effectiveIndex],
             bottomNavigationBar: BottomNavigationBar(
-              items: _navBarItems,
-              currentIndex: currentIndex,
+              items: navBarItems,
+              currentIndex: effectiveIndex,
               onTap: (index) {
-                final isProtectedTab =
-                    index == 2 || index == 3 || index == 4 || index == 5;
-
-                if (isProtectedTab &&
-                    !requireAuthenticatedUser(
-                      context,
-                      message: 'Please login to access this section.',
-                    )) {
-                  return;
-                }
-
                 context.read<NavigationCubit>().goToTab(index);
               },
               selectedItemColor: Colors.black,
