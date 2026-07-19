@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:jannah/core/custom_widgets/primary_button.dart';
-import 'package:jannah/features/authentication/presentation/authentication_screen.dart';
+import 'package:jannah/core/local/app_preferences.dart';
 import 'package:jannah/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:jannah/features/onboarding/presentation/cubit/onboarding_state.dart';
 import 'package:jannah/features/onboarding/presentation/onboarding_screen_1.dart';
@@ -62,15 +63,14 @@ class OnboardingParentScreen extends StatelessWidget {
                         : const SizedBox.shrink(),
                     Expanded(
                       child: PrimaryButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (state.currentPageIndex == 2) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const AuthenticationScreen(),
-                              ),
+                            final box = Hive.box<bool>(AppPreferences.boxName);
+                            await box.put(
+                              AppPreferences.hasSeenOnboardingKey,
+                              true,
                             );
+                            await box.flush();
                           } else {
                             context.read<OnboardingCubit>().changePage(
                               state.currentPageIndex + 1,

@@ -14,16 +14,19 @@ abstract class ProfileRemoteDataSource {
 }
 
 class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
-  final Map<int, AppUser> _users = {
-    1: AppUser(
-      userId: 1,
-      name: 'John Doe',
-      email: 'othman@example.com',
-      phone: '123-456-7890',
-      profileImage: 'store_images/Sweets_and_Desserts/Licorice/Image_5.jpg',
-      createdAt: DateTime(2026, 7, 14),
-    ),
-  };
+  final Map<int, AppUser> _users;
+
+  MockProfileRemoteDataSource({List<AppUser> initialUsers = const []})
+    : _users = {
+        1: AppUser(
+          userId: 1,
+          name: 'Guest User',
+          phone: '+962 7 9000 0000',
+          createdAt: DateTime(2026, 1, 1),
+        ),
+        for (final user in initialUsers)
+          user.userId: AppUser.fromJson(user.toJson()),
+      };
 
   final Map<int, List<Address>> _addressesByUserId = {
     1: [

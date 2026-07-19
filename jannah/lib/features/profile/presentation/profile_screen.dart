@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jannah/app/navigation/navigation_cubit.dart';
+import 'package:jannah/features/authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:jannah/features/profile/data/app_user_model.dart';
 import 'package:jannah/features/profile/presentation/about_screen.dart';
 import 'package:jannah/features/profile/presentation/addresses_screen.dart';
@@ -295,7 +296,9 @@ class ProfileScreen extends StatelessWidget {
                 SettingsOption(
                   icon: 'assets/icons/logout_icon.svg',
                   title: 'Logout',
-                  onTap: () {},
+                  onTap: () {
+                    context.read<AuthenticationCubit>().logout();
+                  },
                 ),
               ],
             ),

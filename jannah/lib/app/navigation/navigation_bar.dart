@@ -17,6 +17,8 @@ import 'package:jannah/features/checkout/domain/usecases/load_cart_items.dart';
 import 'package:jannah/features/checkout/domain/usecases/remove_item.dart';
 import 'package:jannah/features/checkout/presentation/checkout_screen.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
+import 'package:jannah/features/authentication/data/auth_user_model.dart';
+import 'package:jannah/features/authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:jannah/features/favourites/data/favourites_remote_data_source.dart';
 import 'package:jannah/features/favourites/data/favourites_repository_impl.dart';
 import 'package:jannah/features/favourites/domain/usecases/add_to_favourites.dart';
@@ -44,6 +46,7 @@ import 'package:jannah/features/products/domain/usecases/get_products_by_categor
 import 'package:jannah/features/products/domain/usecases/get_products_by_name.dart';
 import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jannah/features/profile/data/app_user_model.dart';
 import 'package:jannah/features/profile/data/profile_remote_data_source.dart';
 import 'package:jannah/features/profile/data/profile_repository_impl.dart';
 import 'package:jannah/features/profile/domain/usecases/delete_address.dart';
@@ -63,7 +66,7 @@ class JannahNavigationBar extends StatelessWidget {
     remoteDataSource: _ordersRemoteDataSource,
   );
 
-  FavouritesCubit _createFavouritesCubit() {
+  FavouritesCubit _createFavouritesCubit({required int currentUserId}) {
     final remoteDataSource = InMemoryFavouritesRemoteDataSource();
     final repository = FavouritesRepositoryImpl(
       remoteDataSource: remoteDataSource,
@@ -73,8 +76,7 @@ class JannahNavigationBar extends StatelessWidget {
       getFavourites: GetFavourites(repository),
       addToFavourites: AddToFavourites(repository),
       removeFromFavourites: RemoveFromFavourites(repository),
-      // TODO : Replace this with the authenticated user id once auth exposes it.
-      currentUserId: 1,
+      currentUserId: currentUserId,
     )..loadFavourites();
   }
 
@@ -92,7 +94,10 @@ class JannahNavigationBar extends StatelessWidget {
     )..loadProducts();
   }
 
-  CheckoutCubit _createCheckoutCubit({required PostOrder postOrderUseCase}) {
+  CheckoutCubit _createCheckoutCubit({
+    required PostOrder postOrderUseCase,
+    required int currentUserId,
+  }) {
     final remoteDataSource = InMemoryCheckoutRemoteDataSource();
     final repository = CheckoutRepositoryImpl(
       remoteDataSource: remoteDataSource,
@@ -107,17 +112,18 @@ class JannahNavigationBar extends StatelessWidget {
       checkoutUseCase: Checkout(repository),
       loadCartItemsUseCase: LoadCartItems(repository),
       postOrderUseCase: postOrderUseCase,
-      // TODO : Replace this with the authenticated user id once auth exposes it.
-      currentUserId: 1,
+      currentUserId: currentUserId,
     )..loadCart();
   }
 
-  OrdersCubit _createOrdersCubit(OrdersRepository repository) {
+  OrdersCubit _createOrdersCubit(
+    OrdersRepository repository, {
+    required int currentUserId,
+  }) {
     return OrdersCubit(
       getOrders: GetOrders(repository),
       postOrder: PostOrder(repository),
-      // TODO : Replace this with the authenticated user id once auth exposes it.
-      currentUserId: 1,
+      currentUserId: currentUserId,
     )..loadOrders();
   }
 
@@ -141,8 +147,13 @@ class JannahNavigationBar extends StatelessWidget {
       ..loadPromotions();
   }
 
-  ProfileCubit _createProfileCubit() {
-    final remoteDataSource = MockProfileRemoteDataSource();
+  ProfileCubit _createProfileCubit({
+    required int currentUserId,
+    AppUser? initialUser,
+  }) {
+    final remoteDataSource = MockProfileRemoteDataSource(
+      initialUsers: [?initialUser],
+    );
     final repository = ProfileRepositoryImpl(
       remoteDataSource: remoteDataSource,
     );
@@ -153,27 +164,60 @@ class JannahNavigationBar extends StatelessWidget {
       getAddresses: GetAddresses(repository),
       saveAddress: SaveAddress(repository),
       deleteAddress: DeleteAddress(repository),
-      // TODO : Replace this with the authenticated user id once auth exposes it.
-      currentUserId: 1,
+      currentUserId: currentUserId,
     )..loadProfileData();
+  }
+
+  AppUser? _appUserFromAuthUser(AuthUser? user) {
+    if (user == null) {
+      return null;
+    }
+
+    final contact = user.emailOrPhone.trim();
+    final isEmail = contact.contains('@');
+
+    return AppUser(
+      userId: user.userId,
+      name: user.fullName,
+      email: isEmail ? contact : null,
+      phone: isEmail ? null : contact,
+      createdAt: user.createdDate,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final authUser = context.read<AuthenticationCubit>().state.user;
+    final currentUserId = authUser?.userId ?? 1;
+    final initialProfileUser = _appUserFromAuthUser(authUser);
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => NavigationCubit()),
-        BlocProvider(create: (_) => _createFavouritesCubit()),
+        BlocProvider(
+          create: (_) => _createFavouritesCubit(currentUserId: currentUserId),
+        ),
         BlocProvider(create: (_) => _createProductsCubit()),
         BlocProvider(
           create: (_) => _createCheckoutCubit(
             postOrderUseCase: PostOrder(_ordersRepository),
+            currentUserId: currentUserId,
           ),
         ),
-        BlocProvider(create: (_) => _createOrdersCubit(_ordersRepository)),
+        BlocProvider(
+          create: (_) => _createOrdersCubit(
+            _ordersRepository,
+            currentUserId: currentUserId,
+          ),
+        ),
         BlocProvider(create: (_) => _createCategoriesCubit()),
         BlocProvider(create: (_) => _createPromotionsCubit()),
-        BlocProvider(create: (_) => _createProfileCubit()),
+        BlocProvider(
+          create: (_) => _createProfileCubit(
+            currentUserId: currentUserId,
+            initialUser: initialProfileUser,
+          ),
+        ),
       ],
       child: const _JannahNavigationScaffold(),
     );

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jannah/app/navigation/navigation_bar.dart';
 import 'package:jannah/core/custom_widgets/primary_button.dart';
 import 'package:jannah/core/custom_widgets/primary_text_field.dart';
 import 'package:jannah/features/authentication/presentation/cubit/authentication_cubit.dart';
@@ -47,13 +46,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
 
         if (state.status == AuthenticationStatus.authenticated) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const JannahNavigationBar(),
-            ),
-            (route) => false,
-          );
+          Navigator.of(context).popUntil((route) => route.isFirst);
         }
 
         if (state.status == AuthenticationStatus.failure) {

@@ -22,4 +22,14 @@ class AuthUser {
       createdDate: DateTime.parse(json['CreatedDate']),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'UserId': userId,
+      'FullName': fullName,
+      'EmailOrPhone': emailOrPhone,
+      'Token': passwordHash,
+      'CreatedDate': createdDate.toIso8601String(),
+    };
+  }
 }

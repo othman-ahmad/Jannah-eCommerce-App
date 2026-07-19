@@ -1,5 +1,7 @@
-import 'package:jannah/features/authentication/data/auth_user_model.dart';
 import 'package:bcrypt/bcrypt.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:jannah/core/local/app_preferences.dart';
+import 'package:jannah/features/authentication/data/auth_user_model.dart';
 
 abstract class AuthenticationRemoteDataSource {
   String hashPassword({required String password});
@@ -18,24 +20,32 @@ abstract class AuthenticationRemoteDataSource {
 
 class MockAuthenticationRemoteDataSource
     implements AuthenticationRemoteDataSource {
+  final Box<dynamic> _box;
+  final List<_MockAuthAccount> _accounts;
+  int _nextUserId;
+
+  factory MockAuthenticationRemoteDataSource({Box<dynamic>? box}) {
+    final resolvedBox = box ?? Hive.box<dynamic>(AppPreferences.authBoxName);
+
+    return MockAuthenticationRemoteDataSource._(
+      box: resolvedBox,
+      accounts: _readAccounts(resolvedBox),
+      nextUserId: _readNextUserId(resolvedBox),
+    );
+  }
+
+  MockAuthenticationRemoteDataSource._({
+    required Box<dynamic> box,
+    required List<_MockAuthAccount> accounts,
+    required int nextUserId,
+  }) : _box = box,
+       _accounts = accounts,
+       _nextUserId = nextUserId;
+
+  @override
   String hashPassword({required String password}) {
     return BCrypt.hashpw(password, BCrypt.gensalt());
   }
-
-  final List<_MockAuthAccount> _accounts = [
-    // _MockAuthAccount(
-    //   user: AuthUser(
-    //     userId: 1,
-    //     fullName: 'Jannah Customer',
-    //     emailOrPhone: 'customer@jannah.com',
-    //     passwordHash: 'mock-token-1',
-    //     createdDate: DateTime(2026, 1, 1),
-    //   ),
-    //   password: 'password123',
-    // ),
-  ];
-
-  int _nextUserId = 2;
 
   @override
   Future<AuthUser> login({
@@ -47,13 +57,13 @@ class MockAuthenticationRemoteDataSource
     final account = _accounts.where(
       (account) =>
           _normalize(account.user.emailOrPhone) == normalizedIdentifier &&
-          account.passwordHash == hashPassword(password: password),
+          BCrypt.checkpw(password, account.passwordHash),
     );
 
     if (account.isEmpty) {
       throw Exception('Invalid email or password.');
     }
-    _printAccounts(_accounts);
+
     return account.first.user;
   }
 
@@ -85,12 +95,43 @@ class MockAuthenticationRemoteDataSource
     _accounts.add(
       _MockAuthAccount(user: user, passwordHash: user.passwordHash),
     );
-    _printAccounts(_accounts);
+    await _saveAccounts();
     return user;
   }
 
   String _normalize(String value) {
     return value.trim().toLowerCase();
+  }
+
+  Future<void> _saveAccounts() async {
+    await _box.put(
+      AppPreferences.authAccountsKey,
+      _accounts.map((account) => account.toJson()).toList(growable: false),
+    );
+    await _box.put(AppPreferences.nextAuthUserIdKey, _nextUserId);
+    await _box.flush();
+  }
+
+  static int _readNextUserId(Box<dynamic> box) {
+    return box.get(AppPreferences.nextAuthUserIdKey, defaultValue: 2) as int;
+  }
+
+  static List<_MockAuthAccount> _readAccounts(Box<dynamic> box) {
+    final rawAccounts =
+        box.get(AppPreferences.authAccountsKey, defaultValue: <dynamic>[])
+            as List<dynamic>;
+
+    return rawAccounts.whereType<Map<dynamic, dynamic>>().map((rawAccount) {
+      final account = Map<String, dynamic>.from(rawAccount);
+      final user = Map<String, dynamic>.from(
+        account['user'] as Map<dynamic, dynamic>,
+      );
+
+      return _MockAuthAccount(
+        user: AuthUser.fromJson(user),
+        passwordHash: account['passwordHash'] as String,
+      );
+    }).toList();
   }
 }
 
@@ -99,21 +140,8 @@ class _MockAuthAccount {
   String passwordHash;
 
   _MockAuthAccount({required this.user, required this.passwordHash});
-}
 
-void _printAccounts(List<_MockAuthAccount> accounts) {
-  print(
-    '============================== Accounts ======================================',
-  );
-  for (var account in accounts) {
-    print('User ID: ${account.user.userId}');
-    print('Full Name: ${account.user.fullName}');
-    print('Email/Phone: ${account.user.emailOrPhone}');
-    print('Password Hash: ${account.passwordHash}');
-    print('Created Date: ${account.user.createdDate}');
-    print('-----------------------------');
+  Map<String, dynamic> toJson() {
+    return {'user': user.toJson(), 'passwordHash': passwordHash};
   }
-  print(
-    '==============================================================================',
-  );
 }

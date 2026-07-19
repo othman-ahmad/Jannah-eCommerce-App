@@ -1,4 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:jannah/core/local/app_preferences.dart';
+import 'package:jannah/features/authentication/data/auth_user_model.dart';
 import 'package:jannah/features/authentication/domain/usecases/login.dart';
 import 'package:jannah/features/authentication/domain/usecases/register.dart';
 import 'package:jannah/features/authentication/presentation/cubit/authentication_state.dart';
@@ -9,7 +12,9 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
   AuthenticationCubit({
     required this.loginUseCase,
     required this.registerUseCase,
-  }) : super(const AuthenticationState());
+  }) : super(const AuthenticationState()) {
+    _restoreSession();
+  }
 
   Future<void> login({
     required String emailOrPhone,
@@ -30,6 +35,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         emailOrPhone: emailOrPhone.trim(),
         password: password,
       );
+      await _saveAuthenticatedSession(user);
 
       emit(
         state.copyWith(
@@ -72,6 +78,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         emailOrPhone: emailOrPhone.trim(),
         password: password,
       );
+      await _saveAuthenticatedSession(user);
 
       emit(
         state.copyWith(
@@ -88,6 +95,75 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         ),
       );
     }
+  }
+
+  Future<void> continueAsGuest() async {
+    await _saveGuestSession();
+
+    emit(
+      state.copyWith(
+        status: AuthenticationStatus.guest,
+        clearUser: true,
+        clearErrorMessage: true,
+      ),
+    );
+  }
+
+  Future<void> logout() async {
+    await _clearSession();
+
+    emit(
+      const AuthenticationState(status: AuthenticationStatus.unauthenticated),
+    );
+  }
+
+  void _restoreSession() {
+    final box = Hive.box<dynamic>(AppPreferences.authBoxName);
+    final sessionStatus = box.get(AppPreferences.authSessionStatusKey);
+
+    if (sessionStatus == AuthenticationStatus.guest.name) {
+      emit(const AuthenticationState(status: AuthenticationStatus.guest));
+      return;
+    }
+
+    final rawUser = box.get(AppPreferences.currentAuthUserKey);
+
+    if (sessionStatus == AuthenticationStatus.authenticated.name &&
+        rawUser is Map<dynamic, dynamic>) {
+      emit(
+        AuthenticationState(
+          status: AuthenticationStatus.authenticated,
+          user: AuthUser.fromJson(Map<String, dynamic>.from(rawUser)),
+        ),
+      );
+    }
+  }
+
+  Future<void> _saveAuthenticatedSession(AuthUser user) async {
+    final box = Hive.box<dynamic>(AppPreferences.authBoxName);
+    await box.put(
+      AppPreferences.authSessionStatusKey,
+      AuthenticationStatus.authenticated.name,
+    );
+    await box.put(AppPreferences.currentAuthUserKey, user.toJson());
+    await box.flush();
+  }
+
+  Future<void> _saveGuestSession() async {
+    final box = Hive.box<dynamic>(AppPreferences.authBoxName);
+    await box.put(
+      AppPreferences.authSessionStatusKey,
+      AuthenticationStatus.guest.name,
+    );
+    await box.delete(AppPreferences.currentAuthUserKey);
+    await box.flush();
+  }
+
+  Future<void> _clearSession() async {
+    final box = Hive.box<dynamic>(AppPreferences.authBoxName);
+    await box.delete(AppPreferences.authSessionStatusKey);
+    await box.delete(AppPreferences.currentAuthUserKey);
+    await box.flush();
   }
 
   void _validateRequired(String value, String message) {

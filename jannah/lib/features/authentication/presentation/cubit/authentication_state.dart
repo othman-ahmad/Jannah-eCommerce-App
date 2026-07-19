@@ -1,6 +1,13 @@
 import 'package:jannah/features/authentication/data/auth_user_model.dart';
 
-enum AuthenticationStatus { initial, loading, authenticated, failure }
+enum AuthenticationStatus {
+  initial,
+  loading,
+  authenticated,
+  guest,
+  unauthenticated,
+  failure,
+}
 
 class AuthenticationState {
   final AuthenticationStatus status;
