@@ -120,6 +120,7 @@ class _PromotionsBannerState extends State<PromotionsBanner> {
           : Stack(
               children: [
                 GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: _openCurrentPromotion,
                   child: PageView.builder(
                     controller: _pageController,

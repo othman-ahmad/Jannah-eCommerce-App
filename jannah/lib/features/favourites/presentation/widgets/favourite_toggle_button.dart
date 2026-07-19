@@ -27,6 +27,7 @@ class FavouriteToggleButton extends StatelessWidget {
         final isPending = state.isPending(productId);
 
         return GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: isPending
               ? null
               : () {

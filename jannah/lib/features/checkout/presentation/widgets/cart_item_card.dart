@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:jannah/core/helpers/cloudinary_image.dart';
 import 'package:jannah/features/checkout/data/cart_item_model.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_state.dart';
@@ -99,8 +100,8 @@ class CheckoutItemCard extends StatelessWidget {
                       padding: const EdgeInsets.all(8.0),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          product.imagesList.first,
+                        child: CloudinaryImage(
+                          imagePath: product.imagesList.first,
                           width: 84,
                           height: 84,
                           fit: BoxFit.cover,
@@ -175,6 +176,7 @@ class CheckoutItemCard extends StatelessWidget {
                                 height: 32,
                                 child: quantity == 0
                                     ? GestureDetector(
+                                        behavior: HitTestBehavior.opaque,
                                         onTap: isPending
                                             ? null
                                             : () {

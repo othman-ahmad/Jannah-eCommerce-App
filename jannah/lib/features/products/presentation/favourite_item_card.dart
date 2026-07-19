@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jannah/core/helpers/cloudinary_image.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:jannah/features/favourites/presentation/cubit/favourites_cubit.dart';
 import 'package:jannah/features/favourites/presentation/widgets/favourite_toggle_button.dart';
@@ -43,6 +44,7 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
         }
 
         return GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () {
             final cartQuantity = context
                 .read<CheckoutCubit>()
@@ -79,8 +81,8 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
                   padding: const EdgeInsets.all(8.0),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      widget.product.imagesList.first,
+                    child: CloudinaryImage(
+                      imagePath: widget.product.imagesList.first,
                       width: 84,
                       height: 84,
                       fit: BoxFit.cover,

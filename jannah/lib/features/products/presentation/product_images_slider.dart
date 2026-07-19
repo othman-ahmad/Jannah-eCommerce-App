@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jannah/core/helpers/cloudinary_image.dart';
 
 class ProductImageSlider extends StatefulWidget {
   const ProductImageSlider({super.key, required this.images});
@@ -25,7 +26,10 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
               });
             },
             itemBuilder: (context, index) {
-              return Image.network(widget.images[index], fit: BoxFit.cover);
+              return CloudinaryImage(
+                imagePath: widget.images[index],
+                fit: BoxFit.cover,
+              );
             },
           ),
         ),

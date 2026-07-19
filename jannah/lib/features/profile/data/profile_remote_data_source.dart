@@ -20,8 +20,7 @@ class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
       name: 'John Doe',
       email: 'othman@example.com',
       phone: '123-456-7890',
-      profileImage:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSehbobRiZE93GxisajT4yL3inqDJ8EI7d9iXMzPFywSA&s=10',
+      profileImage: 'store_images/Sweets_and_Desserts/Licorice/Image_5.jpg',
       createdAt: DateTime(2026, 7, 14),
     ),
   };

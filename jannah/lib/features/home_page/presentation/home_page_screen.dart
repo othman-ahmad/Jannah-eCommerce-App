@@ -107,6 +107,7 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                 : productsState.selectedCategoryId == category.categoryId;
 
             return GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: () => _selectCategory(category),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -228,6 +229,7 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
                           onTap: () {
                             context.read<NavigationCubit>().goToTab(1);
                           },
