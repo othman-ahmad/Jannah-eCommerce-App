@@ -37,7 +37,7 @@ class MockPromotionsRemoteDataSource implements PromotionsRemoteDataSource {
         promotionId: 3,
         title: 'Leafy Greens',
         description: 'Fresh & 15% OFF.',
-        categoryId: 3,
+        categoryId: 5,
         discountPercentage: 15.0,
         imageUrl: 'assets/images/60f386bf-15dc-4410-b8d1-201b80598ba2.png',
         startDate: DateTime(2024, 1, 1),

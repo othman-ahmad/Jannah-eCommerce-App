@@ -113,14 +113,15 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text(
-                            '\$${basePrice.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Color.fromARGB(180, 0, 0, 0),
-                              decoration: TextDecoration.lineThrough,
+                          if (basePrice != displayPrice)
+                            Text(
+                              '\$${basePrice.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color.fromARGB(180, 0, 0, 0),
+                                decoration: TextDecoration.lineThrough,
+                              ),
                             ),
-                          ),
                           Text(
                             '\$${displayPrice.toStringAsFixed(2)}',
                             style: const TextStyle(

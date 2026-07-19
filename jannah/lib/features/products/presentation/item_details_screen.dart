@@ -164,19 +164,15 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        '\$${basePrice.toStringAsFixed(2)}  ',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color.from(
-                            alpha: 1,
-                            red: 0,
-                            green: 0,
-                            blue: 0,
+                      if (promotion != null)
+                        Text(
+                          '\$${basePrice.toStringAsFixed(2)}  ',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(180, 0, 0, 0),
+                            decoration: TextDecoration.lineThrough,
                           ),
                         ),
-                      ),
                       Text(
                         '\$${displayPrice.toStringAsFixed(2)}  / ${product.unit}',
                         style: const TextStyle(

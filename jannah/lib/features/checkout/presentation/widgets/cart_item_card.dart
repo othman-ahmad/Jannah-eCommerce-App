@@ -58,6 +58,7 @@ class CheckoutItemCard extends StatelessWidget {
                 : basePrice * ((100 - promotion.discountPercentage) / 100);
 
             return GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: () {
                 Navigator.push(
                   context,
@@ -122,14 +123,15 @@ class CheckoutItemCard extends StatelessWidget {
                             maxLines: 1,
                           ),
                           const Spacer(),
-                          Text(
-                            '\$${basePrice.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Color.fromARGB(180, 0, 0, 0),
-                              decoration: TextDecoration.lineThrough,
+                          if (promotion != null)
+                            Text(
+                              '\$${basePrice.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color.fromARGB(180, 0, 0, 0),
+                                decoration: TextDecoration.lineThrough,
+                              ),
                             ),
-                          ),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4.5),
                             child: Text(
