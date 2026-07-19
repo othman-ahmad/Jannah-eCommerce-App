@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jannah/features/categories/data/category_model.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
+import 'package:jannah/features/home_page/presentation/cubit/promotions_cubit.dart';
 import 'package:jannah/features/products/presentation/category_items_screen.dart';
 import 'package:jannah/features/categories/presentation/cubit/categories_cubit.dart';
 import 'package:jannah/features/categories/presentation/cubit/categories_state.dart';
@@ -95,6 +96,7 @@ class _PromotionsBannerState extends State<PromotionsBanner> {
             BlocProvider.value(value: context.read<FavouritesCubit>()),
             BlocProvider.value(value: context.read<CheckoutCubit>()),
             BlocProvider(create: (_) => _createProductsCubit()),
+            BlocProvider.value(value: context.read<PromotionsCubit>()),
           ],
           child: CategoryItemsScreen(category: category),
         ),
