@@ -58,6 +58,9 @@ class LocationPreview extends StatelessWidget {
                       // and opens the full picker instead.
                       IgnorePointer(
                         child: FlutterMap(
+                          key: ValueKey(
+                            '${latitude ?? 'null'}:${longitude ?? 'null'}',
+                          ),
                           options: MapOptions(
                             initialCenter: LatLng(latitude!, longitude!),
                             initialZoom: 15,

@@ -290,6 +290,9 @@ class CheckoutScreen extends StatelessWidget {
             child: SizedBox(
               width: 100,
               child: LocationPreview(
+                key: ValueKey(
+                  '${deliveryAddress?.addressId ?? 'default'}:${deliveryAddress?.latitude ?? 'null'}:${deliveryAddress?.longitude ?? 'null'}',
+                ),
                 height: 100,
                 latitude: deliveryAddress?.latitude ?? 32.32,
                 longitude: deliveryAddress?.longitude ?? 12.654,
