@@ -106,7 +106,7 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
-                      SizedBox(height: 16),
+                      Spacer(),
                       Text(
                         widget.product.description,
                         style: const TextStyle(
@@ -116,10 +116,11 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                       ),
+                      const SizedBox(height: 8),
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 16),
                 BlocBuilder<CheckoutCubit, CheckoutState>(
                   builder: (context, state) {
                     final quantity = state.quantityForProduct(

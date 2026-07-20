@@ -166,7 +166,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                     children: [
                       if (promotion != null)
                         Text(
-                          '\$${basePrice.toStringAsFixed(2)}  ',
+                          '\$${basePrice.toStringAsFixed(2)}    ',
                           style: const TextStyle(
                             fontSize: 16,
                             color: Color.fromARGB(180, 0, 0, 0),
@@ -186,6 +186,15 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                           ),
                         ),
                       ),
+                      if (promotion != null)
+                        Text(
+                          '    ',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(180, 0, 0, 0),
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -201,7 +210,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
 
   Widget buildCartSection(Product product, double unitPrice) {
     return Padding(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(8),
       child: Column(
         children: [
           Align(
@@ -215,6 +224,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               ),
             ),
           ),
+          SizedBox(height: 16),
           SizedBox(
             height: 65,
             child: Row(

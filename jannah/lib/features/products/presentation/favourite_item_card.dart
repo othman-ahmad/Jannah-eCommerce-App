@@ -115,6 +115,14 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
+                          Text(
+                            '\$${displayPrice.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            ),
+                          ),
                           if (basePrice != displayPrice)
                             Text(
                               '\$${basePrice.toStringAsFixed(2)}',
@@ -124,14 +132,6 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
                                 decoration: TextDecoration.lineThrough,
                               ),
                             ),
-                          Text(
-                            '\$${displayPrice.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 0, 0, 0),
-                            ),
-                          ),
                         ],
                       ),
                       const Spacer(),

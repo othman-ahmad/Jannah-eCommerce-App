@@ -155,7 +155,7 @@ class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
     print('Users:');
     _users.forEach((userId, user) {
       print(
-        'User ID: $userId, \nName: ${user.name}, \n ImageUrl: ${user.profileImage} \nEmail: ${user.email} \nPhone: ${user.phone}, \nCreated At: ${user.createdAt}',
+        'User ID: $userId, \nName: ${user.name}, \nImageUrl: ${user.profileImage} \nEmail: ${user.email} \nPhone: ${user.phone}, \nCreated At: ${user.createdAt}',
       );
     });
   }

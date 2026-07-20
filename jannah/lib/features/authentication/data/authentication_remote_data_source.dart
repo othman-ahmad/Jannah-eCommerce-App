@@ -1,4 +1,5 @@
-import 'package:bcrypt/bcrypt.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:jannah/core/local/app_preferences.dart';
 import 'package:jannah/features/authentication/data/auth_user_model.dart';
@@ -44,7 +45,10 @@ class MockAuthenticationRemoteDataSource
 
   @override
   String hashPassword({required String password}) {
-    return BCrypt.hashpw(password, BCrypt.gensalt());
+    const secretKey = 'A8+fsd465sdg5ddg/*sgh8Jf4Ds';
+    final hmac = Hmac(sha256, utf8.encode(secretKey));
+    final digest = hmac.convert(utf8.encode(password));
+    return digest.toString();
   }
 
   @override
@@ -57,7 +61,7 @@ class MockAuthenticationRemoteDataSource
     final account = _accounts.where(
       (account) =>
           _normalize(account.user.emailOrPhone) == normalizedIdentifier &&
-          BCrypt.checkpw(password, account.passwordHash),
+          hashPassword(password: password) == account.passwordHash,
     );
 
     if (account.isEmpty) {
