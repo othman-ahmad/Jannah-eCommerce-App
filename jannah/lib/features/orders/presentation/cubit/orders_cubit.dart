@@ -1,18 +1,22 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jannah/features/checkout/data/cart_item_model.dart';
 import 'package:jannah/features/orders/data/order_model.dart';
+import 'package:jannah/features/orders/domain/usecases/get_order_details.dart';
 import 'package:jannah/features/orders/domain/usecases/get_orders.dart';
 import 'package:jannah/features/orders/domain/usecases/post_order.dart';
 import 'package:jannah/features/orders/presentation/cubit/orders_state.dart';
+import 'package:jannah/features/profile/data/address_model.dart';
 
 class OrdersCubit extends Cubit<OrdersState> {
   final GetOrders getOrders;
+  final GetOrderDetails getOrderDetails;
   final PostOrder postOrder;
 
   int currentUserId;
 
   OrdersCubit({
     required this.getOrders,
+    required this.getOrderDetails,
     required this.postOrder,
     required this.currentUserId,
   }) : super(const OrdersState());
@@ -46,6 +50,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     required Order order,
     required String paymentMethod,
     required List<CartItem> cartItems,
+    required Address deliveryAddress,
   }) async {
     emit(state.copyWith(isPosting: true, clearErrorMessage: true));
 
@@ -54,6 +59,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         order: order,
         paymentMethod: paymentMethod,
         cartItems: cartItems,
+        deliveryAddress: deliveryAddress,
       );
       final orders = await getOrders(userId: postedOrder.userId);
       currentUserId = postedOrder.userId;
@@ -75,6 +81,35 @@ class OrdersCubit extends Cubit<OrdersState> {
         ),
       );
       return null;
+    }
+  }
+
+  Future<void> loadOrderDetails({required int orderId}) async {
+    emit(
+      state.copyWith(
+        detailsStatus: OrdersStatus.loading,
+        clearDetailsErrorMessage: true,
+        clearOrderDetails: true,
+      ),
+    );
+
+    try {
+      final details = await getOrderDetails(orderId: orderId);
+      emit(
+        state.copyWith(
+          detailsStatus: OrdersStatus.success,
+          orderDetails: details,
+          clearDetailsErrorMessage: true,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          detailsStatus: OrdersStatus.failure,
+          detailsErrorMessage: e.toString(),
+          clearOrderDetails: true,
+        ),
+      );
     }
   }
 

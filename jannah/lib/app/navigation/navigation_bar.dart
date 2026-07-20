@@ -35,6 +35,7 @@ import 'package:jannah/features/home_page/presentation/home_page_screen.dart';
 import 'package:jannah/features/orders/data/orders_remote_data_source.dart';
 import 'package:jannah/features/orders/data/orders_repository_impl.dart';
 import 'package:jannah/features/orders/domain/orders_repository.dart';
+import 'package:jannah/features/orders/domain/usecases/get_order_details.dart';
 import 'package:jannah/features/orders/domain/usecases/get_orders.dart';
 import 'package:jannah/features/orders/domain/usecases/post_order.dart';
 import 'package:jannah/features/orders/presentation/cubit/orders_cubit.dart';
@@ -131,6 +132,7 @@ class JannahNavigationBar extends StatelessWidget {
   }) {
     return OrdersCubit(
       getOrders: GetOrders(repository),
+      getOrderDetails: GetOrderDetails(repository),
       postOrder: PostOrder(repository),
       currentUserId: currentUserId,
     )..loadOrders();

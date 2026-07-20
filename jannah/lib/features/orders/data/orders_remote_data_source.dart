@@ -15,9 +15,10 @@ abstract class OrdersRemoteDataSource {
     required Order order,
     required String paymentMethod,
     required List<CartItem> cartItems,
+    required Address deliveryAddress,
   });
 
-  // Future<OrderDetails> fetchOrderDetails({required int orderId});
+  Future<OrderDetails> fetchOrderDetails({required int orderId});
 }
 
 class InMemoryOrdersRemoteDataSource implements OrdersRemoteDataSource {
@@ -35,9 +36,49 @@ class InMemoryOrdersRemoteDataSource implements OrdersRemoteDataSource {
       status: 'Delivered',
     ),
   ];
-  static final List<Payment> _payments = [];
+  static final List<Payment> _payments = [
+    Payment(
+      orderId: 1,
+      amount: 48.50,
+      paymentMethod: 'Cash',
+      transactionId: 'MOCK-ORD-1001',
+      status: 'Success',
+      paymentDate: DateTime(2026, 7, 14, 12, 30),
+    ),
+  ];
 
-  static List<OrderItem> _mockOrderItems = [];
+  static final List<OrderItem> _mockOrderItems = [
+    OrderItem(
+      orderItemId: 1,
+      orderId: 1,
+      productId: 1,
+      quantity: 10,
+      price: 2.89,
+    ),
+    OrderItem(
+      orderItemId: 2,
+      orderId: 1,
+      productId: 6,
+      quantity: 5,
+      price: 3.52,
+    ),
+  ];
+
+  static final Map<int, Address> _deliveryAddresses = {
+    1: Address(
+      addressId: 1,
+      userId: 1,
+      addressType: 'Home',
+      addressLine: 'Al Madina Street, Building 12',
+      city: 'Amman',
+      state: 'Amman',
+      country: 'Jordan',
+      postalCode: '11118',
+      latitude: 31.9539,
+      longitude: 35.9106,
+      isDefault: true,
+    ),
+  };
 
   static int _nextOrderId = 2;
 
@@ -68,6 +109,7 @@ class InMemoryOrdersRemoteDataSource implements OrdersRemoteDataSource {
     required Order order,
     required String paymentMethod,
     required List<CartItem> cartItems,
+    required Address deliveryAddress,
   }) async {
     final orderId = order.orderId == 0 ? _nextOrderId++ : order.orderId;
     final orderNumber = order.orderNumber.isEmpty
@@ -79,6 +121,7 @@ class InMemoryOrdersRemoteDataSource implements OrdersRemoteDataSource {
     );
 
     _orders.add(Order.fromJson(orderToSave.toJson()));
+    _deliveryAddresses[orderId] = Address.fromJson(deliveryAddress.toJson());
     for (final cartItem in cartItems) {
       _mockOrderItems.add(
         OrderItem(
@@ -106,41 +149,63 @@ class InMemoryOrdersRemoteDataSource implements OrdersRemoteDataSource {
     return Order.fromJson(orderToSave.toJson());
   }
 
-  // Future<OrderDetails> fetchOrderDetails({required int orderId}) async {
-  //   final Order order = _orders.firstWhere(
-  //     (order) => order.orderId == orderId,
-  //     orElse: () => throw Exception('Order not found'),
-  //   );
+  @override
+  Future<OrderDetails> fetchOrderDetails({required int orderId}) async {
+    final order = _orders.firstWhere(
+      (order) => order.orderId == orderId,
+      orElse: () => throw Exception('Order not found'),
+    );
 
-  //   final payment = _payments.firstWhere(
-  //     (payment) => payment.orderId == orderId,
-  //     orElse: () => throw Exception('Payment not found for order'),
-  //   );
+    final payment = _payments.firstWhere(
+      (payment) => payment.orderId == orderId,
+      orElse: () => Payment(
+        orderId: orderId,
+        amount: order.total,
+        paymentMethod: 'Unknown',
+        transactionId: 'No_Transaction_ID',
+        status: 'Unknown',
+        paymentDate: order.date,
+      ),
+    );
 
-  //   final List<OrderItem> orderItems = _mockOrderItems
-  //       .where((item) => item.orderId == orderId)
-  //       .toList(growable: false);
+    final orderItems = _mockOrderItems
+        .where((item) => item.orderId == orderId)
+        .map((item) => OrderItem.fromJson(item.toJson()))
+        .toList(growable: false);
+    final deliveryAddress =
+        _deliveryAddresses[orderId] ?? _fallbackAddressForOrder(order);
 
-  //   final Address
-  //   deliveryAddress; // TODO : Fetch the delivery address based on order.addressId
+    print('\n');
+    print('==================== MOCK ORDER DETAILS ====================');
+    print('Operation: FETCH ORDER DETAILS');
+    print(
+      'OrderId: ${order.orderId}, Items: ${orderItems.length}, PaymentMethod: ${payment.paymentMethod}, AddressId: ${deliveryAddress.addressId}',
+    );
+    print('============================================================\n');
 
-  //   final orderDetails = OrderDetails(
-  //     orderId: order.orderId,
-  //     userId: order.userId,
-  //     addressId: order.addressId,
-  //     orderNumber: order.orderNumber,
-  //     date: order.date,
-  //     subtotal: order.subtotal,
-  //     deliveryFee: order.deliveryFee,
-  //     pakagingFee: order.pakagingFee,
-  //     total: order.total,
-  //     status: order.status,
-  //     items: orderItems,
-  //     deliveryAddress: deliveryAddress,
-  //     paymentMethod: payment.paymentMethod,
-  //   );
-  //   return orderDetails;
-  // }
+    return OrderDetails.fromOrder(
+      order: Order.fromJson(order.toJson()),
+      items: orderItems,
+      deliveryAddress: Address.fromJson(deliveryAddress.toJson()),
+      paymentMethod: payment.paymentMethod,
+    );
+  }
+
+  Address _fallbackAddressForOrder(Order order) {
+    return Address(
+      addressId: order.addressId,
+      userId: order.userId,
+      addressType: 'Delivery',
+      addressLine: 'Address #${order.addressId}',
+      city: '',
+      state: '',
+      country: '',
+      postalCode: '',
+      latitude: 0,
+      longitude: 0,
+      isDefault: false,
+    );
+  }
 
   void _printDatabaseState(String operation) {
     print('\n');

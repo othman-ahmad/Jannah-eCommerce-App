@@ -192,7 +192,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   }
 
   Future<void> completeCheckout({
-    required int addressId,
+    required Address deliveryAddress,
     required double deliveryFee,
     required double pakagingFee,
     required String paymentMethod,
@@ -210,7 +210,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       final order = Order(
         orderId: 0,
         userId: cart.userId,
-        addressId: addressId,
+        addressId: deliveryAddress.addressId,
         orderNumber: '',
         date: DateTime.now(),
         subtotal: subtotal,
@@ -224,6 +224,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         order: order,
         paymentMethod: paymentMethod,
         cartItems: state.cartItems,
+        deliveryAddress: deliveryAddress,
       );
       await checkoutUseCase(cart.cartId);
       emit(

@@ -204,7 +204,7 @@ class CheckoutScreen extends StatelessWidget {
                         }
 
                         await context.read<CheckoutCubit>().completeCheckout(
-                          addressId: deliveryAddress.addressId,
+                          deliveryAddress: deliveryAddress,
                           deliveryFee: deliveryFee,
                           pakagingFee: pakagingFee,
                           paymentMethod: paymentMethod,
