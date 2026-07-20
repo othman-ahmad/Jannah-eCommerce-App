@@ -8,6 +8,7 @@ import 'package:jannah/features/onboarding/presentation/cubit/onboarding_state.d
 import 'package:jannah/features/onboarding/presentation/onboarding_screen_1.dart';
 import 'package:jannah/features/onboarding/presentation/onboarding_screen_2.dart';
 import 'package:jannah/features/onboarding/presentation/onboarding_screen_3.dart';
+import 'package:jannah/features/onboarding/presentation/widgets/step_indicator.dart';
 
 class OnboardingInitiate extends StatelessWidget {
   const OnboardingInitiate({super.key});
@@ -59,7 +60,7 @@ class OnboardingParentScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     state.currentPageIndex != 2
-                        ? const _StepIndicator()
+                        ? const StepIndicator()
                         : const SizedBox.shrink(),
                     Expanded(
                       child: PrimaryButton(
@@ -86,41 +87,6 @@ class OnboardingParentScreen extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _StepIndicator extends StatelessWidget {
-  const _StepIndicator();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<OnboardingCubit, OnboardingState>(
-      builder: (context, state) {
-        return Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              3,
-              (index) => AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeOut,
-                margin: const EdgeInsets.symmetric(horizontal: 3),
-                height: 8,
-                width: state.currentPageIndex == index ? 22 : 8,
-                decoration: BoxDecoration(
-                  color: state.currentPageIndex == index
-                      ? Colors.black
-                      : Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-            ),
           ),
         );
       },

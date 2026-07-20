@@ -66,13 +66,14 @@ class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
     if (user == null) {
       throw Exception('User not found');
     }
-
+    _printState();
     return AppUser.fromJson(user.toJson());
   }
 
   @override
   Future<AppUser> updateUser({required AppUser user}) async {
     _users[user.userId] = AppUser.fromJson(user.toJson());
+    _printState();
     return fetchUser(userId: user.userId);
   }
 
@@ -148,5 +149,14 @@ class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
     for (var i = 0; i < addresses.length; i++) {
       addresses[i] = addresses[i].copyWith(isDefault: false);
     }
+  }
+
+  void _printState() {
+    print('Users:');
+    _users.forEach((userId, user) {
+      print(
+        'User ID: $userId, \nName: ${user.name}, \n ImageUrl: ${user.profileImage} \nEmail: ${user.email} \nPhone: ${user.phone}, \nCreated At: ${user.createdAt}',
+      );
+    });
   }
 }

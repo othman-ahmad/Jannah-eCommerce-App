@@ -1,14 +1,24 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:jannah/app/navigation/navigation_cubit.dart';
 import 'package:jannah/features/authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:jannah/features/authentication/presentation/cubit/authentication_state.dart';
 import 'package:jannah/features/profile/data/app_user_model.dart';
+import 'package:jannah/features/profile/data/cloudinary_profile_image_uploader.dart';
 import 'package:jannah/features/profile/presentation/about_screen.dart';
 import 'package:jannah/features/profile/presentation/addresses_screen.dart';
 import 'package:jannah/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:jannah/features/profile/presentation/cubit/profile_state.dart';
+import 'package:jannah/features/profile/presentation/guest_profile_prompt.dart';
+import 'package:jannah/features/profile/presentation/widgets/editable_profile_avatar.dart';
+import 'package:jannah/features/profile/presentation/widgets/profile_text_field.dart';
 import 'package:jannah/features/profile/presentation/widgets/settings_option.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -30,9 +40,14 @@ class ProfileScreen extends StatelessWidget {
     final nameController = TextEditingController(text: user.name);
     final emailController = TextEditingController(text: user.email ?? '');
     final phoneController = TextEditingController(text: user.phone ?? '');
-    final imageController = TextEditingController(
-      text: user.profileImage ?? '',
-    );
+    final initialProfileImage = user.profileImage?.trim().isEmpty ?? true
+        ? null
+        : user.profileImage!.trim();
+    final imagePicker = ImagePicker();
+    final imageUploader = CloudinaryProfileImageUploader();
+    Uint8List? selectedProfileImageBytes;
+    String? profileImageUrl = initialProfileImage;
+    var isImageUploading = false;
 
     await showModalBottomSheet<void>(
       context: context,
@@ -44,118 +59,193 @@ class ProfileScreen extends StatelessWidget {
       builder: (sheetContext) {
         return BlocProvider.value(
           value: cubit,
-          child: Padding(
-            padding: EdgeInsets.only(
-              left: 16,
-              right: 16,
-              top: 20,
-              bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 20,
-            ),
-            child: BlocBuilder<ProfileCubit, ProfileState>(
-              builder: (context, state) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Edit Profile',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _ProfileTextField(
-                      controller: nameController,
-                      label: 'Name',
-                      textInputAction: TextInputAction.next,
-                    ),
-                    const SizedBox(height: 12),
-                    _ProfileTextField(
-                      controller: emailController,
-                      label: 'Email',
-                      keyboardType: TextInputType.emailAddress,
-                      textInputAction: TextInputAction.next,
-                    ),
-                    const SizedBox(height: 12),
-                    _ProfileTextField(
-                      controller: phoneController,
-                      label: 'Phone',
-                      keyboardType: TextInputType.phone,
-                      textInputAction: TextInputAction.next,
-                    ),
-                    const SizedBox(height: 12),
-                    _ProfileTextField(
-                      controller: imageController,
-                      label: 'Profile Image URL',
-                      keyboardType: TextInputType.url,
-                    ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      height: 54,
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: state.isProfileSaving
-                            ? null
-                            : () async {
-                                final updatedUser = user.copyWith(
-                                  name: nameController.text.trim(),
-                                  email: emailController.text.trim().isEmpty
-                                      ? null
-                                      : emailController.text.trim(),
-                                  clearEmail: emailController.text
-                                      .trim()
-                                      .isEmpty,
-                                  phone: phoneController.text.trim().isEmpty
-                                      ? null
-                                      : phoneController.text.trim(),
-                                  clearPhone: phoneController.text
-                                      .trim()
-                                      .isEmpty,
-                                  profileImage:
-                                      imageController.text.trim().isEmpty
-                                      ? null
-                                      : imageController.text.trim(),
-                                  clearProfileImage: imageController.text
-                                      .trim()
-                                      .isEmpty,
-                                );
+          child: StatefulBuilder(
+            builder: (context, setSheetState) {
+              Future<void> pickProfileImage() async {
+                final XFile? pickedImage;
 
-                                await cubit.saveProfile(updatedUser);
+                try {
+                  pickedImage = await imagePicker.pickImage(
+                    source: ImageSource.gallery,
+                    imageQuality: 85,
+                    maxWidth: 1200,
+                  );
+                } on PlatformException catch (error) {
+                  if (!context.mounted) {
+                    return;
+                  }
 
-                                if (sheetContext.mounted) {
-                                  Navigator.of(sheetContext).pop();
-                                }
-                              },
-                        style: FilledButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                  final message = error.code == 'channel-error'
+                      ? 'Image picker is not ready. Stop the app and run it again.'
+                      : error.message ?? 'Could not open image picker';
+
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(message)));
+                  return;
+                }
+
+                if (pickedImage == null) {
+                  return;
+                }
+
+                final imageBytes = await pickedImage.readAsBytes();
+
+                setSheetState(() {
+                  selectedProfileImageBytes = imageBytes;
+                  isImageUploading = true;
+                });
+
+                try {
+                  final uploadedImageUrl = await imageUploader.upload(
+                    imageBytes: imageBytes,
+                    fileName: pickedImage.name,
+                  );
+
+                  if (!context.mounted) {
+                    return;
+                  }
+
+                  setSheetState(() {
+                    profileImageUrl = uploadedImageUrl;
+                    isImageUploading = false;
+                  });
+                } catch (error) {
+                  if (!context.mounted) {
+                    return;
+                  }
+
+                  setSheetState(() {
+                    selectedProfileImageBytes = null;
+                    profileImageUrl = initialProfileImage;
+                    isImageUploading = false;
+                  });
+
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(error.toString())));
+                }
+              }
+
+              return Padding(
+                padding: EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 20,
+                  bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 20,
+                ),
+                child: BlocBuilder<ProfileCubit, ProfileState>(
+                  builder: (context, state) {
+                    final isSaving = state.isProfileSaving || isImageUploading;
+                    final profileImageForSave =
+                        profileImageUrl?.trim().isEmpty ?? true
+                        ? null
+                        : profileImageUrl!.trim();
+
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Edit Profile',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        child: state.isProfileSaving
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Text(
-                                'Save Changes',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                        const SizedBox(height: 16),
+                        Center(
+                          child: EditableProfileAvatar(
+                            imageBytes: selectedProfileImageBytes,
+                            imageUrl: profileImageUrl,
+                            isUploading: isImageUploading,
+                            onTap: isSaving ? null : pickProfileImage,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        ProfileTextField(
+                          controller: nameController,
+                          label: 'Name',
+                          textInputAction: TextInputAction.next,
+                        ),
+                        const SizedBox(height: 12),
+                        ProfileTextField(
+                          controller: emailController,
+                          label: 'Email',
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                        ),
+                        const SizedBox(height: 12),
+                        ProfileTextField(
+                          controller: phoneController,
+                          label: 'Phone',
+                          keyboardType: TextInputType.phone,
+                          textInputAction: TextInputAction.next,
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          height: 54,
+                          width: double.infinity,
+                          child: FilledButton(
+                            onPressed: isSaving
+                                ? null
+                                : () async {
+                                    final updatedUser = user.copyWith(
+                                      name: nameController.text.trim(),
+                                      email: emailController.text.trim().isEmpty
+                                          ? null
+                                          : emailController.text.trim(),
+                                      clearEmail: emailController.text
+                                          .trim()
+                                          .isEmpty,
+                                      phone: phoneController.text.trim().isEmpty
+                                          ? null
+                                          : phoneController.text.trim(),
+                                      clearPhone: phoneController.text
+                                          .trim()
+                                          .isEmpty,
+                                      profileImage: profileImageForSave,
+                                      clearProfileImage:
+                                          profileImageForSave == null,
+                                    );
+
+                                    await cubit.saveProfile(updatedUser);
+
+                                    if (sheetContext.mounted) {
+                                      Navigator.of(sheetContext).pop();
+                                    }
+                                  },
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Colors.black,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
+                            ),
+                            child: isSaving
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Save Changes',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              );
+            },
           ),
         );
       },
@@ -194,7 +284,7 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
       body: isGuest
-          ? const _GuestProfilePrompt()
+          ? const GuestProfilePrompt()
           : BlocBuilder<ProfileCubit, ProfileState>(
               builder: (context, state) {
                 if (state.profileStatus == ProfileStatus.loading &&
@@ -319,80 +409,6 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-class _GuestProfilePrompt extends StatelessWidget {
-  const _GuestProfilePrompt();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Icon(Icons.person_outline, size: 64, color: Colors.black),
-            const SizedBox(height: 20),
-            const Text(
-              "You're browsing as a guest.",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Sign in to:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 12),
-            const _GuestBenefit(text: 'Save items'),
-            const _GuestBenefit(text: 'Add products to your cart'),
-            const _GuestBenefit(text: 'Track orders'),
-            const _GuestBenefit(text: 'Sync across devices'),
-            const SizedBox(height: 28),
-            SizedBox(
-              height: 54,
-              child: FilledButton(
-                onPressed: () {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                  context.read<AuthenticationCubit>().logout();
-                },
-                style: FilledButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  'Sign In',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _GuestBenefit extends StatelessWidget {
-  final String text;
-
-  const _GuestBenefit({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Text(
-        '✓ $text',
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-      ),
-    );
-  }
-}
-
 class _ProfileHeaderCard extends StatelessWidget {
   final AppUser user;
   final VoidCallback onEdit;
@@ -471,43 +487,6 @@ class _DefaultAddressPreview extends StatelessWidget {
             style: TextStyle(color: Colors.grey.shade700),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _ProfileTextField extends StatelessWidget {
-  final TextEditingController controller;
-  final String label;
-  final TextInputType? keyboardType;
-  final TextInputAction? textInputAction;
-
-  const _ProfileTextField({
-    required this.controller,
-    required this.label,
-    this.keyboardType,
-    this.textInputAction,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      textInputAction: textInputAction,
-      decoration: InputDecoration(
-        labelText: label,
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey.shade400),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Colors.black, width: 1.5),
-        ),
       ),
     );
   }
