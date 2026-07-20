@@ -18,6 +18,7 @@ bool requireAuthenticatedUser(BuildContext context, {required String message}) {
         content: Text(message),
         action: SnackBarAction(
           label: 'Sign In',
+          textColor: Colors.white,
           onPressed: () {
             Navigator.of(context).popUntil((route) => route.isFirst);
             authCubit.logout();

@@ -81,74 +81,92 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
           ),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: SizedBox(
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Spacer(),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'New to Jannah?',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.5,
-                        color: Colors.grey.shade900,
+          body: SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+                  ),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Spacer(),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'New to Jannah?',
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.5,
+                                color: Colors.grey.shade900,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Let\'s get you started with a new account.',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey.shade500,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 40),
+                          PrimaryTextField(
+                            hintText: 'Full Name',
+                            controller: _fullNameController,
+                            textInputAction: TextInputAction.next,
+                          ),
+                          const SizedBox(height: 16),
+                          PrimaryTextField(
+                            hintText: 'Email or Phone Number',
+                            controller: _emailOrPhoneController,
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                          ),
+                          const SizedBox(height: 16),
+                          PrimaryTextField(
+                            hintText: 'Password',
+                            controller: _passwordController,
+                            isPassword: true,
+                            textInputAction: TextInputAction.next,
+                          ),
+                          const SizedBox(height: 16),
+                          PrimaryTextField(
+                            hintText: 'Confirm password',
+                            controller: _confirmPasswordController,
+                            isPassword: true,
+                            textInputAction: TextInputAction.done,
+                            onSubmitted: (_) => _submit(),
+                          ),
+                          const Spacer(),
+                          PrimaryButton(
+                            onPressed: isLoading ? () {} : _submit,
+                            text: isLoading
+                                ? 'Creating account...'
+                                : 'Register',
+                          ),
+                          const SizedBox(height: 60),
+                        ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Let\'s get you started with a new account.',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey.shade500,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-                  PrimaryTextField(
-                    hintText: 'Full Name',
-                    controller: _fullNameController,
-                    textInputAction: TextInputAction.next,
-                  ),
-                  const SizedBox(height: 16),
-                  PrimaryTextField(
-                    hintText: 'Email or Phone Number',
-                    controller: _emailOrPhoneController,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                  ),
-                  const SizedBox(height: 16),
-                  PrimaryTextField(
-                    hintText: 'Password',
-                    controller: _passwordController,
-                    isPassword: true,
-                    textInputAction: TextInputAction.next,
-                  ),
-                  const SizedBox(height: 16),
-                  PrimaryTextField(
-                    hintText: 'Confirm password',
-                    controller: _confirmPasswordController,
-                    isPassword: true,
-                    textInputAction: TextInputAction.done,
-                    onSubmitted: (_) => _submit(),
-                  ),
-                  const Spacer(),
-                  PrimaryButton(
-                    onPressed: isLoading ? () {} : _submit,
-                    text: isLoading ? 'Creating account...' : 'Register',
-                  ),
-                  const SizedBox(height: 60),
-                ],
-              ),
+                );
+              },
             ),
           ),
         );

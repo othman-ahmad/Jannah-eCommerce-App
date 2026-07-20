@@ -106,6 +106,7 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
+                      SizedBox(height: 16),
                       Text(
                         widget.product.description,
                         style: const TextStyle(
@@ -113,7 +114,7 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                           color: Colors.grey,
                         ),
                         overflow: TextOverflow.ellipsis,
-                        maxLines: 3,
+                        maxLines: 2,
                       ),
                     ],
                   ),
