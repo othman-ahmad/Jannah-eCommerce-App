@@ -31,10 +31,11 @@ class AboutScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 20),
 
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                Icon(Icons.eco, size: 40, color: primaryText),
                 const Text(
                   'Jannah',
                   style: TextStyle(
@@ -43,7 +44,6 @@ class AboutScreen extends StatelessWidget {
                     color: primaryText,
                   ),
                 ),
-                Icon(Icons.eco, size: 24, color: primaryText),
               ],
             ),
 
