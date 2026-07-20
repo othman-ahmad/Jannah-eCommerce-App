@@ -2,7 +2,7 @@ import 'package:jannah/features/checkout/data/cart_item_model.dart';
 import 'package:jannah/features/orders/data/order_model.dart';
 import 'package:jannah/features/profile/data/address_model.dart';
 
-class OrderDetailsModel {
+class OrderDetails {
   int orderId;
   int userId;
   int addressId;
@@ -17,7 +17,7 @@ class OrderDetailsModel {
   Address deliveryAddress;
   String paymentMethod;
 
-  OrderDetailsModel({
+  OrderDetails({
     required this.orderId,
     required this.userId,
     required this.addressId,
@@ -33,8 +33,8 @@ class OrderDetailsModel {
     required this.paymentMethod,
   });
 
-  factory OrderDetailsModel.fromJson(Map<String, dynamic> json) {
-    return OrderDetailsModel(
+  factory OrderDetails.fromJson(Map<String, dynamic> json) {
+    return OrderDetails(
       orderId: json['orderId'],
       userId: json['userId'],
       addressId: json['addressId'],
@@ -55,13 +55,13 @@ class OrderDetailsModel {
     );
   }
 
-  factory OrderDetailsModel.fromOrder({
+  factory OrderDetails.fromOrder({
     required Order order,
     required List<CartItem> items,
     required Address deliveryAddress,
     required String paymentMethod,
   }) {
-    return OrderDetailsModel(
+    return OrderDetails(
       orderId: order.orderId,
       userId: order.userId,
       addressId: order.addressId,
@@ -111,7 +111,7 @@ class OrderDetailsModel {
     );
   }
 
-  OrderDetailsModel copyWith({
+  OrderDetails copyWith({
     int? orderId,
     int? userId,
     int? addressId,
@@ -126,7 +126,7 @@ class OrderDetailsModel {
     Address? deliveryAddress,
     String? paymentMethod,
   }) {
-    return OrderDetailsModel(
+    return OrderDetails(
       orderId: orderId ?? this.orderId,
       userId: userId ?? this.userId,
       addressId: addressId ?? this.addressId,

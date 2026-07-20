@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:jannah/features/orders/data/order_details_model.dart';
 import 'package:jannah/features/orders/data/order_model.dart';
 import 'package:jannah/features/orders/data/payment_model.dart';
 
