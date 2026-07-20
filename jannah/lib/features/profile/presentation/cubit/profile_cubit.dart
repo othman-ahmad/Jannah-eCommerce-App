@@ -121,17 +121,14 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
-  Future<void> saveUserAddress(Address address, {int? userId}) async {
-    final effectiveUserId = userId ?? currentUserId;
-    currentUserId = effectiveUserId;
-
+  Future<void> saveUserAddress(Address address) async {
     emit(
       state.copyWith(isAddressSaving: true, clearAddressesErrorMessage: true),
     );
 
     try {
-      await saveAddress(userId: effectiveUserId, address: address);
-      final addresses = await getAddresses(userId: effectiveUserId);
+      await saveAddress(address: address);
+      final addresses = await getAddresses(userId: currentUserId);
       emit(
         state.copyWith(
           addressesStatus: ProfileStatus.success,
@@ -151,17 +148,14 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
-  Future<void> removeAddress(int addressId, {int? userId}) async {
-    final effectiveUserId = userId ?? currentUserId;
-    currentUserId = effectiveUserId;
-
+  Future<void> removeAddress(int addressId) async {
     emit(
       state.copyWith(isAddressSaving: true, clearAddressesErrorMessage: true),
     );
 
     try {
-      await deleteAddress(userId: effectiveUserId, addressId: addressId);
-      final addresses = await getAddresses(userId: effectiveUserId);
+      await deleteAddress(addressId: addressId);
+      final addresses = await getAddresses(userId: currentUserId);
       emit(
         state.copyWith(
           addressesStatus: ProfileStatus.success,

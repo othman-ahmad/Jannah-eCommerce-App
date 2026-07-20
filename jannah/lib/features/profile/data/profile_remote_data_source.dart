@@ -8,9 +8,9 @@ abstract class ProfileRemoteDataSource {
 
   Future<List<Address>> fetchAddresses({required int userId});
 
-  Future<Address> saveAddress({required int userId, required Address address});
+  Future<Address> saveAddress({required Address addressToSave});
 
-  Future<void> deleteAddress({required int userId, required int addressId});
+  Future<void> deleteAddress({required int addressId});
 }
 
 class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
@@ -28,36 +28,36 @@ class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
           user.userId: AppUser.fromJson(user.toJson()),
       };
 
-  final Map<int, List<Address>> _addressesByUserId = {
-    1: [
-      Address(
-        addressId: 1,
-        addressType: 'Home',
-        addressLine: 'Al Madina Street, Building 12',
-        city: 'Amman',
-        state: 'Amman',
-        country: 'Jordan',
-        postalCode: '11118',
-        latitude: 31.9539,
-        longitude: 35.9106,
-        isDefault: true,
-      ),
-      Address(
-        addressId: 2,
-        addressType: 'Office',
-        addressLine: 'King Hussein Business Park',
-        city: 'Amman',
-        state: 'Amman',
-        country: 'Jordan',
-        postalCode: '11831',
-        latitude: 31.9754,
-        longitude: 35.8438,
-        isDefault: false,
-      ),
-    ],
-  };
+  final List<Address> _addresses = [
+    Address(
+      addressId: 1,
+      userId: 1,
+      addressType: 'Home',
+      addressLine: 'Al Madina Street, Building 12',
+      city: 'Amman',
+      state: 'Amman',
+      country: 'Jordan',
+      postalCode: '11118',
+      latitude: 31.9539,
+      longitude: 35.9106,
+      isDefault: true,
+    ),
+    Address(
+      addressId: 2,
+      userId: 1,
+      addressType: 'Office',
+      addressLine: 'King Hussein Business Park',
+      city: 'Amman',
+      state: 'Amman',
+      country: 'Jordan',
+      postalCode: '11831',
+      latitude: 31.9754,
+      longitude: 35.8438,
+      isDefault: false,
+    ),
+  ];
 
-  int _nextAddressId = 3;
+  static int _nextAddressId = 3;
 
   @override
   Future<AppUser> fetchUser({required int userId}) async {
@@ -79,75 +79,74 @@ class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
 
   @override
   Future<List<Address>> fetchAddresses({required int userId}) async {
-    final addresses = _addressesByUserId[userId] ?? [];
-    return addresses
-        .map((address) => Address.fromJson(address.toJson()))
-        .toList(growable: false);
+    _printAddresses();
+
+    return _addresses.isNotEmpty
+        ? _addresses
+              .where((address) => address.userId == userId)
+              .map((address) => Address.fromJson(address.toJson()))
+              .toList(growable: false)
+        : [];
   }
 
   @override
-  Future<Address> saveAddress({
-    required int userId,
-    required Address address,
-  }) async {
-    final addresses = _addressesByUserId.putIfAbsent(userId, () => []);
-    final addressToSave = address.addressId == 0
-        ? address.copyWith(addressId: _nextAddressId++)
-        : address;
-
+  Future<Address> saveAddress({required Address addressToSave}) async {
     if (addressToSave.isDefault) {
-      _clearDefaultAddress(addresses);
+      _clearDefaultAddress(userId: addressToSave.userId);
     }
 
-    final index = addresses.indexWhere(
-      (item) => item.addressId == addressToSave.addressId,
+    final existingAddressIndex = _addresses.indexWhere(
+      (address) => address.addressId == addressToSave.addressId,
     );
-
-    if (index == -1) {
-      addresses.add(Address.fromJson(addressToSave.toJson()));
-    } else {
-      addresses[index] = Address.fromJson(addressToSave.toJson());
+    if (existingAddressIndex != -1) {
+      _addresses.removeAt(existingAddressIndex);
     }
 
-    if (addresses.length == 1) {
-      addresses[0] = addresses[0].copyWith(isDefault: true);
+    final bool thereIsADefaultAddress = _addresses.any(
+      (address) => address.userId == addressToSave.userId && address.isDefault,
+    );
+    if (!thereIsADefaultAddress) {
+      addressToSave = addressToSave.copyWith(isDefault: true);
     }
 
-    if (addresses.isNotEmpty &&
-        !addresses.any((address) => address.isDefault)) {
-      addresses[0] = addresses[0].copyWith(isDefault: true);
-    }
-
+    _addresses.add(
+      Address.fromJson(
+        addressToSave.copyWith(addressId: _nextAddressId).toJson(),
+      ),
+    );
+    _nextAddressId++;
+    _printAddresses();
     return Address.fromJson(addressToSave.toJson());
   }
 
   @override
-  Future<void> deleteAddress({
-    required int userId,
-    required int addressId,
-  }) async {
-    final addresses = _addressesByUserId[userId];
-
-    if (addresses == null) {
-      return;
-    }
-
-    final deletedAddress = addresses.where(
+  Future<void> deleteAddress({required int addressId}) async {
+    Address? addressToDelete = _addresses.firstWhere(
       (address) => address.addressId == addressId,
+      orElse: () => throw Exception('Address not found'),
     );
-    final wasDefault =
-        deletedAddress.isNotEmpty && deletedAddress.first.isDefault;
-
-    addresses.removeWhere((address) => address.addressId == addressId);
-
-    if (wasDefault && addresses.isNotEmpty) {
-      addresses[0] = addresses[0].copyWith(isDefault: true);
+    if (addressToDelete.isDefault) {
+      final userAddresses = _addresses
+          .where((address) => address.userId == addressToDelete.userId)
+          .toList();
+      if (userAddresses.length > 1) {
+        final newDefaultAddress = userAddresses.firstWhere(
+          (address) => address.addressId != addressId,
+        );
+        final updatedAddress = newDefaultAddress.copyWith(isDefault: true);
+        _addresses[_addresses.indexOf(newDefaultAddress)] = updatedAddress;
+      }
     }
+    _addresses.removeWhere((address) => address.addressId == addressId);
+    _printAddresses();
   }
 
-  void _clearDefaultAddress(List<Address> addresses) {
-    for (var i = 0; i < addresses.length; i++) {
-      addresses[i] = addresses[i].copyWith(isDefault: false);
+  void _clearDefaultAddress({required int userId}) {
+    for (var address in _addresses) {
+      if (address.isDefault && address.userId == userId) {
+        final updatedAddress = address.copyWith(isDefault: false);
+        _addresses[_addresses.indexOf(address)] = updatedAddress;
+      }
     }
   }
 
@@ -158,5 +157,15 @@ class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
         'User ID: $userId, \nName: ${user.name}, \nImageUrl: ${user.profileImage} \nEmail: ${user.email} \nPhone: ${user.phone}, \nCreated At: ${user.createdAt}',
       );
     });
+  }
+
+  void _printAddresses() {
+    print('Addresses:');
+    for (final address in _addresses) {
+      print(
+        'Address ID: ${address.addressId}, \nUser ID: ${address.userId}, \nType: ${address.addressType}, \nLine: ${address.addressLine}, \nCity: ${address.city}, \nState: ${address.state}, \nCountry: ${address.country}, \nPostal Code: ${address.postalCode}, \nLatitude: ${address.latitude}, \nLongitude: ${address.longitude}, \nIs Default: ${address.isDefault}',
+      );
+      print('--------------------------------------------------');
+    }
   }
 }

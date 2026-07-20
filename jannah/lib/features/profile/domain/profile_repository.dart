@@ -8,7 +8,7 @@ abstract class ProfileRepository {
 
   Future<List<Address>> getAddresses({required int userId});
 
-  Future<Address> saveAddress({required int userId, required Address address});
+  Future<Address> saveAddress({required Address address});
 
-  Future<void> deleteAddress({required int userId, required int addressId});
+  Future<void> deleteAddress({required int addressId});
 }

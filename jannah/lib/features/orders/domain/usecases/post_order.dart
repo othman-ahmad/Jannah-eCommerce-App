@@ -1,3 +1,4 @@
+import 'package:jannah/features/checkout/data/cart_item_model.dart';
 import 'package:jannah/features/orders/data/order_model.dart';
 import 'package:jannah/features/orders/domain/orders_repository.dart';
 
@@ -6,7 +7,15 @@ class PostOrder {
 
   const PostOrder(this.repository);
 
-  Future<Order> call({required Order order, required String paymentMethod}) {
-    return repository.postOrder(order: order, paymentMethod: paymentMethod);
+  Future<Order> call({
+    required Order order,
+    required String paymentMethod,
+    required List<CartItem> cartItems,
+  }) {
+    return repository.postOrder(
+      order: order,
+      paymentMethod: paymentMethod,
+      cartItems: cartItems,
+    );
   }
 }

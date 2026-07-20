@@ -6,7 +6,7 @@ class SaveAddress {
 
   const SaveAddress(this.repository);
 
-  Future<Address> call({required int userId, required Address address}) {
-    return repository.saveAddress(userId: userId, address: address);
+  Future<Address> call({required Address address}) {
+    return repository.saveAddress(address: address);
   }
 }

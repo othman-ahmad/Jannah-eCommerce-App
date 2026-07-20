@@ -24,12 +24,12 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<Address> saveAddress({required int userId, required Address address}) {
-    return remoteDataSource.saveAddress(userId: userId, address: address);
+  Future<Address> saveAddress({required Address address}) {
+    return remoteDataSource.saveAddress(addressToSave: address);
   }
 
   @override
-  Future<void> deleteAddress({required int userId, required int addressId}) {
-    return remoteDataSource.deleteAddress(userId: userId, addressId: addressId);
+  Future<void> deleteAddress({required int addressId}) {
+    return remoteDataSource.deleteAddress(addressId: addressId);
   }
 }

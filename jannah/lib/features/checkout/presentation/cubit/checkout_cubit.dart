@@ -220,7 +220,11 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         status: 'Delivered',
       );
 
-      await postOrderUseCase(order: order, paymentMethod: paymentMethod);
+      await postOrderUseCase(
+        order: order,
+        paymentMethod: paymentMethod,
+        cartItems: state.cartItems,
+      );
       await checkoutUseCase(cart.cartId);
       emit(
         state.copyWith(

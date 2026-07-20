@@ -221,6 +221,7 @@ class AddressesScreen extends StatelessWidget {
 
                                       final addressToSave = Address(
                                         addressId: address?.addressId ?? 0,
+                                        userId: cubit.currentUserId,
                                         addressType: typeController.text.trim(),
                                         addressLine: lineController.text.trim(),
                                         city: cityController.text.trim(),

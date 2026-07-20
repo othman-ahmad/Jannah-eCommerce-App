@@ -1,4 +1,4 @@
-import 'package:jannah/features/checkout/data/cart_item_model.dart';
+import 'package:jannah/features/orders/data/order_item_model.dart';
 import 'package:jannah/features/orders/data/order_model.dart';
 import 'package:jannah/features/profile/data/address_model.dart';
 
@@ -13,7 +13,7 @@ class OrderDetails {
   double pakagingFee;
   double total;
   String status;
-  List<CartItem> items;
+  List<OrderItem> items;
   Address deliveryAddress;
   String paymentMethod;
 
@@ -46,7 +46,7 @@ class OrderDetails {
       total: (json['total'] as num).toDouble(),
       status: json['status'],
       items: (json['items'] as List<dynamic>)
-          .map((item) => CartItem.fromJson(item as Map<String, dynamic>))
+          .map((item) => OrderItem.fromJson(item as Map<String, dynamic>))
           .toList(),
       deliveryAddress: Address.fromJson(
         json['deliveryAddress'] as Map<String, dynamic>,
@@ -57,7 +57,7 @@ class OrderDetails {
 
   factory OrderDetails.fromOrder({
     required Order order,
-    required List<CartItem> items,
+    required List<OrderItem> items,
     required Address deliveryAddress,
     required String paymentMethod,
   }) {
@@ -122,7 +122,7 @@ class OrderDetails {
     double? pakagingFee,
     double? total,
     String? status,
-    List<CartItem>? items,
+    List<OrderItem>? items,
     Address? deliveryAddress,
     String? paymentMethod,
   }) {

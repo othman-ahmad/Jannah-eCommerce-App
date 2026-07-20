@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jannah/features/orders/data/order_model.dart';
+import 'package:jannah/features/orders/presentation/cubit/orders_cubit.dart';
+import 'package:jannah/features/orders/presentation/order_details_screen.dart';
 
 class OrderCard extends StatelessWidget {
   final Order order;
@@ -8,57 +11,71 @@ class OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  order.orderNumber,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider.value(value: context.read<OrdersCubit>()),
+              ],
+              child: OrderDetailsScreen(orderId: order.orderId),
+            ),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    order.orderNumber,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
-              ),
-              _StatusChip(status: order.status),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _DetailRow(label: 'Date', value: _formatDate(order.date)),
-          const SizedBox(height: 6),
-          _DetailRow(
-            label: 'Subtotal',
-            value: '\$${order.subtotal.toStringAsFixed(2)}',
-          ),
-          const SizedBox(height: 6),
-          _DetailRow(
-            label: 'Delivery',
-            value: order.deliveryFee == 0
-                ? 'Free'
-                : '\$${order.deliveryFee.toStringAsFixed(2)}',
-          ),
-          const SizedBox(height: 6),
-          _DetailRow(
-            label: 'Service',
-            value: '\$${order.pakagingFee.toStringAsFixed(2)}',
-          ),
-          const Divider(height: 24),
-          _DetailRow(
-            label: 'Total',
-            value: '\$${order.total.toStringAsFixed(2)}',
-            isStrong: true,
-          ),
-        ],
+                _StatusChip(status: order.status),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _DetailRow(label: 'Date', value: _formatDate(order.date)),
+            const SizedBox(height: 6),
+            _DetailRow(
+              label: 'Subtotal',
+              value: '\$${order.subtotal.toStringAsFixed(2)}',
+            ),
+            const SizedBox(height: 6),
+            _DetailRow(
+              label: 'Delivery',
+              value: order.deliveryFee == 0
+                  ? 'Free'
+                  : '\$${order.deliveryFee.toStringAsFixed(2)}',
+            ),
+            const SizedBox(height: 6),
+            _DetailRow(
+              label: 'Service',
+              value: '\$${order.pakagingFee.toStringAsFixed(2)}',
+            ),
+            const Divider(height: 24),
+            _DetailRow(
+              label: 'Total',
+              value: '\$${order.total.toStringAsFixed(2)}',
+              isStrong: true,
+            ),
+          ],
+        ),
       ),
     );
   }

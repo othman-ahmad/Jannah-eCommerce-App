@@ -1,5 +1,6 @@
 class Address {
   int addressId;
+  int userId;
   String addressType; // e.g. Home, Apartment, Office, etc.
   String addressLine; // e.g. My Home, Jimmy's Apartment, Office, etc.
   String city;
@@ -12,6 +13,7 @@ class Address {
 
   Address({
     required this.addressId,
+    required this.userId,
     required this.addressType,
     required this.addressLine,
     required this.city,
@@ -26,6 +28,7 @@ class Address {
   factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
       addressId: json['address_id'] ?? 0,
+      userId: json['user_id'] ?? 0,
       addressType: json['address_type'] ?? '',
       addressLine: json['address_line'] ?? '',
       city: json['city'] ?? '',
@@ -41,6 +44,7 @@ class Address {
   Map<String, dynamic> toJson() {
     return {
       'address_id': addressId,
+      'user_id': userId,
       'address_type': addressType,
       'address_line': addressLine,
       'city': city,
@@ -64,9 +68,11 @@ class Address {
     double? latitude,
     double? longitude,
     bool? isDefault,
+    int? userId,
   }) {
     return Address(
       addressId: addressId ?? this.addressId,
+      userId: userId ?? this.userId,
       addressType: addressType ?? this.addressType,
       addressLine: addressLine ?? this.addressLine,
       city: city ?? this.city,

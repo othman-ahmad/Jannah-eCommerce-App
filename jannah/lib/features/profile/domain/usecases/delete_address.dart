@@ -5,7 +5,7 @@ class DeleteAddress {
 
   const DeleteAddress(this.repository);
 
-  Future<void> call({required int userId, required int addressId}) {
-    return repository.deleteAddress(userId: userId, addressId: addressId);
+  Future<void> call({required int addressId}) {
+    return repository.deleteAddress(addressId: addressId);
   }
 }
