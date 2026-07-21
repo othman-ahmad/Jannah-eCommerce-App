@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jannah/features/checkout/data/cart_item_model.dart';
+import 'package:jannah/features/orders/data/order_details_model.dart';
 import 'package:jannah/features/orders/data/order_model.dart';
 import 'package:jannah/features/orders/domain/usecases/get_order_details.dart';
 import 'package:jannah/features/orders/domain/usecases/get_orders.dart';
@@ -84,33 +85,8 @@ class OrdersCubit extends Cubit<OrdersState> {
     }
   }
 
-  Future<void> loadOrderDetails({required int orderId}) async {
-    emit(
-      state.copyWith(
-        detailsStatus: OrdersStatus.loading,
-        clearDetailsErrorMessage: true,
-        clearOrderDetails: true,
-      ),
-    );
-
-    try {
-      final details = await getOrderDetails(orderId: orderId);
-      emit(
-        state.copyWith(
-          detailsStatus: OrdersStatus.success,
-          orderDetails: details,
-          clearDetailsErrorMessage: true,
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          detailsStatus: OrdersStatus.failure,
-          detailsErrorMessage: e.toString(),
-          clearOrderDetails: true,
-        ),
-      );
-    }
+  Future<OrderDetails> fetchOrderDetails({required int orderId}) {
+    return getOrderDetails(orderId: orderId);
   }
 
   List<Order> _sortOrders(List<Order> orders) {

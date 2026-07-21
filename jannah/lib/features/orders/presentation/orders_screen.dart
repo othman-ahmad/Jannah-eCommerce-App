@@ -6,8 +6,54 @@ import 'package:jannah/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:jannah/features/orders/presentation/cubit/orders_state.dart';
 import 'package:jannah/features/orders/presentation/widgets/oreder_card.dart';
 
-class OrdersScreen extends StatelessWidget {
+class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
+
+  @override
+  State<OrdersScreen> createState() => _OrdersScreenState();
+}
+
+class _OrdersScreenState extends State<OrdersScreen> {
+  int? _expandedOrderId;
+  final ScrollController _scrollController = ScrollController();
+  final Map<int, GlobalKey> _cardKeys = {};
+
+  GlobalKey _keyFor(int orderId) =>
+      _cardKeys.putIfAbsent(orderId, () => GlobalKey());
+
+  void _toggleOrder(int orderId) {
+    final isCollapsing = _expandedOrderId == orderId;
+
+    setState(() {
+      _expandedOrderId = isCollapsing ? null : orderId;
+    });
+
+    if (!isCollapsing) {
+      // First pass: scroll right away so the card starts moving into view
+      // as soon as it begins expanding.
+      _scrollOrderIntoView(orderId);
+    }
+  }
+
+  void _scrollOrderIntoView(int orderId) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_expandedOrderId != orderId) return; // was collapsed/switched
+      final keyContext = _cardKeys[orderId]?.currentContext;
+      if (keyContext == null) return;
+      Scrollable.ensureVisible(
+        keyContext,
+        alignment: 0.0,
+        duration: const Duration(milliseconds: 320),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,10 +140,19 @@ class OrdersScreen extends StatelessWidget {
           return RefreshIndicator(
             onRefresh: () => context.read<OrdersCubit>().loadOrders(),
             child: ListView.builder(
+              controller: _scrollController,
               padding: const EdgeInsets.only(top: 8, bottom: 16),
               itemCount: state.orders.length,
               itemBuilder: (context, index) {
-                return OrderCard(order: state.orders[index]);
+                final order = state.orders[index];
+
+                return OrderCard(
+                  key: _keyFor(order.orderId),
+                  order: order,
+                  isExpanded: _expandedOrderId == order.orderId,
+                  onToggle: () => _toggleOrder(order.orderId),
+                  onDetailsLoaded: () => _scrollOrderIntoView(order.orderId),
+                );
               },
             ),
           );
