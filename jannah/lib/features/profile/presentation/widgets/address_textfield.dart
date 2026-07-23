@@ -6,6 +6,7 @@ class AddressTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
 
   const AddressTextField({
+    super.key,
     required this.controller,
     required this.label,
     this.textInputAction,

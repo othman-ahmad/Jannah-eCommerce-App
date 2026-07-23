@@ -4,7 +4,7 @@ import 'package:jannah/features/onboarding/presentation/cubit/onboarding_cubit.d
 import 'package:jannah/features/onboarding/presentation/cubit/onboarding_state.dart';
 
 class StepIndicator extends StatelessWidget {
-  const StepIndicator();
+  const StepIndicator({super.key});
 
   @override
   Widget build(BuildContext context) {

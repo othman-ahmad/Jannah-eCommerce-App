@@ -4,6 +4,8 @@ import 'package:jannah/features/orders/data/order_details_model.dart';
 import 'package:jannah/features/orders/data/order_item_model.dart';
 import 'package:jannah/features/orders/data/order_model.dart';
 import 'package:jannah/features/orders/presentation/cubit/orders_cubit.dart';
+import 'package:jannah/features/products/data/item_model.dart';
+import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
 import 'package:jannah/features/profile/data/address_model.dart';
 
 class OrderCard extends StatefulWidget {
@@ -361,15 +363,7 @@ class _OrderItemRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Product #${item.productId}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              _ProductNameText(productId: item.productId),
               const SizedBox(height: 4),
               Text(
                 '${item.quantity} x ${_formatCurrency(item.price)}',
@@ -384,6 +378,68 @@ class _OrderItemRow extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.w700),
         ),
       ],
+    );
+  }
+}
+
+class _ProductNameText extends StatefulWidget {
+  final int productId;
+
+  const _ProductNameText({required this.productId});
+
+  @override
+  State<_ProductNameText> createState() => _ProductNameTextState();
+}
+
+class _ProductNameTextState extends State<_ProductNameText> {
+  late Future<Product> _productFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _productFuture = _loadProduct();
+  }
+
+  @override
+  void didUpdateWidget(covariant _ProductNameText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.productId != widget.productId) {
+      _productFuture = _loadProduct();
+    }
+  }
+
+  Future<Product> _loadProduct() {
+    final productsCubit = context.read<ProductsCubit>();
+
+    for (final product in productsCubit.state.products) {
+      if (product.productId == widget.productId) {
+        return Future.value(product);
+      }
+    }
+
+    final selectedProduct = productsCubit.state.selectedProduct;
+    if (selectedProduct?.productId == widget.productId) {
+      return Future.value(selectedProduct);
+    }
+
+    return productsCubit.getProductById(productId: widget.productId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Product>(
+      future: _productFuture,
+      builder: (context, snapshot) {
+        final productName = snapshot.data?.productName;
+        final title = productName ?? 'Loading product...';
+
+        return Text(
+          snapshot.hasError ? 'Product unavailable' : title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+        );
+      },
     );
   }
 }

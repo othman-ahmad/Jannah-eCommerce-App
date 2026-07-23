@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jannah/features/authentication/presentation/cubit/authentication_cubit.dart';
 
 class GuestProfilePrompt extends StatelessWidget {
-  const GuestProfilePrompt();
+  const GuestProfilePrompt({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -9,6 +9,7 @@ class EditableProfileAvatar extends StatelessWidget {
   final VoidCallback? onTap;
 
   const EditableProfileAvatar({
+    super.key,
     required this.imageBytes,
     required this.imageUrl,
     required this.isUploading,

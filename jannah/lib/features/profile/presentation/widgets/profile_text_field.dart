@@ -7,6 +7,7 @@ class ProfileTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
 
   const ProfileTextField({
+    super.key,
     required this.controller,
     required this.label,
     this.keyboardType,
