@@ -24,7 +24,7 @@ class Jannah extends StatelessWidget {
   const Jannah({super.key});
 
   AuthenticationCubit _createAuthenticationCubit() {
-    final remoteDataSource = MockAuthenticationRemoteDataSource();
+    final remoteDataSource = ApiAuthenticationRemoteDataSource();
     final repository = AuthenticationRepositoryImpl(
       remoteDataSource: remoteDataSource,
     );

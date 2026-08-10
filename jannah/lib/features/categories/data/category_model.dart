@@ -13,10 +13,26 @@ class Category {
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
-      categoryId: json['CategoryId'],
-      categoryName: json['CategoryName'],
-      imageUrl: json['ImageUrl'],
-      description: json['Description'],
+      categoryId: _asInt(
+        json['CategoryId'] ?? json['categoryId'] ?? json['id'],
+      ),
+      categoryName: _asString(
+        json['CategoryName'] ?? json['categoryName'] ?? json['name'],
+      ),
+      imageUrl: _asString(
+        json['ImageUrl'] ?? json['imageUrl'] ?? json['image'] ?? json['icon'],
+      ),
+      description: _asString(json['Description'] ?? json['description']),
     );
+  }
+
+  static int _asInt(Object? value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  static String _asString(Object? value) {
+    return value?.toString() ?? '';
   }
 }

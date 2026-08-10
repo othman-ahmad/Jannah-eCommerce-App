@@ -139,7 +139,7 @@ class JannahNavigationBar extends StatelessWidget {
   }
 
   CategoriesCubit _createCategoriesCubit() {
-    final remoteDataSource = MockCategoriesRemoteDataSource();
+    final remoteDataSource = ApiCategoriesRemoteDataSource();
     final repository = CategoriesRepositoryImpl(
       remoteDataSource: remoteDataSource,
     );
