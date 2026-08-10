@@ -13,10 +13,18 @@ class Cart {
 
   factory Cart.fromJson(Map<String, dynamic> json) {
     return Cart(
-      cartId: json['CartId'],
-      userId: json['UserId'],
-      createdDate: DateTime.parse(json['CreatedDate']),
-      isOrdered: json['IsOrdered'],
+      cartId: _readInt(json, const ['cartId', 'CartId', 'cart_id', 'id']),
+      userId: _readInt(json, const ['userId', 'UserId', 'user_id']),
+      createdDate: _readDateTime(json, const [
+        'createdDate',
+        'CreatedDate',
+        'created_date',
+      ]),
+      isOrdered: _readBool(json, const [
+        'isOrdered',
+        'IsOrdered',
+        'is_ordered',
+      ]),
     );
   }
 
@@ -41,5 +49,53 @@ class Cart {
       createdDate: createdDate ?? this.createdDate,
       isOrdered: isOrdered ?? this.isOrdered,
     );
+  }
+
+  static int _readInt(Map<String, dynamic> json, List<String> keys) {
+    final value = _readValue(json, keys);
+    if (value is int) {
+      return value;
+    }
+    if (value is num) {
+      return value.toInt();
+    }
+    if (value is String) {
+      return int.tryParse(value) ?? 0;
+    }
+    return 0;
+  }
+
+  static bool _readBool(Map<String, dynamic> json, List<String> keys) {
+    final value = _readValue(json, keys);
+    if (value is bool) {
+      return value;
+    }
+    if (value is num) {
+      return value != 0;
+    }
+    if (value is String) {
+      return value.toLowerCase() == 'true' || value == '1';
+    }
+    return false;
+  }
+
+  static DateTime _readDateTime(Map<String, dynamic> json, List<String> keys) {
+    final value = _readValue(json, keys);
+    if (value is DateTime) {
+      return value;
+    }
+    if (value is String && value.isNotEmpty) {
+      return DateTime.tryParse(value) ?? DateTime.now();
+    }
+    return DateTime.now();
+  }
+
+  static Object? _readValue(Map<String, dynamic> json, List<String> keys) {
+    for (final key in keys) {
+      if (json.containsKey(key)) {
+        return json[key];
+      }
+    }
+    return null;
   }
 }

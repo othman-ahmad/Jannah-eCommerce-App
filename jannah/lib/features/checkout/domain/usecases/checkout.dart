@@ -5,7 +5,15 @@ class Checkout {
 
   const Checkout(this.repository);
 
-  Future<void> call(int cartId) {
-    return repository.checkout(cartId);
+  Future<void> call({
+    required int cartId,
+    required int addressId,
+    required String paymentMethod,
+  }) {
+    return repository.checkout(
+      cartId: cartId,
+      addressId: addressId,
+      paymentMethod: paymentMethod,
+    );
   }
 }

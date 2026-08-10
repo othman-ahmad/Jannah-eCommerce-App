@@ -1,5 +1,8 @@
 // ignore_for_file: avoid_print
 
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 import 'package:jannah/features/checkout/data/cart_item_model.dart';
 import 'package:jannah/features/checkout/data/checkout_remote_data_source.dart';
 import 'package:jannah/features/orders/data/order_details_model.dart';
@@ -19,6 +22,200 @@ abstract class OrdersRemoteDataSource {
   });
 
   Future<OrderDetails> fetchOrderDetails({required int orderId});
+}
+
+class ApiOrdersRemoteDataSource implements OrdersRemoteDataSource {
+  ApiOrdersRemoteDataSource({
+    http.Client? client,
+    String baseUrl = 'http://192.168.1.75:5241/api',
+  }) : _client = client ?? http.Client(),
+       _baseUri = Uri.parse(baseUrl);
+
+  final http.Client _client;
+  final Uri _baseUri;
+
+  @override
+  Future<List<Order>> fetchOrders({required int userId}) async {
+    final response = await _client
+        .get(_uriFor('orders/user/$userId'), headers: _jsonHeaders)
+        .timeout(const Duration(seconds: 15));
+
+    _throwIfRequestFailed(response, 'Orders request failed');
+
+    return _unwrapList(
+      _decodeJson(response.body),
+      'orders',
+    ).map(Order.fromJson).toList(growable: false);
+  }
+
+  @override
+  Future<OrderDetails> fetchOrderDetails({required int orderId}) async {
+    final response = await _client
+        .get(_uriFor('orders/$orderId'), headers: _jsonHeaders)
+        .timeout(const Duration(seconds: 15));
+
+    _throwIfRequestFailed(response, 'Order details request failed');
+
+    return OrderDetails.fromJson(
+      _unwrapObject(_decodeJson(response.body), 'order'),
+    );
+  }
+
+  @override
+  Future<Order> postOrder({
+    required Order order,
+    required String paymentMethod,
+    required List<CartItem> cartItems,
+    required Address deliveryAddress,
+  }) async {
+    final checkoutDataSource = ApiCheckoutRemoteDataSource(
+      client: _client,
+      baseUrl: _baseUri.toString(),
+    );
+    final cart = await checkoutDataSource.fetchActiveCart(userId: order.userId);
+
+    if (cart == null) {
+      throw Exception('No active cart found for checkout.');
+    }
+
+    await checkoutDataSource.checkout(
+      cartId: cart.cartId,
+      addressId: deliveryAddress.addressId,
+      paymentMethod: paymentMethod,
+    );
+
+    final orders = await fetchOrders(userId: order.userId);
+    if (orders.isEmpty) {
+      return order.copyWith(
+        orderId: cart.cartId,
+        orderNumber: 'ORD-${cart.cartId}',
+        status: 'Pending',
+      );
+    }
+
+    orders.sort((a, b) => b.date.compareTo(a.date));
+    return orders.first;
+  }
+
+  Uri _uriFor(String pathSegment) {
+    final path = _baseUri.path.endsWith('/')
+        ? '${_baseUri.path}$pathSegment'
+        : '${_baseUri.path}/$pathSegment';
+
+    return _baseUri.replace(path: path);
+  }
+
+  Object? _decodeJson(String responseBody) {
+    if (responseBody.trim().isEmpty) {
+      return null;
+    }
+
+    return jsonDecode(responseBody);
+  }
+
+  Map<String, dynamic> _unwrapObject(Object? decoded, String objectName) {
+    if (decoded is Map) {
+      final json = Map<String, dynamic>.from(decoded);
+      for (final key in [
+        objectName,
+        _capitalize(objectName),
+        'data',
+        'Data',
+        'result',
+        'Result',
+      ]) {
+        final value = json[key];
+        if (value is Map) {
+          return Map<String, dynamic>.from(value);
+        }
+      }
+
+      return json;
+    }
+
+    throw FormatException('Expected an $objectName object from the API.');
+  }
+
+  List<Map<String, dynamic>> _unwrapList(Object? decoded, String listName) {
+    final Object? list = decoded is Map
+        ? decoded[listName] ??
+              decoded[_capitalize(listName)] ??
+              decoded['items'] ??
+              decoded['Items'] ??
+              decoded['data'] ??
+              decoded['Data'] ??
+              decoded['result'] ??
+              decoded['Result']
+        : decoded;
+
+    if (list is List) {
+      return list
+          .whereType<Map>()
+          .map((itemJson) => Map<String, dynamic>.from(itemJson))
+          .toList(growable: false);
+    }
+
+    throw FormatException('Expected a $listName list from the API.');
+  }
+
+  void _throwIfRequestFailed(http.Response response, String fallbackMessage) {
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return;
+    }
+
+    throw Exception(
+      _extractErrorMessage(response.body) ??
+          '$fallbackMessage (${response.statusCode}).',
+    );
+  }
+
+  String? _extractErrorMessage(String responseBody) {
+    try {
+      final decoded = _decodeJson(responseBody);
+      if (decoded is! Map) {
+        return responseBody.trim().isEmpty ? null : responseBody;
+      }
+
+      final json = Map<String, dynamic>.from(decoded);
+      for (final key in const [
+        'message',
+        'Message',
+        'error',
+        'Error',
+        'title',
+      ]) {
+        final value = json[key];
+        if (value is String && value.isNotEmpty) {
+          return value;
+        }
+      }
+
+      final errors = json['errors'];
+      if (errors is Map && errors.isNotEmpty) {
+        return errors.values
+            .expand((value) => value is List ? value : [value])
+            .map((value) => value.toString())
+            .join('\n');
+      }
+    } catch (_) {
+      return responseBody.trim().isEmpty ? null : responseBody;
+    }
+
+    return null;
+  }
+
+  String _capitalize(String value) {
+    if (value.isEmpty) {
+      return value;
+    }
+
+    return '${value[0].toUpperCase()}${value.substring(1)}';
+  }
+
+  static const _jsonHeaders = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  };
 }
 
 class InMemoryOrdersRemoteDataSource implements OrdersRemoteDataSource {

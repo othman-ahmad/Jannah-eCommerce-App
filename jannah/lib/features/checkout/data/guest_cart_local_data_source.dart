@@ -109,7 +109,11 @@ class GuestCartLocalDataSource implements CheckoutRemoteDataSource {
   }
 
   @override
-  Future<void> checkout({required int cartId}) {
+  Future<void> checkout({
+    required int cartId,
+    required int addressId,
+    required String paymentMethod,
+  }) {
     throw Exception('Please sign in to place your order.');
   }
 

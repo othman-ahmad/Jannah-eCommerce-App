@@ -34,24 +34,42 @@ class OrderDetails {
   });
 
   factory OrderDetails.fromJson(Map<String, dynamic> json) {
+    final order = Order.fromJson(json);
+    final itemsJson = _readList(json, const [
+      'items',
+      'Items',
+      'orderItems',
+      'OrderItems',
+    ]);
+    final addressJson = _readMap(json, const [
+      'deliveryAddress',
+      'DeliveryAddress',
+      'address',
+      'Address',
+    ]);
+
     return OrderDetails(
-      orderId: json['orderId'],
-      userId: json['userId'],
-      addressId: json['addressId'],
-      orderNumber: json['orderNumber'],
-      date: DateTime.parse(json['date']),
-      subtotal: (json['subtotal'] as num).toDouble(),
-      deliveryFee: (json['deliveryFee'] as num).toDouble(),
-      pakagingFee: (json['pakagingFee'] as num).toDouble(),
-      total: (json['total'] as num).toDouble(),
-      status: json['status'],
-      items: (json['items'] as List<dynamic>)
-          .map((item) => OrderItem.fromJson(item as Map<String, dynamic>))
-          .toList(),
-      deliveryAddress: Address.fromJson(
-        json['deliveryAddress'] as Map<String, dynamic>,
-      ),
-      paymentMethod: json['paymentMethod'],
+      orderId: order.orderId,
+      userId: order.userId,
+      addressId: order.addressId,
+      orderNumber: order.orderNumber,
+      date: order.date,
+      subtotal: order.subtotal,
+      deliveryFee: order.deliveryFee,
+      pakagingFee: order.pakagingFee,
+      total: order.total,
+      status: order.status,
+      items: itemsJson.map(OrderItem.fromJson).toList(),
+      deliveryAddress: addressJson == null
+          ? _fallbackAddressFor(order)
+          : Address.fromJson(addressJson),
+      paymentMethod:
+          _readString(json, const ['paymentMethod', 'PaymentMethod']) ??
+          _readString(
+            _readMap(json, const ['payment', 'Payment']) ?? const {},
+            const ['paymentMethod', 'PaymentMethod', 'method', 'Method'],
+          ) ??
+          'Unknown',
     );
   }
 
@@ -141,5 +159,61 @@ class OrderDetails {
       deliveryAddress: deliveryAddress ?? this.deliveryAddress,
       paymentMethod: paymentMethod ?? this.paymentMethod,
     );
+  }
+
+  static Address _fallbackAddressFor(Order order) {
+    return Address(
+      addressId: order.addressId,
+      userId: order.userId,
+      addressType: 'Delivery',
+      addressLine: 'Address #${order.addressId}',
+      city: '',
+      state: '',
+      country: '',
+      postalCode: '',
+      latitude: 0,
+      longitude: 0,
+      isDefault: false,
+    );
+  }
+
+  static Map<String, dynamic>? _readMap(
+    Map<String, dynamic> json,
+    List<String> keys,
+  ) {
+    for (final key in keys) {
+      final value = json[key];
+      if (value is Map) {
+        return Map<String, dynamic>.from(value);
+      }
+    }
+    return null;
+  }
+
+  static List<Map<String, dynamic>> _readList(
+    Map<String, dynamic> json,
+    List<String> keys,
+  ) {
+    for (final key in keys) {
+      final value = json[key];
+      if (value is List) {
+        return value
+            .whereType<Map>()
+            .map((itemJson) => Map<String, dynamic>.from(itemJson))
+            .toList(growable: false);
+      }
+    }
+    return const [];
+  }
+
+  static String? _readString(Map<String, dynamic> json, List<String> keys) {
+    for (final key in keys) {
+      final value = json[key];
+      final stringValue = value?.toString();
+      if (stringValue != null && stringValue.isNotEmpty) {
+        return stringValue;
+      }
+    }
+    return null;
   }
 }

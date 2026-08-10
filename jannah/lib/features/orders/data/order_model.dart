@@ -24,17 +24,49 @@ class Order {
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
+    final orderId = _readInt(json, const [
+      'orderId',
+      'OrderId',
+      'order_id',
+      'id',
+    ]);
     return Order(
-      orderId: json['orderId'],
-      userId: json['userId'],
-      addressId: json['addressId'],
-      orderNumber: json['orderNumber'],
-      date: DateTime.parse(json['date']),
-      subtotal: (json['subtotal'] as num).toDouble(),
-      deliveryFee: (json['deliveryFee'] as num).toDouble(),
-      pakagingFee: (json['pakagingFee'] as num).toDouble(),
-      total: (json['total'] as num).toDouble(),
-      status: json['status'],
+      orderId: orderId,
+      userId: _readInt(json, const ['userId', 'UserId', 'user_id']),
+      addressId: _readInt(json, const ['addressId', 'AddressId', 'address_id']),
+      orderNumber:
+          _readString(json, const [
+            'orderNumber',
+            'OrderNumber',
+            'order_number',
+          ]) ??
+          (orderId == 0 ? '' : 'ORD-$orderId'),
+      date: _readDateTime(json, const [
+        'date',
+        'Date',
+        'orderDate',
+        'OrderDate',
+        'createdDate',
+        'CreatedDate',
+      ]),
+      subtotal: _readDouble(json, const ['subtotal', 'Subtotal']),
+      deliveryFee: _readDouble(json, const [
+        'deliveryFee',
+        'DeliveryFee',
+        'delivery_fee',
+      ]),
+      pakagingFee: _readDouble(json, const [
+        'pakagingFee',
+        'PakagingFee',
+        'packagingFee',
+        'PackagingFee',
+        'serviceFee',
+        'ServiceFee',
+      ]),
+      total: _readDouble(json, const ['total', 'Total']),
+      status:
+          _readString(json, const ['status', 'Status', 'orderStatus']) ??
+          'Pending',
     );
   }
 
@@ -77,5 +109,59 @@ class Order {
       total: total ?? this.total,
       status: status ?? this.status,
     );
+  }
+
+  static int _readInt(Map<String, dynamic> json, List<String> keys) {
+    final value = _readValue(json, keys);
+    if (value is int) {
+      return value;
+    }
+    if (value is num) {
+      return value.toInt();
+    }
+    if (value is String) {
+      return int.tryParse(value) ?? 0;
+    }
+    return 0;
+  }
+
+  static double _readDouble(Map<String, dynamic> json, List<String> keys) {
+    final value = _readValue(json, keys);
+    if (value is num) {
+      return value.toDouble();
+    }
+    if (value is String) {
+      return double.tryParse(value) ?? 0;
+    }
+    return 0;
+  }
+
+  static DateTime _readDateTime(Map<String, dynamic> json, List<String> keys) {
+    final value = _readValue(json, keys);
+    if (value is DateTime) {
+      return value;
+    }
+    if (value is String && value.isNotEmpty) {
+      return DateTime.tryParse(value) ?? DateTime.now();
+    }
+    return DateTime.now();
+  }
+
+  static String? _readString(Map<String, dynamic> json, List<String> keys) {
+    final value = _readValue(json, keys);
+    final stringValue = value?.toString();
+    if (stringValue == null || stringValue.isEmpty) {
+      return null;
+    }
+    return stringValue;
+  }
+
+  static Object? _readValue(Map<String, dynamic> json, List<String> keys) {
+    for (final key in keys) {
+      if (json.containsKey(key)) {
+        return json[key];
+      }
+    }
+    return null;
   }
 }

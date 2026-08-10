@@ -61,12 +61,12 @@ class JannahNavigationBar extends StatelessWidget {
   const JannahNavigationBar({super.key});
 
   static final OrdersRemoteDataSource _ordersRemoteDataSource =
-      InMemoryOrdersRemoteDataSource();
+      ApiOrdersRemoteDataSource();
   static final OrdersRepository _ordersRepository = OrdersRepositoryImpl(
     remoteDataSource: _ordersRemoteDataSource,
   );
-  static final InMemoryCheckoutRemoteDataSource _checkoutRemoteDataSource =
-      InMemoryCheckoutRemoteDataSource();
+  static final CheckoutRemoteDataSource _checkoutRemoteDataSource =
+      ApiCheckoutRemoteDataSource();
   static final InMemoryFavouritesRemoteDataSource _favouritesRemoteDataSource =
       InMemoryFavouritesRemoteDataSource();
 
@@ -102,7 +102,6 @@ class JannahNavigationBar extends StatelessWidget {
   }
 
   CheckoutCubit _createCheckoutCubit({
-    required PostOrder postOrderUseCase,
     required int currentUserId,
     required bool isGuest,
   }) {
@@ -119,7 +118,6 @@ class JannahNavigationBar extends StatelessWidget {
       removeItemUseCase: RemoveItem(repository),
       checkoutUseCase: Checkout(repository),
       loadCartItemsUseCase: LoadCartItems(repository),
-      postOrderUseCase: postOrderUseCase,
       currentUserId: currentUserId,
     )..loadCart();
   }
@@ -200,7 +198,6 @@ class JannahNavigationBar extends StatelessWidget {
         BlocProvider(create: (_) => _createProductsCubit()),
         BlocProvider(
           create: (_) => _createCheckoutCubit(
-            postOrderUseCase: PostOrder(_ordersRepository),
             currentUserId: currentUserId,
             isGuest: isGuest,
           ),

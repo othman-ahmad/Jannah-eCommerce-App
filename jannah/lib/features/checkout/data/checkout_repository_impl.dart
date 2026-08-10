@@ -78,12 +78,24 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
   }
 
   @override
-  Future<void> checkout(int cartId) {
+  Future<void> checkout({
+    required int cartId,
+    required int addressId,
+    required String paymentMethod,
+  }) {
     if (isGuest) {
-      return localDataSource.checkout(cartId: cartId);
+      return localDataSource.checkout(
+        cartId: cartId,
+        addressId: addressId,
+        paymentMethod: paymentMethod,
+      );
     }
 
-    return remoteDataSource.checkout(cartId: cartId);
+    return remoteDataSource.checkout(
+      cartId: cartId,
+      addressId: addressId,
+      paymentMethod: paymentMethod,
+    );
   }
 
   @override

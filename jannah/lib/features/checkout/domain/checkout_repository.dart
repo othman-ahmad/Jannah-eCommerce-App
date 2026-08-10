@@ -17,7 +17,11 @@ abstract class CheckoutRepository {
 
   Future<void> removeItem({required int userId, required int productId});
 
-  Future<void> checkout(int cartId);
+  Future<void> checkout({
+    required int cartId,
+    required int addressId,
+    required String paymentMethod,
+  });
 
   Future<List<CartItem>> loadCartItems(int cartId);
 }

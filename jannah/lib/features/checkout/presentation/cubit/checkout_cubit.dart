@@ -7,8 +7,6 @@ import 'package:jannah/features/checkout/domain/usecases/load_cart.dart';
 import 'package:jannah/features/checkout/domain/usecases/load_cart_items.dart';
 import 'package:jannah/features/checkout/domain/usecases/remove_item.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_state.dart';
-import 'package:jannah/features/orders/data/order_model.dart';
-import 'package:jannah/features/orders/domain/usecases/post_order.dart';
 import 'package:jannah/features/profile/data/address_model.dart';
 
 class CheckoutCubit extends Cubit<CheckoutState> {
@@ -19,7 +17,6 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   final RemoveItem removeItemUseCase;
   final Checkout checkoutUseCase;
   final LoadCartItems loadCartItemsUseCase;
-  final PostOrder postOrderUseCase;
 
   int currentUserId;
 
@@ -31,7 +28,6 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     required this.removeItemUseCase,
     required this.checkoutUseCase,
     required this.loadCartItemsUseCase,
-    required this.postOrderUseCase,
     required this.currentUserId,
   }) : super(const CheckoutState());
 
@@ -206,27 +202,11 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     emit(state.copyWith(isCheckingOut: true, clearErrorMessage: true));
 
     try {
-      final subtotal = state.total;
-      final order = Order(
-        orderId: 0,
-        userId: cart.userId,
+      await checkoutUseCase(
+        cartId: cart.cartId,
         addressId: deliveryAddress.addressId,
-        orderNumber: '',
-        date: DateTime.now(),
-        subtotal: subtotal,
-        deliveryFee: deliveryFee,
-        pakagingFee: pakagingFee,
-        total: subtotal + deliveryFee + pakagingFee,
-        status: 'Delivered',
-      );
-
-      await postOrderUseCase(
-        order: order,
         paymentMethod: paymentMethod,
-        cartItems: state.cartItems,
-        deliveryAddress: deliveryAddress,
       );
-      await checkoutUseCase(cart.cartId);
       emit(
         state.copyWith(
           status: CheckoutStatus.success,

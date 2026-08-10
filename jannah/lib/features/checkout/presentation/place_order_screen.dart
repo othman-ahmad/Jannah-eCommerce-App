@@ -34,7 +34,7 @@ class PlaceOrderScreen extends StatefulWidget {
     required String paymentMethod,
   })
   onCheckout;
-  String selectedPayment = 'Cash on Delivery';
+  String selectedPayment = 'Cash On Delivery';
 
   @override
   State<PlaceOrderScreen> createState() => _PlaceOrderScreenState();
@@ -212,12 +212,12 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
           child: ListTile(
             onTap: () {
               setState(() {
-                widget.selectedPayment = 'Cash on Delivery';
+                widget.selectedPayment = 'Cash On Delivery';
               });
             },
             leading: Radio<String>(
               activeColor: Colors.black,
-              value: 'Cash on Delivery',
+              value: 'Cash On Delivery',
               groupValue: widget.selectedPayment,
               onChanged: (value) {
                 setState(() {
@@ -225,7 +225,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                 });
               },
             ),
-            title: const Text('Cash on Delivery'),
+            title: const Text('Cash On Delivery'),
           ),
         ),
         Container(
