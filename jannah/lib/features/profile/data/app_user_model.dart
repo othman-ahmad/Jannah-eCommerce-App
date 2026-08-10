@@ -17,14 +17,22 @@ class AppUser {
 
   factory AppUser.fromJson(Map<String, dynamic> json) {
     return AppUser(
-      userId: json['user_id'] ?? 0,
-      name: json['name'] ?? '',
-      email: json['email'],
-      phone: json['phone'],
-      profileImage: json['profile_image'],
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
-          : null,
+      userId: _readInt(json, const ['user_id', 'userId', 'UserId', 'id', 'Id']),
+      name: _readString(json, const ['name', 'Name', 'fullName', 'FullName']),
+      email: _readNullableString(json, const ['email', 'Email']),
+      phone: _readNullableString(json, const ['phone', 'Phone']),
+      profileImage: _readNullableString(json, const [
+        'profile_image',
+        'profileImage',
+        'ProfileImage',
+      ]),
+      createdAt: _readNullableDate(json, const [
+        'created_at',
+        'createdAt',
+        'CreatedAt',
+        'createdDate',
+        'CreatedDate',
+      ]),
     );
   }
 
@@ -61,5 +69,56 @@ class AppUser {
           : profileImage ?? this.profileImage,
       createdAt: clearCreatedAt ? null : createdAt ?? this.createdAt,
     );
+  }
+
+  static int _readInt(Map<String, dynamic> json, List<String> keys) {
+    final value = _readValue(json, keys);
+    if (value is int) {
+      return value;
+    }
+    if (value is num) {
+      return value.toInt();
+    }
+    if (value is String) {
+      return int.tryParse(value) ?? 0;
+    }
+    return 0;
+  }
+
+  static String _readString(Map<String, dynamic> json, List<String> keys) {
+    final value = _readValue(json, keys);
+    return value?.toString() ?? '';
+  }
+
+  static String? _readNullableString(
+    Map<String, dynamic> json,
+    List<String> keys,
+  ) {
+    final value = _readValue(json, keys);
+    final stringValue = value?.toString();
+    return stringValue == null || stringValue.isEmpty ? null : stringValue;
+  }
+
+  static DateTime? _readNullableDate(
+    Map<String, dynamic> json,
+    List<String> keys,
+  ) {
+    final value = _readValue(json, keys);
+    if (value is DateTime) {
+      return value;
+    }
+    if (value is String && value.isNotEmpty) {
+      return DateTime.tryParse(value);
+    }
+    return null;
+  }
+
+  static Object? _readValue(Map<String, dynamic> json, List<String> keys) {
+    for (final key in keys) {
+      if (json.containsKey(key)) {
+        return json[key];
+      }
+    }
+    return null;
   }
 }

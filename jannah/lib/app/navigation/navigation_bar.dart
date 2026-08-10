@@ -17,7 +17,6 @@ import 'package:jannah/features/checkout/domain/usecases/load_cart_items.dart';
 import 'package:jannah/features/checkout/domain/usecases/remove_item.dart';
 import 'package:jannah/features/checkout/presentation/checkout_screen.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
-import 'package:jannah/features/authentication/data/auth_user_model.dart';
 import 'package:jannah/features/authentication/presentation/cubit/authentication_cubit.dart';
 import 'package:jannah/features/authentication/presentation/cubit/authentication_state.dart';
 import 'package:jannah/features/favourites/data/favourites_remote_data_source.dart';
@@ -48,7 +47,6 @@ import 'package:jannah/features/products/domain/usecases/get_products_by_categor
 import 'package:jannah/features/products/domain/usecases/get_products_by_name.dart';
 import 'package:jannah/features/products/presentation/cubit/products_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jannah/features/profile/data/app_user_model.dart';
 import 'package:jannah/features/profile/data/profile_remote_data_source.dart';
 import 'package:jannah/features/profile/data/profile_repository_impl.dart';
 import 'package:jannah/features/profile/domain/usecases/delete_address.dart';
@@ -160,40 +158,27 @@ class JannahNavigationBar extends StatelessWidget {
 
   ProfileCubit _createProfileCubit({
     required int currentUserId,
-    AppUser? initialUser,
+    required bool isGuest,
   }) {
-    final remoteDataSource = MockProfileRemoteDataSource(
-      initialUsers: [?initialUser],
-    );
+    final remoteDataSource = ApiProfileRemoteDataSource();
     final repository = ProfileRepositoryImpl(
       remoteDataSource: remoteDataSource,
     );
 
-    return ProfileCubit(
+    final cubit = ProfileCubit(
       getProfile: GetProfile(repository),
       updateProfile: UpdateProfile(repository),
       getAddresses: GetAddresses(repository),
       saveAddress: SaveAddress(repository),
       deleteAddress: DeleteAddress(repository),
       currentUserId: currentUserId,
-    )..loadProfileData();
-  }
+    );
 
-  AppUser? _appUserFromAuthUser(AuthUser? user) {
-    if (user == null) {
-      return null;
+    if (!isGuest) {
+      cubit.loadProfileData();
     }
 
-    final contact = user.emailOrPhone.trim();
-    final isEmail = contact.contains('@');
-
-    return AppUser(
-      userId: user.userId,
-      name: user.fullName,
-      email: isEmail ? contact : null,
-      phone: isEmail ? null : contact,
-      createdAt: user.createdDate,
-    );
+    return cubit;
   }
 
   @override
@@ -202,7 +187,6 @@ class JannahNavigationBar extends StatelessWidget {
     final authUser = authState.user;
     final isGuest = authState.status == AuthenticationStatus.guest;
     final currentUserId = authUser?.userId ?? 0;
-    final initialProfileUser = _appUserFromAuthUser(authUser);
 
     return MultiBlocProvider(
       providers: [
@@ -231,8 +215,8 @@ class JannahNavigationBar extends StatelessWidget {
         BlocProvider(create: (_) => _createPromotionsCubit()),
         BlocProvider(
           create: (_) => _createProfileCubit(
-            currentUserId: isGuest ? 1 : currentUserId,
-            initialUser: initialProfileUser,
+            currentUserId: currentUserId,
+            isGuest: isGuest,
           ),
         ),
       ],

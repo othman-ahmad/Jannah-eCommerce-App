@@ -27,17 +27,33 @@ class Address {
 
   factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
-      addressId: json['address_id'] ?? 0,
-      userId: json['user_id'] ?? 0,
-      addressType: json['address_type'] ?? '',
-      addressLine: json['address_line'] ?? '',
-      city: json['city'] ?? '',
-      state: json['state'] ?? '',
-      country: json['country'] ?? '',
-      postalCode: json['postal_code'] ?? '',
-      latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
-      longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
-      isDefault: json['is_default'] ?? false,
+      addressId: _readInt(json, const ['address_id', 'addressId', 'AddressId']),
+      userId: _readInt(json, const ['user_id', 'userId', 'UserId']),
+      addressType: _readString(json, const [
+        'address_type',
+        'addressType',
+        'AddressType',
+      ]),
+      addressLine: _readString(json, const [
+        'address_line',
+        'addressLine',
+        'AddressLine',
+      ]),
+      city: _readString(json, const ['city', 'City']),
+      state: _readString(json, const ['state', 'State']),
+      country: _readString(json, const ['country', 'Country']),
+      postalCode: _readString(json, const [
+        'postal_code',
+        'postalCode',
+        'PostalCode',
+      ]),
+      latitude: _readDouble(json, const ['latitude', 'Latitude']),
+      longitude: _readDouble(json, const ['longitude', 'Longitude']),
+      isDefault: _readBool(json, const [
+        'is_default',
+        'isDefault',
+        'IsDefault',
+      ]),
     );
   }
 
@@ -83,5 +99,58 @@ class Address {
       longitude: longitude ?? this.longitude,
       isDefault: isDefault ?? this.isDefault,
     );
+  }
+
+  static int _readInt(Map<String, dynamic> json, List<String> keys) {
+    final value = _readValue(json, keys);
+    if (value is int) {
+      return value;
+    }
+    if (value is num) {
+      return value.toInt();
+    }
+    if (value is String) {
+      return int.tryParse(value) ?? 0;
+    }
+    return 0;
+  }
+
+  static double _readDouble(Map<String, dynamic> json, List<String> keys) {
+    final value = _readValue(json, keys);
+    if (value is num) {
+      return value.toDouble();
+    }
+    if (value is String) {
+      return double.tryParse(value) ?? 0.0;
+    }
+    return 0.0;
+  }
+
+  static bool _readBool(Map<String, dynamic> json, List<String> keys) {
+    final value = _readValue(json, keys);
+    if (value is bool) {
+      return value;
+    }
+    if (value is num) {
+      return value != 0;
+    }
+    if (value is String) {
+      return value.toLowerCase() == 'true' || value == '1';
+    }
+    return false;
+  }
+
+  static String _readString(Map<String, dynamic> json, List<String> keys) {
+    final value = _readValue(json, keys);
+    return value?.toString() ?? '';
+  }
+
+  static Object? _readValue(Map<String, dynamic> json, List<String> keys) {
+    for (final key in keys) {
+      if (json.containsKey(key)) {
+        return json[key];
+      }
+    }
+    return null;
   }
 }
