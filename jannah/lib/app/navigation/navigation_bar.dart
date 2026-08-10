@@ -90,7 +90,7 @@ class JannahNavigationBar extends StatelessWidget {
   }
 
   ProductsCubit _createProductsCubit() {
-    final remoteDataSource = MockProductsRemoteDataSource();
+    final remoteDataSource = ApiProductsRemoteDataSource();
     final repository = ProductsRepositoryImpl(
       remoteDataSource: remoteDataSource,
     );

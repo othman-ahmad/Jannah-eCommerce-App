@@ -84,7 +84,9 @@ class _PrimaryItemCardState extends State<PrimaryItemCard> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: CloudinaryImage(
-                      imagePath: widget.product.imagesList.first,
+                      imagePath: widget.product.imagesList.isEmpty
+                          ? ''
+                          : widget.product.imagesList.first,
                       width: 84,
                       height: 84,
                       fit: BoxFit.cover,

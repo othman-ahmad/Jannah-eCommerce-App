@@ -196,6 +196,7 @@ class _HomePageProductsViewState extends State<_HomePageProductsView> {
                   }
 
                   if (state.productsStatus == ProductsStatus.failure) {
+                    print('Error: ${state.errorMessage}');
                     return Center(
                       child: Padding(
                         padding: const EdgeInsets.all(24),

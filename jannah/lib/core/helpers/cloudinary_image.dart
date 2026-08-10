@@ -23,8 +23,12 @@ class CloudinaryImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final imageUrl = imagePath.startsWith('http')
+        ? imagePath
+        : '$_baseUrl/$imagePath';
+
     return CachedNetworkImage(
-      imageUrl: '$_baseUrl/$imagePath',
+      imageUrl: imageUrl,
       width: width,
       height: height,
       fit: fit,

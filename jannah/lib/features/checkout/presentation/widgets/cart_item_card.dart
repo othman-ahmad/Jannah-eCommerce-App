@@ -101,7 +101,9 @@ class CheckoutItemCard extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: CloudinaryImage(
-                          imagePath: product.imagesList.first,
+                          imagePath: product.imagesList.isEmpty
+                              ? ''
+                              : product.imagesList.first,
                           width: 84,
                           height: 84,
                           fit: BoxFit.cover,

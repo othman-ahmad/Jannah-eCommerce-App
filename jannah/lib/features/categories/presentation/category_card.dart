@@ -25,7 +25,7 @@ class CategoryCard extends StatelessWidget {
   final Category category;
 
   ProductsCubit _createProductsCubit() {
-    final remoteDataSource = MockProductsRemoteDataSource();
+    final remoteDataSource = ApiProductsRemoteDataSource();
     final repository = ProductsRepositoryImpl(
       remoteDataSource: remoteDataSource,
     );

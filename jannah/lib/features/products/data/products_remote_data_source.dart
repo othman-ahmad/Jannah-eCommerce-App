@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:jannah/features/products/data/item_model.dart';
 
 abstract class ProductsRemoteDataSource {
@@ -10,155 +12,110 @@ abstract class ProductsRemoteDataSource {
   Future<List<Product>> fetchProductsByName({required String productName});
 }
 
-class MockProductsRemoteDataSource implements ProductsRemoteDataSource {
+class ApiProductsRemoteDataSource implements ProductsRemoteDataSource {
+  ApiProductsRemoteDataSource({
+    http.Client? client,
+    String baseUrl = 'http://192.168.1.75:5241/api/products',
+  }) : _client = client ?? http.Client(),
+       _baseUri = Uri.parse(baseUrl);
+
+  final http.Client _client;
+  final Uri _baseUri;
+
   @override
   Future<List<Product>> fetchProducts() async {
-    return _mockProductsList();
+    final response = await _get(_baseUri);
+    return _parseProductsList(response.body);
   }
 
   @override
   Future<Product> fetchProductById({required int productId}) async {
-    return _mockProductsList()
-        .where((product) => product.productId == productId)
-        .first;
+    final response = await _get(
+      _baseUri.replace(path: '${_baseUri.path}/$productId'),
+    );
+    return _parseProduct(response.body);
   }
 
   @override
   Future<List<Product>> fetchProductsByCategoryId({
     required int categoryId,
   }) async {
-    return _mockProductsList()
-        .where((product) => product.categoryId == categoryId)
-        .toList();
+    final response = await _get(
+      _baseUri.replace(path: '${_baseUri.path}/category/$categoryId'),
+    );
+    return _parseProductsList(response.body);
   }
 
   @override
   Future<List<Product>> fetchProductsByName({
     required String productName,
   }) async {
-    return _mockProductsList()
-        .where(
-          (product) => product.productName.toLowerCase().contains(
-            productName.toLowerCase(),
-          ),
-        )
+    final response = await _get(
+      _baseUri.replace(
+        path: '${_baseUri.path}/search',
+        queryParameters: {'name': productName},
+      ),
+    );
+    return _parseProductsList(response.body);
+  }
+
+  Future<http.Response> _get(Uri uri) async {
+    final response = await _client.get(
+      uri,
+      headers: const {'Accept': 'application/json'},
+    );
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+        'Products request failed (${response.statusCode}): ${response.body}',
+      );
+    }
+
+    return response;
+  }
+
+  Product _parseProduct(String responseBody) {
+    final decoded = jsonDecode(responseBody);
+    final productJson = _unwrapObject(decoded);
+    return Product.fromJson(productJson);
+  }
+
+  List<Product> _parseProductsList(String responseBody) {
+    final decoded = jsonDecode(responseBody);
+    final productsJson = _unwrapList(decoded);
+    return productsJson
+        .map((productJson) => Product.fromJson(productJson))
         .toList();
   }
 
-  List<Product> _mockProductsList() {
-    return [
-      Product(
-        productId: 1,
-        categoryId: 1,
-        productName: 'Watermelon',
-        imagesList: [
-          'store_images/Beverages/Lemonade/Image_2.jpg',
-          'store_images/Fruits/Watermelon/Image_2.jpg',
-          'store_images/Sweets_and_Desserts/Licorice/Image_5.jpg',
-          'store_images/Vegetables/Cauliflower/Image_1.jpg',
-          'store_images/Vegetables/Zucchini/Image_2.jpg',
-        ],
-        description:
-            'Watermelon is a refreshing and hydrating fruit that is perfect for hot summer days. It is low in calories and high in vitamins A and C, making it a healthy choice for snacking or adding to salads. Watermelon is also rich in antioxidants, which can help protect your cells from damage and reduce inflammation in the body.',
-        unit: 'kg',
-        price: 2.89,
+  Map<String, dynamic> _unwrapObject(Object? decoded) {
+    if (decoded is Map<String, dynamic>) {
+      final nestedProduct =
+          decoded['product'] ?? decoded['Product'] ?? decoded['data'];
 
-        createdDate: DateTime.now(),
-      ),
-      Product(
-        // mango
-        productId: 2,
-        categoryId: 2,
-        productName: 'Mango',
-        imagesList: [
-          'store_images/Fruits/Watermelon/Image_2.jpg',
-          'store_images/Sweets_and_Desserts/Licorice/Image_5.jpg',
-          'store_images/Vegetables/Cauliflower/Image_1.jpg',
-          'store_images/Vegetables/Zucchini/Image_2.jpg',
-          'store_images/Beverages/Lemonade/Image_2.jpg',
-        ],
-        description:
-            'Mango is a tropical fruit that is known for its sweet and juicy flavor. It is rich in vitamins A and C, as well as fiber and antioxidants, making it a healthy choice for snacking or adding to smoothies and desserts. Mangoes are also versatile in cooking, as they can be used in both sweet and savory dishes.',
-        unit: 'kg',
-        price: 3.49,
+      if (nestedProduct is Map<String, dynamic>) {
+        return nestedProduct;
+      }
 
-        createdDate: DateTime.now(),
-      ),
-      Product(
-        // banana
-        productId: 3,
-        categoryId: 2,
-        productName: 'Banana',
-        imagesList: [
-          'store_images/Sweets_and_Desserts/Licorice/Image_5.jpg',
-          'store_images/Vegetables/Cauliflower/Image_1.jpg',
-          'store_images/Vegetables/Zucchini/Image_2.jpg',
-          'store_images/Beverages/Lemonade/Image_2.jpg',
-          'store_images/Fruits/Watermelon/Image_2.jpg',
-        ],
-        description:
-            'Bananas are a popular fruit that are known for their sweet taste and convenient portability. They are rich in potassium, vitamin C, and dietary fiber, making them a healthy choice for snacking or adding to smoothies and desserts. Bananas are also versatile in cooking, as they can be used in both sweet and savory dishes.',
-        unit: 'kg',
-        price: 1.99,
+      return decoded;
+    }
 
-        createdDate: DateTime.now(),
-      ),
-      Product(
-        // apple
-        productId: 4,
-        categoryId: 3,
-        productName: 'Apple',
-        imagesList: [
-          'store_images/Vegetables/Cauliflower/Image_1.jpg',
-          'store_images/Vegetables/Zucchini/Image_2.jpg',
-          'store_images/Beverages/Lemonade/Image_2.jpg',
-          'store_images/Fruits/Watermelon/Image_2.jpg',
-          'store_images/Sweets_and_Desserts/Licorice/Image_5.jpg',
-        ],
-        description:
-            'Apples are a popular fruit that are known for their crisp texture and sweet-tart flavor. They are rich in fiber, vitamin C, and antioxidants, making them a healthy choice for snacking or adding to salads and desserts. Apples are also versatile in cooking, as they can be used in both sweet and savory dishes.',
-        unit: 'kg',
-        price: 2.49,
+    throw const FormatException('Expected a product object from the API.');
+  }
 
-        createdDate: DateTime.now(),
-      ),
-      Product(
-        // orange
-        productId: 5,
-        categoryId: 3,
-        productName: 'Orange',
-        imagesList: [
-          'store_images/Vegetables/Zucchini/Image_2.jpg',
-          'store_images/Beverages/Lemonade/Image_2.jpg',
-          'store_images/Fruits/Watermelon/Image_2.jpg',
-          'store_images/Sweets_and_Desserts/Licorice/Image_5.jpg',
-          'store_images/Vegetables/Cauliflower/Image_1.jpg',
-        ],
-        description:
-            'Oranges are a popular citrus fruit that are known for their sweet and tangy flavor',
-        unit: 'kg',
-        price: 2.99,
+  List<Map<String, dynamic>> _unwrapList(Object? decoded) {
+    final Object? products = decoded is Map<String, dynamic>
+        ? decoded['products'] ??
+              decoded['Products'] ??
+              decoded['items'] ??
+              decoded['Items'] ??
+              decoded['data']
+        : decoded;
 
-        createdDate: DateTime.now(),
-      ),
-      Product(
-        productId: 6,
-        categoryId: 3,
-        productName: 'Strawberry',
-        imagesList: [
-          'store_images/Beverages/Lemonade/Image_2.jpg',
-          'store_images/Fruits/Watermelon/Image_2.jpg',
-          'store_images/Sweets_and_Desserts/Licorice/Image_5.jpg',
-          'store_images/Vegetables/Cauliflower/Image_1.jpg',
-          'store_images/Vegetables/Zucchini/Image_2.jpg',
-        ],
-        description:
-            'Strawberries are sweet, juicy, and packed with vitamin C. They are ideal for snacking, smoothies, and desserts, and add a bright, fresh flavor to any meal.',
-        unit: 'kg',
-        price: 4.29,
+    if (products is List) {
+      return products.whereType<Map<String, dynamic>>().toList(growable: false);
+    }
 
-        createdDate: DateTime.now(),
-      ),
-    ];
+    throw const FormatException('Expected a product list from the API.');
   }
 }

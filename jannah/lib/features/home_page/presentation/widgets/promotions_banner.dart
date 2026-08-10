@@ -35,7 +35,7 @@ class _PromotionsBannerState extends State<PromotionsBanner> {
   }
 
   ProductsCubit _createProductsCubit() {
-    final remoteDataSource = MockProductsRemoteDataSource();
+    final remoteDataSource = ApiProductsRemoteDataSource();
     final repository = ProductsRepositoryImpl(
       remoteDataSource: remoteDataSource,
     );
