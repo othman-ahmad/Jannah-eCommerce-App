@@ -67,8 +67,8 @@ class JannahNavigationBar extends StatelessWidget {
   );
   static final CheckoutRemoteDataSource _checkoutRemoteDataSource =
       ApiCheckoutRemoteDataSource();
-  static final InMemoryFavouritesRemoteDataSource _favouritesRemoteDataSource =
-      InMemoryFavouritesRemoteDataSource();
+  static final FavouritesRemoteDataSource _favouritesRemoteDataSource =
+      ApiFavouritesRemoteDataSource();
 
   FavouritesCubit _createFavouritesCubit({
     required int currentUserId,
@@ -145,7 +145,7 @@ class JannahNavigationBar extends StatelessWidget {
   }
 
   PromotionsCubit _createPromotionsCubit() {
-    final remoteDataSource = MockPromotionsRemoteDataSource();
+    final remoteDataSource = ApiPromotionsRemoteDataSource();
     final repository = PromotionsRepositoryImpl(
       remoteDataSource: remoteDataSource,
     );

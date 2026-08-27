@@ -27,6 +27,8 @@ class CloudinaryImage extends StatelessWidget {
         ? imagePath
         : '$_baseUrl/$imagePath';
 
+    print('CloudinaryImage: $imageUrl');
+
     return CachedNetworkImage(
       imageUrl: imageUrl,
       width: width,

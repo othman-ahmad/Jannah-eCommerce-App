@@ -13,10 +13,27 @@ class Favourite {
 
   factory Favourite.fromJson(Map<String, dynamic> json) {
     return Favourite(
-      likeId: json['LikeId'] ?? json['likeId'] ?? json['like_id'],
-      userId: json['UserId'] ?? json['userId'] ?? json['user_id'],
-      productId: json['ProductId'] ?? json['productId'] ?? json['product_id'],
-      date: DateTime.parse(json['Date'] ?? json['createdDate']),
+      likeId: _readInt(json, const [
+        'favoriteId',
+        'FavoriteId',
+        'favorite_id',
+        'favouriteId',
+        'FavouriteId',
+        'favourite_id',
+        'likeId',
+        'LikeId',
+        'like_id',
+        'id',
+      ]),
+      userId: _readInt(json, const ['userId', 'UserId', 'user_id']),
+      productId: _readInt(json, const ['productId', 'ProductId', 'product_id']),
+      date: _readDateTime(json, const [
+        'date',
+        'Date',
+        'createdDate',
+        'CreatedDate',
+        'created_at',
+      ]),
     );
   }
 
@@ -27,5 +44,39 @@ class Favourite {
       'ProductId': productId,
       'Date': date.toIso8601String(),
     };
+  }
+
+  static int _readInt(Map<String, dynamic> json, List<String> keys) {
+    final value = _readValue(json, keys);
+    if (value is int) {
+      return value;
+    }
+    if (value is num) {
+      return value.toInt();
+    }
+    if (value is String) {
+      return int.tryParse(value) ?? 0;
+    }
+    return 0;
+  }
+
+  static DateTime _readDateTime(Map<String, dynamic> json, List<String> keys) {
+    final value = _readValue(json, keys);
+    if (value is DateTime) {
+      return value;
+    }
+    if (value is String && value.isNotEmpty) {
+      return DateTime.tryParse(value) ?? DateTime.now();
+    }
+    return DateTime.now();
+  }
+
+  static Object? _readValue(Map<String, dynamic> json, List<String> keys) {
+    for (final key in keys) {
+      if (json.containsKey(key)) {
+        return json[key];
+      }
+    }
+    return null;
   }
 }

@@ -1,58 +1,117 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 import 'package:jannah/features/home_page/data/promotion_model.dart';
 
 abstract class PromotionsRemoteDataSource {
   Future<List<Promotion>> fetchPromotions();
 }
 
-class MockPromotionsRemoteDataSource implements PromotionsRemoteDataSource {
+class ApiPromotionsRemoteDataSource implements PromotionsRemoteDataSource {
+  ApiPromotionsRemoteDataSource({
+    http.Client? client,
+    String baseUrl = 'http://192.168.1.75:5241/api/promotions',
+  }) : _client = client ?? http.Client(),
+       _baseUri = Uri.parse(baseUrl);
+
+  final http.Client _client;
+  final Uri _baseUri;
+
   @override
   Future<List<Promotion>> fetchPromotions() async {
-    return _mockPromotionsList();
+    final response = await _client
+        .get(_baseUri, headers: const {'Accept': 'application/json'})
+        .timeout(const Duration(seconds: 15));
+
+    _throwIfRequestFailed(response, 'Promotions request failed');
+
+    return _unwrapList(
+      _decodeJson(response.body),
+      'promotions',
+    ).map(Promotion.fromJson).toList(growable: false);
   }
 
-  List<Promotion> _mockPromotionsList() {
-    return [
-      Promotion(
-        promotionId: 1,
-        title: 'Fresh Fruits',
-        description: 'Enjoy 25% OFF.',
-        categoryId: 1,
-        discountPercentage: 25.0,
-        imageUrl: 'assets/images/eb7638a3-0399-40a8-9fcd-66981badff7a.png',
-        startDate: DateTime(2024, 1, 1),
-        endDate: DateTime(2029, 12, 31),
-      ),
-      Promotion(
-        promotionId: 2,
-        title: 'Fresh Vegetables',
-        description: 'Save 20% Today.',
-        categoryId: 5,
-        discountPercentage: 20.0,
-        imageUrl:
-            'assets/images/9d461358-c286-4a54-a6c2-b25f6ae4fb81 (1)(1).png',
-        startDate: DateTime(2024, 1, 1),
-        endDate: DateTime(2029, 12, 31),
-      ),
-      Promotion(
-        promotionId: 3,
-        title: 'Leafy Greens',
-        description: 'Fresh & 15% OFF.',
-        categoryId: 3,
-        discountPercentage: 15.0,
-        imageUrl: 'assets/images/60f386bf-15dc-4410-b8d1-201b80598ba2.png',
-        startDate: DateTime(2024, 1, 1),
-        endDate: DateTime(2029, 12, 31),
-      ),
-      Promotion(
-        promotionId: 4,
-        title: 'Premium Nuts',
-        description: 'Enjoy 30% OFF.',
-        categoryId: 4,
-        discountPercentage: 30.0,
-        imageUrl: 'assets/images/9d461358-c286-4a54-a6c2-b25f6ae4fb81 (1).png',
-        startDate: DateTime(2024, 1, 1),
-        endDate: DateTime(2029, 12, 31),
-      ),
-    ];
+  Object? _decodeJson(String responseBody) {
+    if (responseBody.trim().isEmpty) {
+      return null;
+    }
+
+    return jsonDecode(responseBody);
+  }
+
+  List<Map<String, dynamic>> _unwrapList(Object? decoded, String listName) {
+    final Object? list = decoded is Map
+        ? decoded[listName] ??
+              decoded[_capitalize(listName)] ??
+              decoded['items'] ??
+              decoded['Items'] ??
+              decoded['data'] ??
+              decoded['Data'] ??
+              decoded['result'] ??
+              decoded['Result']
+        : decoded;
+
+    if (list is List) {
+      return list
+          .whereType<Map>()
+          .map((itemJson) => Map<String, dynamic>.from(itemJson))
+          .toList(growable: false);
+    }
+
+    throw FormatException('Expected a $listName list from the API.');
+  }
+
+  void _throwIfRequestFailed(http.Response response, String fallbackMessage) {
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return;
+    }
+
+    throw Exception(
+      _extractErrorMessage(response.body) ??
+          '$fallbackMessage (${response.statusCode}).',
+    );
+  }
+
+  String? _extractErrorMessage(String responseBody) {
+    try {
+      final decoded = _decodeJson(responseBody);
+      if (decoded is! Map) {
+        return responseBody.trim().isEmpty ? null : responseBody;
+      }
+
+      final json = Map<String, dynamic>.from(decoded);
+      for (final key in const [
+        'message',
+        'Message',
+        'error',
+        'Error',
+        'title',
+      ]) {
+        final value = json[key];
+        if (value is String && value.isNotEmpty) {
+          return value;
+        }
+      }
+
+      final errors = json['errors'];
+      if (errors is Map && errors.isNotEmpty) {
+        return errors.values
+            .expand((value) => value is List ? value : [value])
+            .map((value) => value.toString())
+            .join('\n');
+      }
+    } catch (_) {
+      return responseBody.trim().isEmpty ? null : responseBody;
+    }
+
+    return null;
+  }
+
+  String _capitalize(String value) {
+    if (value.isEmpty) {
+      return value;
+    }
+
+    return '${value[0].toUpperCase()}${value.substring(1)}';
   }
 }

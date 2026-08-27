@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jannah/core/helpers/cloudinary_image.dart';
 import 'package:jannah/features/categories/data/category_model.dart';
 import 'package:jannah/features/checkout/presentation/cubit/checkout_cubit.dart';
 import 'package:jannah/features/home_page/presentation/cubit/promotions_cubit.dart';
@@ -134,14 +135,17 @@ class _PromotionsBannerState extends State<PromotionsBanner> {
                     },
                     itemBuilder: (context, index) {
                       final promotion = widget.promotions[index];
+                      print(
+                        'Promotion image URL: ${promotion.imageUrl}',
+                      ); // Debug print
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4),
                         child: Stack(
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(
-                                promotion.imageUrl,
+                              child: CloudinaryImage(
+                                imagePath: promotion.imageUrl,
                                 fit: BoxFit.cover,
                                 width: double.infinity,
                               ),
