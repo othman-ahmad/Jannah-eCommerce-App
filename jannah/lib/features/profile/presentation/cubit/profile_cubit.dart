@@ -26,20 +26,11 @@ class ProfileCubit extends Cubit<ProfileState> {
     required this.currentUserId,
   }) : super(const ProfileState());
 
-  Future<void> loadProfileData({int? userId}) async {
-    final effectiveUserId = userId ?? currentUserId;
-    currentUserId = effectiveUserId;
-
-    await Future.wait([
-      loadProfile(userId: effectiveUserId),
-      loadAddresses(userId: effectiveUserId),
-    ]);
+  Future<void> loadProfileData() async {
+    await Future.wait([loadProfile(), loadAddresses()]);
   }
 
-  Future<void> loadProfile({int? userId}) async {
-    final effectiveUserId = userId ?? currentUserId;
-    currentUserId = effectiveUserId;
-
+  Future<void> loadProfile() async {
     emit(
       state.copyWith(
         profileStatus: ProfileStatus.loading,
@@ -48,7 +39,8 @@ class ProfileCubit extends Cubit<ProfileState> {
     );
 
     try {
-      final user = await getProfile(userId: effectiveUserId);
+      final user = await getProfile();
+      currentUserId = user.userId;
       emit(
         state.copyWith(
           profileStatus: ProfileStatus.success,
@@ -66,10 +58,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
-  Future<void> loadAddresses({int? userId}) async {
-    final effectiveUserId = userId ?? currentUserId;
-    currentUserId = effectiveUserId;
-
+  Future<void> loadAddresses() async {
     emit(
       state.copyWith(
         addressesStatus: ProfileStatus.loading,
@@ -78,7 +67,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     );
 
     try {
-      final addresses = await getAddresses(userId: effectiveUserId);
+      final addresses = await getAddresses();
       emit(
         state.copyWith(
           addressesStatus: ProfileStatus.success,
@@ -128,7 +117,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
     try {
       await saveAddress(address: address);
-      final addresses = await getAddresses(userId: currentUserId);
+      final addresses = await getAddresses();
       emit(
         state.copyWith(
           addressesStatus: ProfileStatus.success,
@@ -155,7 +144,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
     try {
       await deleteAddress(addressId: addressId);
-      final addresses = await getAddresses(userId: currentUserId);
+      final addresses = await getAddresses();
       emit(
         state.copyWith(
           addressesStatus: ProfileStatus.success,

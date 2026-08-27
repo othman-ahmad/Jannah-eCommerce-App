@@ -59,17 +59,17 @@ class Address {
 
   Map<String, dynamic> toJson() {
     return {
-      'address_id': addressId,
-      'user_id': userId,
-      'address_type': addressType,
-      'address_line': addressLine,
-      'city': city,
-      'state': state,
-      'country': country,
-      'postal_code': postalCode,
-      'latitude': latitude,
-      'longitude': longitude,
-      'is_default': isDefault,
+      'AddressId': addressId,
+      'UserId': userId,
+      'AddressType': addressType,
+      'AddressLine': addressLine,
+      'City': city,
+      'State': state,
+      'Country': country,
+      'PostalCode': postalCode,
+      'Latitude': latitude,
+      'Longitude': longitude,
+      'IsDefault': isDefault,
     };
   }
 

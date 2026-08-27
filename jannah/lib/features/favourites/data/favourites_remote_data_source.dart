@@ -4,24 +4,17 @@ import 'package:http/http.dart' as http;
 import 'package:jannah/features/favourites/data/favourite_model.dart';
 
 abstract class FavouritesRemoteDataSource {
-  Future<List<Favourite>> fetchFavourites({required int userId});
+  Future<List<Favourite>> fetchFavourites();
 
-  Future<Favourite> addToFavourites({
-    required int userId,
-    required int productId,
-  });
+  Future<Favourite> addToFavourites({required int productId});
 
-  Future<void> removeFromFavourites({
-    required int userId,
-    required int productId,
-    int? likeId,
-  });
+  Future<void> removeFromFavourites({required int productId, int? likeId});
 }
 
 class ApiFavouritesRemoteDataSource implements FavouritesRemoteDataSource {
   ApiFavouritesRemoteDataSource({
     http.Client? client,
-    String baseUrl = 'http://192.168.1.75:5241/api/favorites',
+    String baseUrl = 'http://192.168.1.21:5241/api/favorites',
   }) : _client = client ?? http.Client(),
        _baseUri = Uri.parse(baseUrl);
 
@@ -29,9 +22,9 @@ class ApiFavouritesRemoteDataSource implements FavouritesRemoteDataSource {
   final Uri _baseUri;
 
   @override
-  Future<List<Favourite>> fetchFavourites({required int userId}) async {
+  Future<List<Favourite>> fetchFavourites() async {
     final response = await _client
-        .get(_uriFor('user/$userId'), headers: _jsonHeaders)
+        .get(_baseUri, headers: _jsonHeaders)
         .timeout(const Duration(seconds: 15));
 
     _throwIfRequestFailed(response, 'Favourites request failed');
@@ -43,15 +36,12 @@ class ApiFavouritesRemoteDataSource implements FavouritesRemoteDataSource {
   }
 
   @override
-  Future<Favourite> addToFavourites({
-    required int userId,
-    required int productId,
-  }) async {
+  Future<Favourite> addToFavourites({required int productId}) async {
     final response = await _client
         .post(
           _baseUri,
           headers: _jsonHeaders,
-          body: jsonEncode({'userId': userId, 'productId': productId}),
+          body: jsonEncode({'ProductId': productId}),
         )
         .timeout(const Duration(seconds: 15));
 
@@ -68,12 +58,12 @@ class ApiFavouritesRemoteDataSource implements FavouritesRemoteDataSource {
       }
     }
 
-    final favourites = await fetchFavourites(userId: userId);
+    final favourites = await fetchFavourites();
     return favourites.firstWhere(
       (favourite) => favourite.productId == productId,
       orElse: () => Favourite(
         likeId: 0,
-        userId: userId,
+        userId: 0,
         productId: productId,
         date: DateTime.now(),
       ),
@@ -82,11 +72,10 @@ class ApiFavouritesRemoteDataSource implements FavouritesRemoteDataSource {
 
   @override
   Future<void> removeFromFavourites({
-    required int userId,
     required int productId,
     int? likeId,
   }) async {
-    final favouriteId = likeId ?? await _findFavouriteId(userId, productId);
+    final favouriteId = likeId ?? await _findFavouriteId(productId);
 
     if (favouriteId == null || favouriteId == 0) {
       return;
@@ -99,8 +88,8 @@ class ApiFavouritesRemoteDataSource implements FavouritesRemoteDataSource {
     _throwIfRequestFailed(response, 'Remove favourite request failed');
   }
 
-  Future<int?> _findFavouriteId(int userId, int productId) async {
-    final favourites = await fetchFavourites(userId: userId);
+  Future<int?> _findFavouriteId(int productId) async {
+    final favourites = await fetchFavourites();
     for (final favourite in favourites) {
       if (favourite.productId == productId) {
         return favourite.likeId;
@@ -237,22 +226,20 @@ class ApiFavouritesRemoteDataSource implements FavouritesRemoteDataSource {
 class InMemoryFavouritesRemoteDataSource implements FavouritesRemoteDataSource {
   final List<Favourite> _favourites = [];
   int _nextLikeId = 1;
+  static const _mockUserId = 1;
 
   @override
-  Future<List<Favourite>> fetchFavourites({required int userId}) async {
+  Future<List<Favourite>> fetchFavourites() async {
     return _favourites
-        .where((favourite) => favourite.userId == userId)
+        .where((favourite) => favourite.userId == _mockUserId)
         .toList(growable: false);
   }
 
   @override
-  Future<Favourite> addToFavourites({
-    required int userId,
-    required int productId,
-  }) async {
+  Future<Favourite> addToFavourites({required int productId}) async {
     final existing = _favourites.where(
       (favourite) =>
-          favourite.userId == userId && favourite.productId == productId,
+          favourite.userId == _mockUserId && favourite.productId == productId,
     );
 
     if (existing.isNotEmpty) {
@@ -261,7 +248,7 @@ class InMemoryFavouritesRemoteDataSource implements FavouritesRemoteDataSource {
 
     final favourite = Favourite(
       likeId: _nextLikeId++,
-      userId: userId,
+      userId: _mockUserId,
       productId: productId,
       date: DateTime.now(),
     );
@@ -272,13 +259,12 @@ class InMemoryFavouritesRemoteDataSource implements FavouritesRemoteDataSource {
 
   @override
   Future<void> removeFromFavourites({
-    required int userId,
     required int productId,
     int? likeId,
   }) async {
     _favourites.removeWhere(
       (favourite) =>
-          favourite.userId == userId &&
+          favourite.userId == _mockUserId &&
           favourite.productId == productId &&
           (likeId == null || favourite.likeId == likeId),
     );

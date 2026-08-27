@@ -22,14 +22,11 @@ class OrdersCubit extends Cubit<OrdersState> {
     required this.currentUserId,
   }) : super(const OrdersState());
 
-  Future<void> loadOrders({int? userId}) async {
-    final effectiveUserId = userId ?? currentUserId;
-    currentUserId = effectiveUserId;
-
+  Future<void> loadOrders() async {
     emit(state.copyWith(status: OrdersStatus.loading, clearErrorMessage: true));
 
     try {
-      final orders = await getOrders(userId: effectiveUserId);
+      final orders = await getOrders();
       emit(
         state.copyWith(
           status: OrdersStatus.success,
@@ -62,7 +59,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         cartItems: cartItems,
         deliveryAddress: deliveryAddress,
       );
-      final orders = await getOrders(userId: postedOrder.userId);
+      final orders = await getOrders();
       currentUserId = postedOrder.userId;
       emit(
         state.copyWith(

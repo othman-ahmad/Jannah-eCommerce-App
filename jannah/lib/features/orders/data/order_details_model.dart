@@ -98,19 +98,19 @@ class OrderDetails {
 
   Map<String, dynamic> toJson() {
     return {
-      'orderId': orderId,
-      'userId': userId,
-      'addressId': addressId,
-      'orderNumber': orderNumber,
-      'date': date.toIso8601String(),
-      'subtotal': subtotal,
-      'deliveryFee': deliveryFee,
-      'pakagingFee': pakagingFee,
-      'total': total,
-      'status': status,
-      'items': items.map((item) => item.toJson()).toList(),
-      'deliveryAddress': deliveryAddress.toJson(),
-      'paymentMethod': paymentMethod,
+      'OrderId': orderId,
+      'UserId': userId,
+      'AddressId': addressId,
+      'OrderNumber': orderNumber,
+      'Date': date.toIso8601String(),
+      'Subtotal': subtotal,
+      'DeliveryFee': deliveryFee,
+      'PakagingFee': pakagingFee,
+      'Total': total,
+      'Status': status,
+      'Items': items.map((item) => item.toJson()).toList(),
+      'DeliveryAddress': deliveryAddress.toJson(),
+      'PaymentMethod': paymentMethod,
     };
   }
 

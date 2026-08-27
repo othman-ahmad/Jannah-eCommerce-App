@@ -6,7 +6,7 @@ class GetOrders {
 
   const GetOrders(this.repository);
 
-  Future<List<Order>> call({required int userId}) {
-    return repository.fetchOrders(userId: userId);
+  Future<List<Order>> call() {
+    return repository.fetchOrders();
   }
 }

@@ -31,16 +31,13 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     required this.currentUserId,
   }) : super(const CheckoutState());
 
-  Future<void> loadCart({int? userId}) async {
-    final effectiveUserId = userId ?? currentUserId;
-    currentUserId = effectiveUserId;
-
+  Future<void> loadCart() async {
     emit(
       state.copyWith(status: CheckoutStatus.loading, clearErrorMessage: true),
     );
 
     try {
-      final cart = await loadCartUseCase(effectiveUserId);
+      final cart = await loadCartUseCase();
       if (cart == null) {
         emit(
           state.copyWith(
@@ -71,16 +68,13 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     }
   }
 
-  Future<void> createCart({int? userId}) async {
-    final effectiveUserId = userId ?? currentUserId;
-    currentUserId = effectiveUserId;
-
+  Future<void> createCart() async {
     emit(
       state.copyWith(status: CheckoutStatus.loading, clearErrorMessage: true),
     );
 
     try {
-      final cart = await createCartUseCase(effectiveUserId);
+      final cart = await createCartUseCase();
       emit(
         state.copyWith(
           status: CheckoutStatus.success,
@@ -134,25 +128,21 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     required int productId,
     required int quantity,
     required double price,
-    int? userId,
   }) async {
     if (quantity <= 0 || state.isPending(productId)) {
       return;
     }
 
-    final effectiveUserId = userId ?? currentUserId;
-    currentUserId = effectiveUserId;
     _setProductPending(productId, isPending: true);
 
     try {
       await addItemUseCase(
-        userId: effectiveUserId,
         productId: productId,
         quantity: quantity,
         price: price,
       );
 
-      await _refreshCart(effectiveUserId);
+      await _refreshCart();
     } catch (e) {
       emit(
         state.copyWith(
@@ -164,18 +154,16 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     }
   }
 
-  Future<void> removeCartItem({required int productId, int? userId}) async {
+  Future<void> removeCartItem({required int productId}) async {
     if (state.isPending(productId)) {
       return;
     }
 
-    final effectiveUserId = userId ?? currentUserId;
-    currentUserId = effectiveUserId;
     _setProductPending(productId, isPending: true);
 
     try {
-      await removeItemUseCase(userId: effectiveUserId, productId: productId);
-      await _refreshCart(effectiveUserId);
+      await removeItemUseCase(productId: productId);
+      await _refreshCart();
     } catch (e) {
       emit(
         state.copyWith(
@@ -231,8 +219,8 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     emit(state.copyWith(selectedDeliveryAddress: address));
   }
 
-  Future<void> _refreshCart(int userId) async {
-    final cart = await loadCartUseCase(userId);
+  Future<void> _refreshCart() async {
+    final cart = await loadCartUseCase();
     if (cart == null) {
       emit(
         state.copyWith(

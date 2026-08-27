@@ -6,7 +6,7 @@ class GetAddresses {
 
   const GetAddresses(this.repository);
 
-  Future<List<Address>> call({required int userId}) {
-    return repository.getAddresses(userId: userId);
+  Future<List<Address>> call() {
+    return repository.getAddresses();
   }
 }

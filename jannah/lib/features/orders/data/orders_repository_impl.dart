@@ -11,8 +11,8 @@ class OrdersRepositoryImpl implements OrdersRepository {
   const OrdersRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<Order>> fetchOrders({required int userId}) {
-    return remoteDataSource.fetchOrders(userId: userId);
+  Future<List<Order>> fetchOrders() {
+    return remoteDataSource.fetchOrders();
   }
 
   @override

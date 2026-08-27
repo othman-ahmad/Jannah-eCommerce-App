@@ -12,15 +12,12 @@ class GuestFavouritesLocalDataSource implements FavouritesRemoteDataSource {
     : _box = box ?? Hive.box<dynamic>(AppPreferences.guestFavouritesBoxName);
 
   @override
-  Future<List<Favourite>> fetchFavourites({required int userId}) async {
+  Future<List<Favourite>> fetchFavourites() async {
     return _readFavourites();
   }
 
   @override
-  Future<Favourite> addToFavourites({
-    required int userId,
-    required int productId,
-  }) async {
+  Future<Favourite> addToFavourites({required int productId}) async {
     final favourites = _readFavourites();
     final existing = favourites.where(
       (favourite) => favourite.productId == productId,
@@ -43,7 +40,6 @@ class GuestFavouritesLocalDataSource implements FavouritesRemoteDataSource {
 
   @override
   Future<void> removeFromFavourites({
-    required int userId,
     required int productId,
     int? likeId,
   }) async {

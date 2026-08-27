@@ -2,14 +2,14 @@ class AuthUser {
   final int userId;
   final String fullName;
   final String emailOrPhone;
-  final String passwordHash;
+  final String token;
   final DateTime createdDate;
 
   AuthUser({
     required this.userId,
     required this.fullName,
     required this.emailOrPhone,
-    required this.passwordHash,
+    required this.token,
     required this.createdDate,
   });
 
@@ -36,7 +36,7 @@ class AuthUser {
         'phone',
         'Phone',
       ]),
-      passwordHash: _readString(json, const [
+      token: _readString(json, const [
         'Token',
         'token',
         'accessToken',
@@ -52,14 +52,12 @@ class AuthUser {
     );
   }
 
-  String get token => passwordHash;
-
   Map<String, dynamic> toJson() {
     return {
       'UserId': userId,
       'FullName': fullName,
       'EmailOrPhone': emailOrPhone,
-      'Token': passwordHash,
+      'Token': token,
       'CreatedDate': createdDate.toIso8601String(),
     };
   }

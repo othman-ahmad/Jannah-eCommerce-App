@@ -15,7 +15,7 @@ abstract class ProductsRemoteDataSource {
 class ApiProductsRemoteDataSource implements ProductsRemoteDataSource {
   ApiProductsRemoteDataSource({
     http.Client? client,
-    String baseUrl = 'http://192.168.1.75:5241/api/products',
+    String baseUrl = 'http://192.168.1.21:5241/api/products',
   }) : _client = client ?? http.Client(),
        _baseUri = Uri.parse(baseUrl);
 

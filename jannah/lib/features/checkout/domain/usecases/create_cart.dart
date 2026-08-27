@@ -6,7 +6,7 @@ class CreateCart {
 
   const CreateCart(this.repository);
 
-  Future<Cart> call(int userId) {
-    return repository.createCart(userId);
+  Future<Cart> call() {
+    return repository.createCart();
   }
 }

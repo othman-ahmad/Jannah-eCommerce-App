@@ -18,16 +18,13 @@ class FavouritesCubit extends Cubit<FavouritesState> {
     required this.currentUserId,
   }) : super(const FavouritesState());
 
-  Future<void> loadFavourites({int? userId}) async {
-    final effectiveUserId = userId ?? currentUserId;
-    currentUserId = effectiveUserId;
-
+  Future<void> loadFavourites() async {
     emit(
       state.copyWith(status: FavouritesStatus.loading, clearErrorMessage: true),
     );
 
     try {
-      final favourites = await getFavourites(userId: effectiveUserId);
+      final favourites = await getFavourites();
       emit(
         state.copyWith(
           status: FavouritesStatus.success,
@@ -45,28 +42,23 @@ class FavouritesCubit extends Cubit<FavouritesState> {
     }
   }
 
-  Future<void> toggleFavourite(int productId, {int? userId}) async {
+  Future<void> toggleFavourite(int productId) async {
     if (state.isPending(productId)) {
       return;
     }
 
     if (state.isFavourite(productId)) {
-      await removeFavourite(productId, userId: userId);
+      await removeFavourite(productId);
     } else {
-      await addFavourite(productId, userId: userId);
+      await addFavourite(productId);
     }
   }
 
-  Future<void> addFavourite(int productId, {int? userId}) async {
-    final effectiveUserId = userId ?? currentUserId;
-    currentUserId = effectiveUserId;
+  Future<void> addFavourite(int productId) async {
     _setProductPending(productId, isPending: true);
 
     try {
-      final favourite = await addToFavourites(
-        userId: effectiveUserId,
-        productId: productId,
-      );
+      final favourite = await addToFavourites(productId: productId);
 
       final withoutDuplicate = state.favourites
           .where((item) => item.productId != productId)
@@ -91,15 +83,12 @@ class FavouritesCubit extends Cubit<FavouritesState> {
     }
   }
 
-  Future<void> removeFavourite(int productId, {int? userId}) async {
-    final effectiveUserId = userId ?? currentUserId;
-    currentUserId = effectiveUserId;
+  Future<void> removeFavourite(int productId) async {
     final favourite = state.favouriteForProduct(productId);
     _setProductPending(productId, isPending: true);
 
     try {
       await removeFromFavourites(
-        userId: effectiveUserId,
         productId: productId,
         likeId: favourite?.likeId,
       );

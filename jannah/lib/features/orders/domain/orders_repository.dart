@@ -4,7 +4,7 @@ import 'package:jannah/features/orders/data/order_model.dart';
 import 'package:jannah/features/profile/data/address_model.dart';
 
 abstract class OrdersRepository {
-  Future<List<Order>> fetchOrders({required int userId});
+  Future<List<Order>> fetchOrders();
 
   Future<OrderDetails> fetchOrderDetails({required int orderId});
 

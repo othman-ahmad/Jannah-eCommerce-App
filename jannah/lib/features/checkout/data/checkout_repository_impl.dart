@@ -17,22 +17,22 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
   }) : localDataSource = localDataSource ?? GuestCartLocalDataSource();
 
   @override
-  Future<Cart?> loadCart(int userId) async {
+  Future<Cart?> loadCart() async {
     if (isGuest) {
-      return localDataSource.fetchActiveCart(userId: userId);
+      return localDataSource.fetchActiveCart();
     }
 
-    await _syncGuestCartToUser(userId);
-    return remoteDataSource.fetchActiveCart(userId: userId);
+    await _syncGuestCartToUser();
+    return remoteDataSource.fetchActiveCart();
   }
 
   @override
-  Future<Cart> createCart(int userId) {
+  Future<Cart> createCart() {
     if (isGuest) {
-      return localDataSource.createCart(userId: userId);
+      return localDataSource.createCart();
     }
 
-    return remoteDataSource.createCart(userId: userId);
+    return remoteDataSource.createCart();
   }
 
   @override
@@ -46,14 +46,12 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
 
   @override
   Future<void> addItem({
-    required int userId,
     required int productId,
     required int quantity,
     required double price,
   }) {
     if (isGuest) {
       return localDataSource.addItem(
-        userId: userId,
         productId: productId,
         quantity: quantity,
         price: price,
@@ -61,7 +59,6 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
     }
 
     return remoteDataSource.addItem(
-      userId: userId,
       productId: productId,
       quantity: quantity,
       price: price,
@@ -69,12 +66,12 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
   }
 
   @override
-  Future<void> removeItem({required int userId, required int productId}) {
+  Future<void> removeItem({required int productId}) {
     if (isGuest) {
-      return localDataSource.removeItem(userId: userId, productId: productId);
+      return localDataSource.removeItem(productId: productId);
     }
 
-    return remoteDataSource.removeItem(userId: userId, productId: productId);
+    return remoteDataSource.removeItem(productId: productId);
   }
 
   @override
@@ -107,7 +104,7 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
     return remoteDataSource.fetchCartItems(cartId: cartId);
   }
 
-  Future<void> _syncGuestCartToUser(int userId) async {
+  Future<void> _syncGuestCartToUser() async {
     if (_hasSyncedGuestCart) {
       return;
     }
@@ -121,7 +118,6 @@ class CheckoutRepositoryImpl implements CheckoutRepository {
 
     for (final item in guestItems) {
       await remoteDataSource.addItem(
-        userId: userId,
         productId: item.productId,
         quantity: item.quantity,
         price: item.price,

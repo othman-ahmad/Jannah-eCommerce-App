@@ -9,8 +9,8 @@ class ProfileRepositoryImpl implements ProfileRepository {
   const ProfileRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<AppUser> getUser({required int userId}) {
-    return remoteDataSource.fetchUser(userId: userId);
+  Future<AppUser> getUser() {
+    return remoteDataSource.fetchUser();
   }
 
   @override
@@ -19,8 +19,8 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<List<Address>> getAddresses({required int userId}) {
-    return remoteDataSource.fetchAddresses(userId: userId);
+  Future<List<Address>> getAddresses() {
+    return remoteDataSource.fetchAddresses();
   }
 
   @override

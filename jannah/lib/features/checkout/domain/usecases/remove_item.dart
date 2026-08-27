@@ -5,7 +5,7 @@ class RemoveItem {
 
   const RemoveItem(this.repository);
 
-  Future<void> call({required int userId, required int productId}) {
-    return repository.removeItem(userId: userId, productId: productId);
+  Future<void> call({required int productId}) {
+    return repository.removeItem(productId: productId);
   }
 }

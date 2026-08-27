@@ -17,12 +17,12 @@ class Payment {
 
   Map<String, dynamic> toJson() {
     return {
-      'orderId': orderId,
-      'paymentMethod': paymentMethod,
-      'amount': amount,
-      'transactionId': transactionId,
-      'status': status,
-      'paymentDate': paymentDate.toIso8601String(),
+      'OrderId': orderId,
+      'PaymentMethod': paymentMethod,
+      'Amount': amount,
+      'TransactionId': transactionId,
+      'Status': status,
+      'PaymentDate': paymentDate.toIso8601String(),
     };
   }
 }

@@ -6,7 +6,7 @@ class GetProfile {
 
   const GetProfile(this.repository);
 
-  Future<AppUser> call({required int userId}) {
-    return repository.getUser(userId: userId);
+  Future<AppUser> call() {
+    return repository.getUser();
   }
 }

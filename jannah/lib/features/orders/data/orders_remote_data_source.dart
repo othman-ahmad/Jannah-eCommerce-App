@@ -12,7 +12,7 @@ import 'package:jannah/features/orders/data/payment_model.dart';
 import 'package:jannah/features/profile/data/address_model.dart';
 
 abstract class OrdersRemoteDataSource {
-  Future<List<Order>> fetchOrders({required int userId});
+  Future<List<Order>> fetchOrders();
 
   Future<Order> postOrder({
     required Order order,
@@ -27,7 +27,7 @@ abstract class OrdersRemoteDataSource {
 class ApiOrdersRemoteDataSource implements OrdersRemoteDataSource {
   ApiOrdersRemoteDataSource({
     http.Client? client,
-    String baseUrl = 'http://192.168.1.75:5241/api',
+    String baseUrl = 'http://192.168.1.21:5241/api',
   }) : _client = client ?? http.Client(),
        _baseUri = Uri.parse(baseUrl);
 
@@ -35,9 +35,9 @@ class ApiOrdersRemoteDataSource implements OrdersRemoteDataSource {
   final Uri _baseUri;
 
   @override
-  Future<List<Order>> fetchOrders({required int userId}) async {
+  Future<List<Order>> fetchOrders() async {
     final response = await _client
-        .get(_uriFor('orders/user/$userId'), headers: _jsonHeaders)
+        .get(_uriFor('orders'), headers: _jsonHeaders)
         .timeout(const Duration(seconds: 15));
 
     _throwIfRequestFailed(response, 'Orders request failed');
@@ -72,7 +72,7 @@ class ApiOrdersRemoteDataSource implements OrdersRemoteDataSource {
       client: _client,
       baseUrl: _baseUri.toString(),
     );
-    final cart = await checkoutDataSource.fetchActiveCart(userId: order.userId);
+    final cart = await checkoutDataSource.fetchActiveCart();
 
     if (cart == null) {
       throw Exception('No active cart found for checkout.');
@@ -84,7 +84,7 @@ class ApiOrdersRemoteDataSource implements OrdersRemoteDataSource {
       paymentMethod: paymentMethod,
     );
 
-    final orders = await fetchOrders(userId: order.userId);
+    final orders = await fetchOrders();
     if (orders.isEmpty) {
       return order.copyWith(
         orderId: cart.cartId,
@@ -278,18 +278,19 @@ class InMemoryOrdersRemoteDataSource implements OrdersRemoteDataSource {
   };
 
   static int _nextOrderId = 2;
+  static const _mockUserId = 1;
 
   @override
-  Future<List<Order>> fetchOrders({required int userId}) async {
+  Future<List<Order>> fetchOrders() async {
     final orders = _orders
-        .where((order) => order.userId == userId)
+        .where((order) => order.userId == _mockUserId)
         .map((order) => Order.fromJson(order.toJson()))
         .toList(growable: false);
 
     print('\n');
     print('==================== MOCK ORDERS DATABASE ====================');
     print('Operation: FETCH ORDERS');
-    print('UserId: $userId');
+    print('UserId: $_mockUserId');
     for (final order in orders) {
       print(
         'OrderId: ${order.orderId}, OrderNumber: ${order.orderNumber}, Date: ${order.date}, Total: ${order.total.toStringAsFixed(2)}, Status: ${order.status}',

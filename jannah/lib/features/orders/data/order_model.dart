@@ -72,16 +72,16 @@ class Order {
 
   Map<String, dynamic> toJson() {
     return {
-      'orderId': orderId,
-      'userId': userId,
-      'addressId': addressId,
-      'orderNumber': orderNumber,
-      'date': date.toIso8601String(),
-      'subtotal': subtotal,
-      'deliveryFee': deliveryFee,
-      'pakagingFee': pakagingFee,
-      'total': total,
-      'status': status,
+      'OrderId': orderId,
+      'UserId': userId,
+      'AddressId': addressId,
+      'OrderNumber': orderNumber,
+      'Date': date.toIso8601String(),
+      'Subtotal': subtotal,
+      'DeliveryFee': deliveryFee,
+      'PakagingFee': pakagingFee,
+      'Total': total,
+      'Status': status,
     };
   }
 

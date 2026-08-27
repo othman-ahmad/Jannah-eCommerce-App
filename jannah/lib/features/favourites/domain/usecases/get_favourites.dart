@@ -6,7 +6,7 @@ class GetFavourites {
 
   const GetFavourites(this.repository);
 
-  Future<List<Favourite>> call({required int userId}) {
-    return repository.getFavourites(userId: userId);
+  Future<List<Favourite>> call() {
+    return repository.getFavourites();
   }
 }

@@ -7,20 +7,19 @@ import 'package:jannah/features/checkout/data/cart_item_model.dart';
 import 'package:jannah/features/checkout/data/cart_model.dart';
 
 abstract class CheckoutRemoteDataSource {
-  Future<Cart?> fetchActiveCart({required int userId});
+  Future<Cart?> fetchActiveCart();
 
-  Future<Cart> createCart({required int userId});
+  Future<Cart> createCart();
 
   Future<void> deleteCart({required int cartId});
 
   Future<void> addItem({
-    required int userId,
     required int productId,
     required int quantity,
     required double price,
   });
 
-  Future<void> removeItem({required int userId, required int productId});
+  Future<void> removeItem({required int productId});
 
   Future<void> checkout({
     required int cartId,
@@ -34,7 +33,7 @@ abstract class CheckoutRemoteDataSource {
 class ApiCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
   ApiCheckoutRemoteDataSource({
     http.Client? client,
-    String baseUrl = 'http://192.168.1.75:5241/api',
+    String baseUrl = 'http://192.168.1.21:5241/api',
   }) : _client = client ?? http.Client(),
        _baseUri = Uri.parse(baseUrl);
 
@@ -42,9 +41,9 @@ class ApiCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
   final Uri _baseUri;
 
   @override
-  Future<Cart?> fetchActiveCart({required int userId}) async {
+  Future<Cart?> fetchActiveCart() async {
     final response = await _client
-        .get(_uriFor('cart/active/$userId'), headers: _jsonHeaders)
+        .get(_uriFor('cart/active'), headers: _jsonHeaders)
         .timeout(const Duration(seconds: 15));
 
     if (response.statusCode == 404 || response.statusCode == 204) {
@@ -61,8 +60,8 @@ class ApiCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
   }
 
   @override
-  Future<Cart> createCart({required int userId}) async {
-    final activeCart = await fetchActiveCart(userId: userId);
+  Future<Cart> createCart() async {
+    final activeCart = await fetchActiveCart();
     if (activeCart != null) {
       return activeCart;
     }
@@ -79,7 +78,6 @@ class ApiCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
 
   @override
   Future<void> addItem({
-    required int userId,
     required int productId,
     required int quantity,
     required double price,
@@ -88,11 +86,7 @@ class ApiCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
         .post(
           _uriFor('cart/items'),
           headers: _jsonHeaders,
-          body: jsonEncode({
-            'userId': userId,
-            'productId': productId,
-            'quantity': quantity,
-          }),
+          body: jsonEncode({'ProductId': productId, 'Quantity': quantity}),
         )
         .timeout(const Duration(seconds: 15));
 
@@ -100,12 +94,12 @@ class ApiCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
   }
 
   @override
-  Future<void> removeItem({required int userId, required int productId}) async {
+  Future<void> removeItem({required int productId}) async {
     final response = await _client
         .delete(
           _uriFor('cart/items'),
           headers: _jsonHeaders,
-          body: jsonEncode({'userId': userId, 'productId': productId}),
+          body: jsonEncode({'ProductId': productId}),
         )
         .timeout(const Duration(seconds: 15));
 
@@ -123,8 +117,8 @@ class ApiCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
           _uriFor('cart/checkout/$cartId'),
           headers: _jsonHeaders,
           body: jsonEncode({
-            'addressId': addressId,
-            'paymentMethod': paymentMethod,
+            'AddressId': addressId,
+            'PaymentMethod': paymentMethod,
           }),
         )
         .timeout(const Duration(seconds: 15));
@@ -272,11 +266,12 @@ class InMemoryCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
   final List<CartItem> _cartItems = [];
   int _nextCartId = 1;
   int _nextCartItemId = 1;
+  static const _mockUserId = 1;
 
   @override
-  Future<Cart?> fetchActiveCart({required int userId}) async {
+  Future<Cart?> fetchActiveCart() async {
     final activeCarts = _carts.where(
-      (cart) => cart.userId == userId && !cart.isOrdered,
+      (cart) => cart.userId == _mockUserId && !cart.isOrdered,
     );
 
     if (activeCarts.isEmpty) {
@@ -287,8 +282,8 @@ class InMemoryCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
   }
 
   @override
-  Future<Cart> createCart({required int userId}) async {
-    final existingCart = await fetchActiveCart(userId: userId);
+  Future<Cart> createCart() async {
+    final existingCart = await fetchActiveCart();
 
     if (existingCart != null) {
       return existingCart;
@@ -296,7 +291,7 @@ class InMemoryCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
 
     final cart = Cart(
       cartId: _nextCartId++,
-      userId: userId,
+      userId: _mockUserId,
       createdDate: DateTime.now(),
       isOrdered: false,
     );
@@ -315,12 +310,11 @@ class InMemoryCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
 
   @override
   Future<void> addItem({
-    required int userId,
     required int productId,
     required int quantity,
     required double price,
   }) async {
-    final cart = await createCart(userId: userId);
+    final cart = await createCart();
     final index = _cartItems.indexWhere(
       (item) => item.cartId == cart.cartId && item.productId == productId,
     );
@@ -348,8 +342,8 @@ class InMemoryCheckoutRemoteDataSource implements CheckoutRemoteDataSource {
   }
 
   @override
-  Future<void> removeItem({required int userId, required int productId}) async {
-    final cart = await fetchActiveCart(userId: userId);
+  Future<void> removeItem({required int productId}) async {
+    final cart = await fetchActiveCart();
 
     if (cart == null) {
       return;

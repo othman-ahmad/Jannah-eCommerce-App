@@ -30,11 +30,11 @@ class OrderItem {
 
   Map<String, dynamic> toJson() {
     return {
-      'orderItemId': orderItemId,
-      'orderId': orderId,
-      'productId': productId,
-      'quantity': quantity,
-      'price': price,
+      'OrderItemId': orderItemId,
+      'OrderId': orderId,
+      'ProductId': productId,
+      'Quantity': quantity,
+      'Price': price,
     };
   }
 

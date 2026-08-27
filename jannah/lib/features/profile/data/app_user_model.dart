@@ -38,12 +38,12 @@ class AppUser {
 
   Map<String, dynamic> toJson() {
     return {
-      'user_id': userId,
-      'name': name,
-      'email': email,
-      'phone': phone,
-      'profile_image': profileImage,
-      'created_at': createdAt?.toIso8601String(),
+      'UserId': userId,
+      'FullName': name,
+      'Email': email,
+      'Phone': phone,
+      'ProfileImage': profileImage,
+      'CreatedDate': createdAt?.toIso8601String(),
     };
   }
 

@@ -6,7 +6,7 @@ class AddToFavourites {
 
   const AddToFavourites(this.repository);
 
-  Future<Favourite> call({required int userId, required int productId}) {
-    return repository.addToFavourites(userId: userId, productId: productId);
+  Future<Favourite> call({required int productId}) {
+    return repository.addToFavourites(productId: productId);
   }
 }

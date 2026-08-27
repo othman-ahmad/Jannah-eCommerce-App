@@ -14,7 +14,7 @@ class GuestCartLocalDataSource implements CheckoutRemoteDataSource {
     : _box = box ?? Hive.box<dynamic>(AppPreferences.guestCartBoxName);
 
   @override
-  Future<Cart?> fetchActiveCart({required int userId}) async {
+  Future<Cart?> fetchActiveCart() async {
     final items = _readItems();
 
     if (items.isEmpty) {
@@ -31,8 +31,8 @@ class GuestCartLocalDataSource implements CheckoutRemoteDataSource {
   }
 
   @override
-  Future<Cart> createCart({required int userId}) async {
-    final existingCart = await fetchActiveCart(userId: userId);
+  Future<Cart> createCart() async {
+    final existingCart = await fetchActiveCart();
 
     if (existingCart != null) {
       return existingCart;
@@ -53,12 +53,11 @@ class GuestCartLocalDataSource implements CheckoutRemoteDataSource {
 
   @override
   Future<void> addItem({
-    required int userId,
     required int productId,
     required int quantity,
     required double price,
   }) async {
-    final cart = await createCart(userId: userId);
+    final cart = await createCart();
     final items = _readItems();
     final index = items.indexWhere((item) => item.productId == productId);
 
@@ -84,7 +83,7 @@ class GuestCartLocalDataSource implements CheckoutRemoteDataSource {
   }
 
   @override
-  Future<void> removeItem({required int userId, required int productId}) async {
+  Future<void> removeItem({required int productId}) async {
     final items = _readItems();
     final index = items.indexWhere((item) => item.productId == productId);
 

@@ -5,13 +5,8 @@ class RemoveFromFavourites {
 
   const RemoveFromFavourites(this.repository);
 
-  Future<void> call({
-    required int userId,
-    required int productId,
-    int? likeId,
-  }) {
+  Future<void> call({required int productId, int? likeId}) {
     return repository.removeFromFavourites(
-      userId: userId,
       productId: productId,
       likeId: likeId,
     );

@@ -5,11 +5,11 @@ import 'package:jannah/features/profile/data/address_model.dart';
 import 'package:jannah/features/profile/data/app_user_model.dart';
 
 abstract class ProfileRemoteDataSource {
-  Future<AppUser> fetchUser({required int userId});
+  Future<AppUser> fetchUser();
 
   Future<AppUser> updateUser({required AppUser user});
 
-  Future<List<Address>> fetchAddresses({required int userId});
+  Future<List<Address>> fetchAddresses();
 
   Future<Address> saveAddress({required Address addressToSave});
 
@@ -19,7 +19,7 @@ abstract class ProfileRemoteDataSource {
 class ApiProfileRemoteDataSource implements ProfileRemoteDataSource {
   ApiProfileRemoteDataSource({
     http.Client? client,
-    String baseUrl = 'http://192.168.1.75:5241/api/profile',
+    String baseUrl = 'http://192.168.1.21:5241/api/profile',
   }) : _client = client ?? http.Client(),
        _baseUri = Uri.parse(baseUrl);
 
@@ -27,25 +27,25 @@ class ApiProfileRemoteDataSource implements ProfileRemoteDataSource {
   final Uri _baseUri;
 
   @override
-  Future<AppUser> fetchUser({required int userId}) async {
-    final response = await _get(_uriFor('$userId'));
+  Future<AppUser> fetchUser() async {
+    final response = await _get(_baseUri);
     return AppUser.fromJson(_unwrapObject(_decodeJson(response.body), 'user'));
   }
 
   @override
   Future<AppUser> updateUser({required AppUser user}) async {
     final response = await _put(
-      _uriFor('${user.userId}'),
+      _baseUri,
       body: {
-        'fullName': user.name,
-        'email': user.email,
-        'phone': user.phone,
-        'profileImage': user.profileImage,
+        'FullName': user.name,
+        'Email': user.email,
+        'Phone': user.phone,
+        'ProfileImage': user.profileImage,
       },
     );
 
     if (response.body.trim().isEmpty) {
-      return fetchUser(userId: user.userId);
+      return fetchUser();
     }
 
     return AppUser.fromJson(
@@ -54,8 +54,8 @@ class ApiProfileRemoteDataSource implements ProfileRemoteDataSource {
   }
 
   @override
-  Future<List<Address>> fetchAddresses({required int userId}) async {
-    final response = await _get(_uriFor('addresses/user/$userId'));
+  Future<List<Address>> fetchAddresses() async {
+    final response = await _get(_uriFor('addresses'));
     return _unwrapList(
       _decodeJson(response.body),
       'addresses',
@@ -67,17 +67,17 @@ class ApiProfileRemoteDataSource implements ProfileRemoteDataSource {
     final response = await _post(
       _uriFor('addresses'),
       body: {
-        'addressId': addressToSave.addressId,
-        'userId': addressToSave.userId,
-        'addressType': addressToSave.addressType,
-        'addressLine': addressToSave.addressLine,
-        'city': addressToSave.city,
-        'state': addressToSave.state,
-        'postalCode': addressToSave.postalCode,
-        'country': addressToSave.country,
-        'latitude': addressToSave.latitude,
-        'longitude': addressToSave.longitude,
-        'isDefault': addressToSave.isDefault,
+        'AddressId': addressToSave.addressId,
+        'UserId': addressToSave.userId,
+        'AddressType': addressToSave.addressType,
+        'AddressLine': addressToSave.addressLine,
+        'City': addressToSave.city,
+        'State': addressToSave.state,
+        'PostalCode': addressToSave.postalCode,
+        'Country': addressToSave.country,
+        'Latitude': addressToSave.latitude,
+        'Longitude': addressToSave.longitude,
+        'IsDefault': addressToSave.isDefault,
       },
     );
 

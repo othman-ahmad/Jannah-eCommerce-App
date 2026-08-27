@@ -10,7 +10,7 @@ abstract class PromotionsRemoteDataSource {
 class ApiPromotionsRemoteDataSource implements PromotionsRemoteDataSource {
   ApiPromotionsRemoteDataSource({
     http.Client? client,
-    String baseUrl = 'http://192.168.1.75:5241/api/promotions',
+    String baseUrl = 'http://192.168.1.21:5241/api/promotions',
   }) : _client = client ?? http.Client(),
        _baseUri = Uri.parse(baseUrl);
 

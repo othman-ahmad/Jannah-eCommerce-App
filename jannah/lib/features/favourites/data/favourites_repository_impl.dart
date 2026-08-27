@@ -16,55 +16,40 @@ class FavouritesRepositoryImpl implements FavouritesRepository {
   }) : localDataSource = localDataSource ?? GuestFavouritesLocalDataSource();
 
   @override
-  Future<List<Favourite>> getFavourites({required int userId}) async {
+  Future<List<Favourite>> getFavourites() async {
     if (isGuest) {
-      return localDataSource.fetchFavourites(userId: userId);
+      return localDataSource.fetchFavourites();
     }
 
-    await _syncGuestFavouritesToUser(userId);
-    return remoteDataSource.fetchFavourites(userId: userId);
+    await _syncGuestFavouritesToUser();
+    return remoteDataSource.fetchFavourites();
   }
 
   @override
-  Future<Favourite> addToFavourites({
-    required int userId,
-    required int productId,
-  }) {
+  Future<Favourite> addToFavourites({required int productId}) {
     if (isGuest) {
-      return localDataSource.addToFavourites(
-        userId: userId,
-        productId: productId,
-      );
+      return localDataSource.addToFavourites(productId: productId);
     }
 
-    return remoteDataSource.addToFavourites(
-      userId: userId,
-      productId: productId,
-    );
+    return remoteDataSource.addToFavourites(productId: productId);
   }
 
   @override
-  Future<void> removeFromFavourites({
-    required int userId,
-    required int productId,
-    int? likeId,
-  }) {
+  Future<void> removeFromFavourites({required int productId, int? likeId}) {
     if (isGuest) {
       return localDataSource.removeFromFavourites(
-        userId: userId,
         productId: productId,
         likeId: likeId,
       );
     }
 
     return remoteDataSource.removeFromFavourites(
-      userId: userId,
       productId: productId,
       likeId: likeId,
     );
   }
 
-  Future<void> _syncGuestFavouritesToUser(int userId) async {
+  Future<void> _syncGuestFavouritesToUser() async {
     if (_hasSyncedGuestFavourites) {
       return;
     }
@@ -77,10 +62,7 @@ class FavouritesRepositoryImpl implements FavouritesRepository {
     }
 
     for (final favourite in favourites) {
-      await remoteDataSource.addToFavourites(
-        userId: userId,
-        productId: favourite.productId,
-      );
+      await remoteDataSource.addToFavourites(productId: favourite.productId);
     }
 
     await localDataSource.clear();

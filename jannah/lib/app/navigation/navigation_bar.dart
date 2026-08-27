@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jannah/app/navigation/navigation_cubit.dart';
+import 'package:jannah/core/network/authenticated_http_client.dart';
 import 'package:jannah/features/categories/data/categories_remote_data_source.dart';
 import 'package:jannah/features/categories/data/categories_repository_impl.dart';
 import 'package:jannah/features/categories/domain/usecases/get_categories.dart';
@@ -33,7 +34,6 @@ import 'package:jannah/features/home_page/presentation/cubit/promotions_cubit.da
 import 'package:jannah/features/home_page/presentation/home_page_screen.dart';
 import 'package:jannah/features/orders/data/orders_remote_data_source.dart';
 import 'package:jannah/features/orders/data/orders_repository_impl.dart';
-import 'package:jannah/features/orders/domain/orders_repository.dart';
 import 'package:jannah/features/orders/domain/usecases/get_order_details.dart';
 import 'package:jannah/features/orders/domain/usecases/get_orders.dart';
 import 'package:jannah/features/orders/domain/usecases/post_order.dart';
@@ -60,22 +60,16 @@ import 'package:jannah/features/profile/presentation/profile_screen.dart';
 class JannahNavigationBar extends StatelessWidget {
   const JannahNavigationBar({super.key});
 
-  static final OrdersRemoteDataSource _ordersRemoteDataSource =
-      ApiOrdersRemoteDataSource();
-  static final OrdersRepository _ordersRepository = OrdersRepositoryImpl(
-    remoteDataSource: _ordersRemoteDataSource,
-  );
-  static final CheckoutRemoteDataSource _checkoutRemoteDataSource =
-      ApiCheckoutRemoteDataSource();
-  static final FavouritesRemoteDataSource _favouritesRemoteDataSource =
-      ApiFavouritesRemoteDataSource();
-
   FavouritesCubit _createFavouritesCubit({
     required int currentUserId,
     required bool isGuest,
+    required AuthenticatedHttpClient authHttpClient,
   }) {
+    final remoteDataSource = ApiFavouritesRemoteDataSource(
+      client: authHttpClient,
+    );
     final repository = FavouritesRepositoryImpl(
-      remoteDataSource: _favouritesRemoteDataSource,
+      remoteDataSource: remoteDataSource,
       isGuest: isGuest,
     );
 
@@ -104,9 +98,13 @@ class JannahNavigationBar extends StatelessWidget {
   CheckoutCubit _createCheckoutCubit({
     required int currentUserId,
     required bool isGuest,
+    required AuthenticatedHttpClient authHttpClient,
   }) {
+    final remoteDataSource = ApiCheckoutRemoteDataSource(
+      client: authHttpClient,
+    );
     final repository = CheckoutRepositoryImpl(
-      remoteDataSource: _checkoutRemoteDataSource,
+      remoteDataSource: remoteDataSource,
       isGuest: isGuest,
     );
 
@@ -122,16 +120,25 @@ class JannahNavigationBar extends StatelessWidget {
     )..loadCart();
   }
 
-  OrdersCubit _createOrdersCubit(
-    OrdersRepository repository, {
+  OrdersCubit _createOrdersCubit({
     required int currentUserId,
+    required bool isGuest,
+    required AuthenticatedHttpClient authHttpClient,
   }) {
-    return OrdersCubit(
+    final remoteDataSource = ApiOrdersRemoteDataSource(client: authHttpClient);
+    final repository = OrdersRepositoryImpl(remoteDataSource: remoteDataSource);
+    final cubit = OrdersCubit(
       getOrders: GetOrders(repository),
       getOrderDetails: GetOrderDetails(repository),
       postOrder: PostOrder(repository),
       currentUserId: currentUserId,
-    )..loadOrders();
+    );
+
+    if (!isGuest) {
+      cubit.loadOrders();
+    }
+
+    return cubit;
   }
 
   CategoriesCubit _createCategoriesCubit() {
@@ -157,8 +164,9 @@ class JannahNavigationBar extends StatelessWidget {
   ProfileCubit _createProfileCubit({
     required int currentUserId,
     required bool isGuest,
+    required AuthenticatedHttpClient authHttpClient,
   }) {
-    final remoteDataSource = ApiProfileRemoteDataSource();
+    final remoteDataSource = ApiProfileRemoteDataSource(client: authHttpClient);
     final repository = ProfileRepositoryImpl(
       remoteDataSource: remoteDataSource,
     );
@@ -185,6 +193,9 @@ class JannahNavigationBar extends StatelessWidget {
     final authUser = authState.user;
     final isGuest = authState.status == AuthenticationStatus.guest;
     final currentUserId = authUser?.userId ?? 0;
+    final authHttpClient = AuthenticatedHttpClient(
+      onUnauthorized: context.read<AuthenticationCubit>().logout,
+    );
 
     return MultiBlocProvider(
       providers: [
@@ -193,6 +204,7 @@ class JannahNavigationBar extends StatelessWidget {
           create: (_) => _createFavouritesCubit(
             currentUserId: currentUserId,
             isGuest: isGuest,
+            authHttpClient: authHttpClient,
           ),
         ),
         BlocProvider(create: (_) => _createProductsCubit()),
@@ -200,12 +212,14 @@ class JannahNavigationBar extends StatelessWidget {
           create: (_) => _createCheckoutCubit(
             currentUserId: currentUserId,
             isGuest: isGuest,
+            authHttpClient: authHttpClient,
           ),
         ),
         BlocProvider(
           create: (_) => _createOrdersCubit(
-            _ordersRepository,
             currentUserId: currentUserId,
+            isGuest: isGuest,
+            authHttpClient: authHttpClient,
           ),
         ),
         BlocProvider(create: (_) => _createCategoriesCubit()),
@@ -214,6 +228,7 @@ class JannahNavigationBar extends StatelessWidget {
           create: (_) => _createProfileCubit(
             currentUserId: currentUserId,
             isGuest: isGuest,
+            authHttpClient: authHttpClient,
           ),
         ),
       ],
