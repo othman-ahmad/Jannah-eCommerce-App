@@ -19,7 +19,7 @@ abstract class ProfileRemoteDataSource {
 class ApiProfileRemoteDataSource implements ProfileRemoteDataSource {
   ApiProfileRemoteDataSource({
     http.Client? client,
-    String baseUrl = 'http://192.168.1.21:5241/api/profile',
+    String baseUrl = 'http://192.168.1.75:5241/api/profile',
   }) : _client = client ?? http.Client(),
        _baseUri = Uri.parse(baseUrl);
 

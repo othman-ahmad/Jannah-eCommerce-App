@@ -14,7 +14,7 @@ abstract class FavouritesRemoteDataSource {
 class ApiFavouritesRemoteDataSource implements FavouritesRemoteDataSource {
   ApiFavouritesRemoteDataSource({
     http.Client? client,
-    String baseUrl = 'http://192.168.1.21:5241/api/favorites',
+    String baseUrl = 'http://192.168.1.75:5241/api/favorites',
   }) : _client = client ?? http.Client(),
        _baseUri = Uri.parse(baseUrl);
 
