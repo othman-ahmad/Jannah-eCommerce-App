@@ -41,6 +41,8 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final promotions = context.watch<PromotionsCubit>().state.promotions;
+
     return Scaffold(
       body: BlocBuilder<ProductsCubit, ProductsState>(
         builder: (context, state) {
@@ -83,7 +85,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
             children: [
               buildProductImagesSlider(product),
               const SizedBox(height: 16),
-              buildItemInfo(product),
+              buildItemInfo(product, promotions),
             ],
           );
         },
@@ -95,116 +97,99 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
     return ProductImageSlider(images: product.imagesList);
   }
 
-  Widget buildItemInfo(Product product) {
+  Widget buildItemInfo(Product product, List<Promotion> promotions) {
     final basePrice = product.price;
-    return FutureBuilder<List<Promotion>>(
-      future: context.read<PromotionsCubit>().getPromotions(),
-      builder: (context, promotionSnapshot) {
-        if (!promotionSnapshot.hasData) {
-          return const SizedBox(
-            height: 100,
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
 
-        final promotions = promotionSnapshot.data!;
-        Promotion? promotion;
-        try {
-          promotion = promotions.firstWhere(
-            (p) => p.categoryId == product.categoryId,
-          );
-        } catch (_) {
-          promotion = null;
-        }
+    Promotion? promotion;
+    try {
+      promotion = promotions.firstWhere(
+        (p) => p.categoryId == product.categoryId,
+      );
+    } catch (_) {
+      promotion = null;
+    }
 
-        final displayPrice = promotion == null
-            ? basePrice
-            : basePrice * ((100 - promotion.discountPercentage) / 100);
+    final displayPrice = promotion == null
+        ? basePrice
+        : basePrice * ((100 - promotion.discountPercentage) / 100);
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      product.productName,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 2,
-                      softWrap: true,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+              Expanded(
+                child: Text(
+                  product.productName,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
-                  FavouriteToggleButton(productId: product.productId),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                product.description,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Color.fromARGB(255, 0, 0, 0),
-                  fontWeight: FontWeight.w500,
+                  maxLines: 2,
+                  softWrap: true,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(height: 16),
-              Container(
-                height: 65,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(30, 0, 0, 0),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      if (promotion != null)
-                        Text(
-                          '\$${basePrice.toStringAsFixed(2)}    ',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Color.fromARGB(180, 0, 0, 0),
-                            decoration: TextDecoration.lineThrough,
-                          ),
-                        ),
-                      Text(
-                        '\$${displayPrice.toStringAsFixed(2)}  / ${product.unit}',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color.from(
-                            alpha: 1,
-                            red: 0,
-                            green: 0,
-                            blue: 0,
-                          ),
-                        ),
-                      ),
-                      if (promotion != null)
-                        Text(
-                          '    ',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Color.fromARGB(180, 0, 0, 0),
-                            decoration: TextDecoration.lineThrough,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              buildCartSection(product, displayPrice),
+              FavouriteToggleButton(productId: product.productId),
             ],
           ),
-        );
-      },
+          const SizedBox(height: 16),
+          Text(
+            product.description,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Color.fromARGB(255, 0, 0, 0),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            height: 65,
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(30, 0, 0, 0),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (promotion != null)
+                    Text(
+                      '\$${basePrice.toStringAsFixed(2)}    ',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Color.fromARGB(180, 0, 0, 0),
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                  Text(
+                    '\$${displayPrice.toStringAsFixed(2)}  / ${product.unit}',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color.from(alpha: 1, red: 0, green: 0, blue: 0),
+                    ),
+                  ),
+                  if (promotion != null)
+                    Text(
+                      '    ',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Color.fromARGB(180, 0, 0, 0),
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          buildCartSection(product, displayPrice),
+        ],
+      ),
     );
   }
 

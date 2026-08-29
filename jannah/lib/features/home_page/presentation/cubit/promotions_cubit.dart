@@ -4,11 +4,22 @@ import 'package:jannah/features/home_page/presentation/cubit/promotions_state.da
 
 class PromotionsCubit extends Cubit<PromotionsState> {
   final GetPromotions getPromotions;
+  bool _isLoading = false;
 
   PromotionsCubit({required this.getPromotions})
     : super(const PromotionsState());
 
   Future<void> loadPromotions() async {
+    if (_isLoading) {
+      return;
+    }
+
+    if (state.promotionsStatus == PromotionsStatus.success &&
+        state.promotions.isNotEmpty) {
+      return;
+    }
+
+    _isLoading = true;
     emit(state.copyWith(promotionsStatus: PromotionsStatus.loading));
 
     try {
@@ -26,6 +37,8 @@ class PromotionsCubit extends Cubit<PromotionsState> {
           errorMessage: e.toString(),
         ),
       );
+    } finally {
+      _isLoading = false;
     }
   }
 }

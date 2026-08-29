@@ -35,20 +35,6 @@ class _PromotionsBannerState extends State<PromotionsBanner> {
     super.dispose();
   }
 
-  ProductsCubit _createProductsCubit() {
-    final remoteDataSource = ApiProductsRemoteDataSource();
-    final repository = ProductsRepositoryImpl(
-      remoteDataSource: remoteDataSource,
-    );
-
-    return ProductsCubit(
-      getProducts: GetProducts(repository),
-      getProductById: GetProductById(repository),
-      getProductsByCategoryId: GetProductsByCategoryId(repository),
-      getProductsByName: GetProductsByName(repository),
-    )..loadProducts();
-  }
-
   Category? _categoryForPromotion(List<Category> categories, int categoryId) {
     for (final category in categories) {
       if (category.categoryId == categoryId) {
@@ -96,7 +82,7 @@ class _PromotionsBannerState extends State<PromotionsBanner> {
           providers: [
             BlocProvider.value(value: context.read<FavouritesCubit>()),
             BlocProvider.value(value: context.read<CheckoutCubit>()),
-            BlocProvider(create: (_) => _createProductsCubit()),
+            BlocProvider.value(value: context.read<ProductsCubit>()),
             BlocProvider.value(value: context.read<PromotionsCubit>()),
           ],
           child: CategoryItemsScreen(category: category),

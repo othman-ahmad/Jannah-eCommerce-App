@@ -21,137 +21,129 @@ class _FavouriteItemCardState extends State<FavouriteItemCard> {
   @override
   Widget build(BuildContext context) {
     final basePrice = widget.product.price;
+    final promotions = context.watch<PromotionsCubit>().state.promotions;
 
-    return FutureBuilder<List<Promotion>>(
-      future: context.read<PromotionsCubit>().getPromotions(),
-      builder: (context, promotionSnapshot) {
-        double displayPrice = basePrice;
-        if (promotionSnapshot.hasData) {
-          final promotions = promotionSnapshot.data!;
-          Promotion? promotion;
-          try {
-            promotion = promotions.firstWhere(
-              (p) => p.categoryId == widget.product.categoryId,
-            );
-          } catch (_) {
-            promotion = null;
-          }
+    double displayPrice = basePrice;
+    Promotion? promotion;
+    try {
+      promotion = promotions.firstWhere(
+        (p) => p.categoryId == widget.product.categoryId,
+      );
+    } catch (_) {
+      promotion = null;
+    }
 
-          if (promotion != null) {
-            displayPrice =
-                basePrice * ((100 - promotion.discountPercentage) / 100);
-          }
-        }
+    if (promotion != null) {
+      displayPrice = basePrice * ((100 - promotion.discountPercentage) / 100);
+    }
 
-        return GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            final cartQuantity = context
-                .read<CheckoutCubit>()
-                .state
-                .quantityForProduct(widget.product.productId);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: context.read<FavouritesCubit>()),
-                    BlocProvider.value(value: context.read<ProductsCubit>()),
-                    BlocProvider.value(value: context.read<CheckoutCubit>()),
-                    BlocProvider.value(value: context.read<PromotionsCubit>()),
-                  ],
-                  child: ItemDetailsScreen(
-                    productId: widget.product.productId,
-                    initialProduct: widget.product,
-                    count: cartQuantity == 0 ? 1 : cartQuantity,
-                  ),
-                ),
-              ),
-            );
-          },
-          child: Container(
-            margin: const EdgeInsets.only(left: 8, right: 16),
-            height: 100,
-            width: double.infinity,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: CloudinaryImage(
-                      imagePath: widget.product.imagesList.isEmpty
-                          ? ''
-                          : widget.product.imagesList.first,
-                      width: 84,
-                      height: 84,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 8),
-                      Text(
-                        widget.product.productName,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      const SizedBox(height: 8),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            '\$${displayPrice.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 0, 0, 0),
-                            ),
-                          ),
-                          if (basePrice != displayPrice)
-                            Text(
-                              '\$${basePrice.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Color.fromARGB(180, 0, 0, 0),
-                                decoration: TextDecoration.lineThrough,
-                              ),
-                            ),
-                        ],
-                      ),
-                      const Spacer(),
-                      SizedBox(
-                        height: 32,
-                        child: FavouriteToggleButton(
-                          productId: widget.product.productId,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-                  ),
-                ),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        final cartQuantity = context
+            .read<CheckoutCubit>()
+            .state
+            .quantityForProduct(widget.product.productId);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider.value(value: context.read<FavouritesCubit>()),
+                BlocProvider.value(value: context.read<ProductsCubit>()),
+                BlocProvider.value(value: context.read<CheckoutCubit>()),
+                BlocProvider.value(value: context.read<PromotionsCubit>()),
               ],
+              child: ItemDetailsScreen(
+                productId: widget.product.productId,
+                initialProduct: widget.product,
+                count: cartQuantity == 0 ? 1 : cartQuantity,
+              ),
             ),
           ),
         );
       },
+      child: Container(
+        margin: const EdgeInsets.only(left: 8, right: 16),
+        height: 100,
+        width: double.infinity,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: CloudinaryImage(
+                  imagePath: widget.product.imagesList.isEmpty
+                      ? ''
+                      : widget.product.imagesList.first,
+                  width: 84,
+                  height: 84,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
+                  Text(
+                    widget.product.productName,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  const SizedBox(height: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '\$${displayPrice.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        ),
+                      ),
+                      if (basePrice != displayPrice)
+                        Text(
+                          '\$${basePrice.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color.fromARGB(180, 0, 0, 0),
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                        ),
+                    ],
+                  ),
+                  const Spacer(),
+                  SizedBox(
+                    height: 32,
+                    child: FavouriteToggleButton(
+                      productId: widget.product.productId,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
